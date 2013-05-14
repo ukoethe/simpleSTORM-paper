@@ -1,0 +1,200 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\date{}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+simpleSTORM - a Fast, Self-Calibrating Reconstruction Algorithm for Localization
+ Microscopy Images
+\end_layout
+
+\begin_layout Author
+Ullrich Köthe, Frank Herrmannsdörfer, Ilia Kats, Fred A.
+ Hamprecht
+\end_layout
+
+\begin_layout Standard
+Existing reconstruction algorithms for localization microscopy usually offer
+ a plathora of configuration settings that must be adjusted carefully in
+ order to obtain good results.
+ This parameter tuning is a difficult task even for experts, and raises
+ the entry threshold for localization microscopy novices.
+ To overcome this difficulty, simpleSTORM was designed to determine all
+ necessary parameters automatically from the raw image data itself during
+ an initial 
+\emph on
+self-calibration phase
+\emph default
+ that preceeds the actual reconstruction phase.
+ It can thus produce good reconstructions with virtually no user input,
+ while still allowing optional configuration by experts for non-standard
+ use cases.
+\end_layout
+
+\begin_layout Standard
+simpleSTORM is based on a careful model of the image acquition process.
+ It assumes that photon counting noise is the dominant noise source and
+ follows a Poisson distribution.
+ However, photon counts are not directly observed, but are transformed by
+ various amplification stages and digitization.
+ We assume that the transformation can be described by a linear equation.
+ Poisson-distributed intensities can thus be recovered by inverting this
+ linear equation, provided its parameters (gain and offset) are known.
+ Furthermore, we assume that the point spread function (PSF) is a Gaussian
+ with unknown (but fixed) width.
+ Finally, we assume that the background intensity varies at a much coarser
+ scale than the PSF and that less than half of the pixels in any sufficiently
+ large window contain signal.
+ Under these assumptions, the model parameters (gain and offset, PSF width,
+ local background intensity) can be estimated automatically in a self-calibratio
+n and preprocessing phase.
+\end_layout
+
+\begin_layout Standard
+In the reconstruction phase, the model parameters are used to transform
+ each frame such that it can be considered as a sum of background-free fluoresce
+nce signal and additive Gaussian noise with zero mean and unit variance.
+ Fluorescence spots can thus be recognized by a simple statistical test:
+ A pixel whose intensity is higher than three times the noise standard deviation
+ contains signal with a probability of about 99.7% (the threshold of the
+ test can be adjusted to control the detection sensitivity of our algorithm).
+ Since the PSF spreads over several pixels, whereas the noise of neighboring
+ pixels is independent, it is even more unlikely that three adjacent pixels
+ exceed the threshold just by chance.
+ The combination of both criteria defines a reliable mask for spot detection.
+ Pixels under (and near) the mask are finally convolved with a matched filter
+ (i.e.
+ a Gaussian filter corresponding to the PSF) for optimal noise reduction
+ and interpolated to the desired resolution using a cubic spline.
+ The coordinaes of local intensity maxima after interpolation are reported
+ as the detected spots.
+\end_layout
+
+\begin_layout Standard
+Specifically, the algorithm proceeds in these steps:
+\end_layout
+
+\begin_layout Enumerate
+Robust estimation of the gain and offset parameters
+\end_layout
+
+\begin_layout Enumerate
+Estimation of the width of a Gaussian PSF via the power spectrum
+\end_layout
+
+\begin_layout Enumerate
+Linear intensity transform into unit gain and zero offset to make the noise
+ approximately Poisson 
+\end_layout
+
+\begin_layout Enumerate
+Anscombe transform of the intensities to make the noise approximately normal
+\end_layout
+
+\begin_layout Enumerate
+Dynamic background estimation and subtraction
+\end_layout
+
+\begin_layout Enumerate
+Statistical test to determine the detection mask according to the specified
+ sensitivity
+\end_layout
+
+\begin_layout Enumerate
+Matched filtering with the PSF for optimal noise reduction
+\end_layout
+
+\begin_layout Enumerate
+Cubic spline interpolation to specified subpixel accuracy and maxima detection
+\end_layout
+
+\begin_layout Standard
+On a standard laptop, the algorithm achieves a processing speed of about
+ 20 frames per second for a typical raw image size of 200x200 pixels.
+ It performed favourably in the recent ISBI Localization Microscopy Challenge
+ (
+\begin_inset CommandInset href
+LatexCommand href
+name "bigwww.epfl.ch/smlm/challenge/"
+target "http://bigwww.epfl.ch/smlm/challenge/"
+
+\end_inset
+
+) that carefully tested more than 20 reconstruction algorithms.
+ In particular, simpleSTORM achieved high accuracy on high-density data,
+ where a relatively large number of spots was simultaneously switched on
+ in order to minimize total acquisition time.
+ Software for our algorithm is freely available in an easy-to-use GUI program
+ at 
+\begin_inset CommandInset href
+LatexCommand href
+name "github.com/ukoethe/simple-STORM"
+target "https://github.com/ukoethe/simple-STORM"
+
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document
