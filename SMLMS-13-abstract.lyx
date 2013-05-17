@@ -31,7 +31,7 @@
 \spacing single
 \use_hyperref false
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -46,6 +46,8 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 4cm
+\rightmargin 4cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -65,39 +67,44 @@
 
 \begin_layout Title
 simpleSTORM - a Fast, Self-Calibrating Reconstruction Algorithm for Localization
- Microscopy Images
+ Microscopy
 \end_layout
 
 \begin_layout Author
 Ullrich Köthe, Frank Herrmannsdörfer, Ilia Kats, Fred A.
  Hamprecht
+\begin_inset Newline newline
+\end_inset
+
+Multi-Dimensional Image Processing Group, University of Heidelberg
 \end_layout
 
 \begin_layout Standard
 Existing reconstruction algorithms for localization microscopy usually offer
- a plathora of configuration settings that must be adjusted carefully in
+ a plethora of configuration settings that must be adjusted carefully in
  order to obtain good results.
- This parameter tuning is a difficult task even for experts, and raises
- the entry threshold for localization microscopy novices.
+ This parameter tuning is difficult even for experts and raises the entry
+ threshold for localization microscopy novices.
  To overcome this difficulty, simpleSTORM was designed to determine all
  necessary parameters automatically from the raw image data itself during
  an initial 
 \emph on
 self-calibration phase
 \emph default
- that preceeds the actual reconstruction phase.
+ that precedes the actual reconstruction phase.
  It can thus produce good reconstructions with virtually no user input,
  while still allowing optional configuration by experts for non-standard
  use cases.
 \end_layout
 
 \begin_layout Standard
-simpleSTORM is based on a careful model of the image acquition process.
+simpleSTORM is based on an accurate model of the image acquisition process.
  It assumes that photon counting noise is the dominant noise source and
  follows a Poisson distribution.
  However, photon counts are not directly observed, but are transformed by
  various amplification stages and digitization.
- We assume that the transformation can be described by a linear equation.
+ We assume that the combined transformation can be described by a linear
+ equation.
  Poisson-distributed intensities can thus be recovered by inverting this
  linear equation, provided its parameters (gain and offset) are known.
  Furthermore, we assume that the point spread function (PSF) is a Gaussian
@@ -126,11 +133,15 @@ nce signal and additive Gaussian noise with zero mean and unit variance.
  (i.e.
  a Gaussian filter corresponding to the PSF) for optimal noise reduction
  and interpolated to the desired resolution using a cubic spline.
- The coordinaes of local intensity maxima after interpolation are reported
+ The coordinates of local intensity maxima after interpolation are reported
  as the detected spots.
 \end_layout
 
 \begin_layout Standard
+\noindent
+\begin_inset Newpage newpage
+\end_inset
+
 Specifically, the algorithm proceeds in these steps:
 \end_layout
 
@@ -144,7 +155,7 @@ Estimation of the width of a Gaussian PSF via the power spectrum
 
 \begin_layout Enumerate
 Linear intensity transform into unit gain and zero offset to make the noise
- approximately Poisson 
+ approximately Poisson distributed 
 \end_layout
 
 \begin_layout Enumerate
@@ -169,9 +180,9 @@ Cubic spline interpolation to specified subpixel accuracy and maxima detection
 \end_layout
 
 \begin_layout Standard
-On a standard laptop, the algorithm achieves a processing speed of about
- 20 frames per second for a typical raw image size of 200x200 pixels.
- It performed favourably in the recent ISBI Localization Microscopy Challenge
+On a standard laptop, our algorithm is able to process about 20 frames per
+ second for a typical raw image size of 200x200 pixels.
+ It performed favorably in the recent ISBI Localization Microscopy Challenge
  (
 \begin_inset CommandInset href
 LatexCommand href
@@ -181,9 +192,9 @@ target "http://bigwww.epfl.ch/smlm/challenge/"
 \end_inset
 
 ) that carefully tested more than 20 reconstruction algorithms.
- In particular, simpleSTORM achieved high accuracy on high-density data,
- where a relatively large number of spots was simultaneously switched on
- in order to minimize total acquisition time.
+ In particular, simpleSTORM achieved high localization accuracy on high-density
+ data, where a relatively large number of spots was simultaneously switched
+ on in order to minimize total acquisition time.
  Software for our algorithm is freely available in an easy-to-use GUI program
  at 
 \begin_inset CommandInset href
@@ -194,6 +205,57 @@ target "https://github.com/ukoethe/simple-STORM"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/RawImage.png
+	width 45text%
+
+\end_inset
+
+
+\begin_inset Formula $\qquad$
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/reconstructedImage.png
+	width 45text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Example result from simpleSTORM (data courtesy of Mike Heilemann).
+ Left: one frame of the raw data.
+ Right: reconstructed high-resolution image.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
