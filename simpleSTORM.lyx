@@ -1,0 +1,1015 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\date{}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 4cm
+\rightmargin 4cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+simpleSTORM - a Fast, Self-Calibrating Reconstruction Algorithm for Localization
+ Microscopy
+\end_layout
+
+\begin_layout Author
+Ullrich Köthe, Frank Herrmannsdörfer, Ilia Kats, Fred A.
+ Hamprecht
+\begin_inset Newline newline
+\end_inset
+
+Multi-Dimensional Image Processing Group, University of Heidelberg
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Localization microscopy techniques such as STORM and PALM have become major
+ tools for ??? Despite differences in the experimental procedures, these
+ techniques rest on a unified computational principle: Super-resolution
+ images are constructed by means of subpixel-accurate spot detection in
+ a sequence of images taken at optical resolution.
+ Various algorithms have been proposed for this task (see below for a short
+ review), and many of them are available in open-source software.
+ ??? 
+\end_layout
+
+\begin_layout Standard
+Existing reconstruction algorithms for localization microscopy usually offer
+ a plethora of configuration settings that must be adjusted carefully in
+ order to obtain good results.
+ This parameter tuning is difficult even for experts and raises the entry
+ threshold for localization microscopy novices.
+ To overcome this difficulty, simpleSTORM was designed to determine all
+ necessary parameters automatically from the raw image data itself during
+ an initial 
+\emph on
+self-calibration phase
+\emph default
+ that precedes the actual reconstruction phase.
+ It can thus produce good reconstructions with virtually no user input,
+ while still allowing optional configuration by experts for non-standard
+ use cases.
+\end_layout
+
+\begin_layout Standard
+simpleSTORM is based on an accurate model of the image acquisition process.
+ It assumes that photon counting noise is the dominant noise source and
+ follows a Poisson distribution.
+ However, photon counts are not directly observed, but are transformed by
+ various amplification stages and digitization.
+ We assume that the combined transformation can be described by a linear
+ equation.
+ Poisson-distributed intensities can thus be recovered by inverting this
+ linear equation, provided its parameters (gain and offset) are known.
+ Furthermore, we assume that the point spread function (PSF) is a Gaussian
+ with unknown (but fixed) width.
+ Finally, we assume that the background intensity varies at a much coarser
+ scale than the PSF and that less than half of the pixels in any sufficiently
+ large window contain signal.
+ Under these assumptions, the model parameters (gain and offset, PSF width,
+ local background intensity) can be estimated automatically in a self-calibratio
+n and preprocessing phase.
+\end_layout
+
+\begin_layout Standard
+In the reconstruction phase, the model parameters are used to transform
+ each frame such that it can be considered as a sum of background-free fluoresce
+nce signal and additive Gaussian noise with zero mean and unit variance.
+ Fluorescence spots can thus be recognized by a simple statistical test:
+ A pixel whose intensity is higher than three times the noise standard deviation
+ contains signal with a probability of about 99.7% (the threshold of the
+ test can be adjusted to control the detection sensitivity of our algorithm).
+ Since the PSF spreads over several pixels, whereas the noise of neighboring
+ pixels is independent, it is even more unlikely that three adjacent pixels
+ exceed the threshold just by chance.
+ The combination of both criteria defines a reliable mask for spot detection.
+ Pixels under (and near) the mask are finally convolved with a matched filter
+ (i.e.
+ a Gaussian filter corresponding to the PSF) for optimal noise reduction
+ and interpolated to the desired resolution using a cubic spline.
+ The coordinates of local intensity maxima after interpolation are reported
+ as the detected spots.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Newpage newpage
+\end_inset
+
+Specifically, the algorithm proceeds in these steps:
+\end_layout
+
+\begin_layout Enumerate
+Robust estimation of the gain and offset parameters
+\end_layout
+
+\begin_layout Enumerate
+Estimation of the width of a Gaussian PSF via the power spectrum
+\end_layout
+
+\begin_layout Enumerate
+Linear intensity transform into unit gain and zero offset to make the noise
+ approximately Poisson distributed 
+\end_layout
+
+\begin_layout Enumerate
+Anscombe transform of the intensities to make the noise approximately normal
+\end_layout
+
+\begin_layout Enumerate
+Dynamic background estimation and subtraction
+\end_layout
+
+\begin_layout Enumerate
+Statistical test to determine the detection mask according to the specified
+ sensitivity
+\end_layout
+
+\begin_layout Enumerate
+Matched filtering with the PSF for optimal noise reduction
+\end_layout
+
+\begin_layout Enumerate
+Cubic spline interpolation to specified subpixel accuracy and maxima detection
+\end_layout
+
+\begin_layout Standard
+On a standard laptop, our algorithm is able to process about 20 frames per
+ second for a typical raw image size of 200x200 pixels.
+ It performed favorably in the recent ISBI Localization Microscopy Challenge
+ (
+\begin_inset CommandInset href
+LatexCommand href
+name "bigwww.epfl.ch/smlm/challenge/"
+target "http://bigwww.epfl.ch/smlm/challenge/"
+
+\end_inset
+
+) that carefully tested more than 20 reconstruction algorithms.
+ In particular, simpleSTORM achieved high localization accuracy on high-density
+ data, where a relatively large number of spots was simultaneously switched
+ on in order to minimize total acquisition time.
+ Software for our algorithm is freely available in an easy-to-use GUI program
+ at 
+\begin_inset CommandInset href
+LatexCommand href
+name "github.com/ukoethe/simple-STORM"
+target "https://github.com/ukoethe/simple-STORM"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/RawImage.png
+	width 45text%
+
+\end_inset
+
+
+\begin_inset Formula $\qquad$
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/reconstructedImage.png
+	width 45text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Example result from simpleSTORM (data courtesy of Mike Heilemann).
+ Left: one frame of the raw data.
+ Right: reconstructed high-resolution image.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Subsection
+Matched Filters
+\end_layout
+
+\begin_layout Standard
+Many existing reconstruction algorithms determine spot positions by fitting
+ a PSF model to the intensities in suitable candidate regions.
+ Under certain conditions, an equivalent effect can be achieved in a simpler
+ and numerically more robust way by means of 
+\emph on
+matched filters.
+ 
+\emph default
+We briefly recall the underlying theory cite???.
+ Let the image 
+\begin_inset Formula $s(x,y)$
+\end_inset
+
+ contain just a single spot at an unknown location 
+\begin_inset Formula $(x_{0},y_{0})$
+\end_inset
+
+.
+ Since the image is corrupted by noise, we cannot simply detect the spot
+ by looking for the point of maximum intensity in 
+\begin_inset Formula $s$
+\end_inset
+
+.
+ To simplify matters, we assume that the noise is additive Gaussian noise
+ with zero mean and variance 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+, i.e.
+ our image model is
+\begin_inset Formula 
+\begin{equation}
+s(x,y)=\mathrm{PSF}(x-x_{0},y-y_{0})+n(x,y),\qquad n(x,y)\sim\mathcal{N}(0,\sigma^{2})\label{eq:simple-signal-model}
+\end{equation}
+
+\end_inset
+
+We now seek a filter function 
+\begin_inset Formula $h(x,y)$
+\end_inset
+
+ such that filtering of 
+\begin_inset Formula $s$
+\end_inset
+
+ with 
+\begin_inset Formula $h$
+\end_inset
+
+ maximizes the signal-to-noise ratio of the filtered image 
+\begin_inset Formula $g(x,y)=g_{\mbox{PSF}}(x,y)+g_{n}(x,y)$
+\end_inset
+
+.
+ The signal and noise parts of the filtered image are given by the convolution
+ integrals
+\begin_inset Formula 
+\begin{eqnarray*}
+g_{\mathrm{PSF}}(x,y) & = & h\star\mbox{PSF}=\int_{\mathbb{R}^{2}}h(x',y')\,\mathrm{PSF}(x-x',y-y')\, dx'\, dy'\\
+g_{n}(x,y) & = & h\star n\quad=\int_{\mathbb{R}^{2}}h(x',y')\, n(x-x',y-y')\, dx'\, dy'
+\end{eqnarray*}
+
+\end_inset
+
+Signal and noise energies are defined by the squares of these expressions.
+ Since the noise is, by assumption, uncorrelated with the filter, the noise
+ energy simplifies to 
+\begin_inset Formula $g_{n}(x,y)^{2}=\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'$
+\end_inset
+
+ according to Parseval's theorem.
+ The signal-to-noise ratio at a point 
+\begin_inset Formula $(x,y)$
+\end_inset
+
+ is the quotient of the corresponding energies, i.e.
+\begin_inset Formula 
+\[
+\mathrm{SNR}(x,y)=\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\mathrm{PSF}(x-x',y-y')\, dx'\, dy'\right)^{2}}{\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'}
+\]
+
+\end_inset
+
+The energy of the PSF is given by 
+\begin_inset Formula 
+\[
+E_{\mathrm{PSF}}=\int_{\mathbb{R}^{2}}\mathrm{PSF}(x',y')^{2}\, dx'\, dy'=\int_{\mathbb{R}^{2}}\mathrm{PSF}(x-x',y-y')^{2}\, dx'\, dy'
+\]
+
+\end_inset
+
+where the second identity follows from translation invariance.
+ We can therefore rewrite the SNR as
+\begin_inset Formula 
+\[
+\mbox{SNR}(x,y)=\frac{E_{\mbox{PSF}}}{\sigma^{2}}\,\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\mathrm{PSF}(x-x',y-y')\, dx'\, dy'\right)^{2}}{\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'\int_{\mathbb{R}^{2}}\mathrm{PSF}(x-x',y-y')^{2}\, dx'\, dy'}
+\]
+
+\end_inset
+
+The second quotient is easily recognized as the square of the correlation
+ coefficient 
+\begin_inset Formula $\rho$
+\end_inset
+
+ between the filter 
+\begin_inset Formula $h$
+\end_inset
+
+ and the mirrored PSF.
+ We must therefore maximize the correlation coefficient in order to maximize
+ the SNR for given signal and noise energy.
+ The correlation coefficient assumes its highest possible value 
+\begin_inset Formula $\rho=1$
+\end_inset
+
+ when 
+\begin_inset Formula 
+\[
+h(x,y)=\kappa\,\mbox{PSF}(-x,-y)
+\]
+
+\end_inset
+
+for any 
+\begin_inset Formula $\kappa\ne0$
+\end_inset
+
+.
+ In other words, the filter should have the same shape as the signal we
+ want to detect, but mirrored at the origin.
+ The convenient choice 
+\begin_inset Formula $\kappa=1$
+\end_inset
+
+ results in the 
+\emph on
+matched filter
+\emph default
+, which is thus optimal under the model of additive Gaussian noise.
+ The spot is localized at the point where the filter result 
+\begin_inset Formula $g=h\star s$
+\end_inset
+
+ assumes its local maximum.
+ This location can be determined by spline interpolation of 
+\begin_inset Formula $g$
+\end_inset
+
+, see section ???.
+\end_layout
+
+\begin_layout Standard
+To use matched filters in localization microscopy, the following requirements
+ must be met:
+\end_layout
+
+\begin_layout Enumerate
+The PSF must be known.
+ We address this in section ???.
+\end_layout
+
+\begin_layout Enumerate
+The PSF should be uniform throughout the image.
+ This condition may not be fulfilled when some spots are out of focus.
+ However, this is not a major problem in practice, because the filter 
+\begin_inset Formula $h$
+\end_inset
+
+ degrades gracefully: Although it is no longer the best possible filter,
+ it still performs reasonably as long as the PSF is not too far off.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Each image should contain only one spot.
+ This is clearly violated in practice and in fact undesirable.
+ But this is not a serios problem either as long as the spot density is
+ not too high.
+ Since the PSF decreases quickly, the filter response at point 
+\begin_inset Formula $(x,y)$
+\end_inset
+
+ is not influenced by spots that are sufficiently far away.
+ The detector suffers only a minor degradation in localization performance
+ at overlapping spots when their distance remains larger than the PSFs full
+ width at half maximum (FWHM).
+ The spot density can easily be controlled by the experimental setup.
+\end_layout
+
+\begin_layout Enumerate
+The image's background intensity must be zero.
+ We use a standard background subtraction procedure as described in section
+ ???.
+\end_layout
+
+\begin_layout Enumerate
+The noise must be additive Gaussian.
+ This is the most serious obstacle, because the noise level actually depends
+ on the intensity and is therefore not additive.
+ To rescue the matched filter approach, we transform the original image
+ intensities so that the noise is approximately turned into additive Gaussian
+ noise.
+ Our 
+\emph on
+noise normalization
+\emph default
+ procedure is described in section ???.
+\end_layout
+
+\begin_layout Subsection
+Noise Normalization
+\end_layout
+
+\begin_layout Standard
+Matched filtering is only optimal when the noise is additive and Gaussian
+ distributed.
+ However, localization microscopy is based on a photon counting process,
+ which instead follows a Poisson distribution with intensity-dependent variance.
+ The probability of observing 
+\begin_inset Formula $k$
+\end_inset
+
+ photons in pixel 
+\begin_inset Formula $(x,y)$
+\end_inset
+
+ when the expected count (i.e.
+ the true intensity) is 
+\begin_inset Formula $\lambda=\lambda(x,y)$
+\end_inset
+
+ is given by
+\begin_inset Formula 
+\[
+p\left(k\right)=\frac{\lambda^{k}}{k!}e^{-\lambda}
+\]
+
+\end_inset
+
+(we dropped the dependency on 
+\begin_inset Formula $(x,y)$
+\end_inset
+
+ to improve readability).
+ Moreover, these counts are not observed directly but are subjected to several
+ amplification stages and discretized into a finite set of gray levels.
+ If we assume linear amplification characteristics and neglect discretization
+ effects
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+This is possible because the discretization noise is much smaller than the
+ noise from other sources in a well-calibrated setup.
+\end_layout
+
+\end_inset
+
+, the observed image gray levels 
+\begin_inset Formula $k'$
+\end_inset
+
+ depend on 
+\begin_inset Formula $k$
+\end_inset
+
+ according to the linear function 
+\begin_inset Formula 
+\[
+k'=a\, k+b
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $a$
+\end_inset
+
+ denotes the combined amplification factor and 
+\begin_inset Formula $b$
+\end_inset
+
+ the dark signal.
+ The noise in 
+\begin_inset Formula $k'$
+\end_inset
+
+ is no longer Poisson distributed.
+ One can easily see this by recalling that both the mean and variance of
+ a Poisson distribution are equal to 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ In contrast, mean and variance of 
+\begin_inset Formula $k'$
+\end_inset
+
+ are
+\begin_inset Formula 
+\begin{eqnarray*}
+E\left[k'\right] & = & a\, E\left[k\right]+b=a\,\lambda+b\\
+Var\left[k'\right] & = & a^{2}\, Var\left[k\right]=a^{2}\lambda
+\end{eqnarray*}
+
+\end_inset
+
+and these quantities are in general different.
+ Figure ??? illustrates the difference between the distributions of 
+\begin_inset Formula $k$
+\end_inset
+
+ and 
+\begin_inset Formula $k'$
+\end_inset
+
+ for a representative choice of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, 
+\begin_inset Formula $a$
+\end_inset
+
+, and 
+\begin_inset Formula $b$
+\end_inset
+
+.
+ Consequently, it is 
+\emph on
+incorrect
+\emph default
+ to apply algorithms (e.g.
+ matched filtering) directly to the observed image 
+\begin_inset Formula $k_{t}'(x,y)$
+\end_inset
+
+ at time step 
+\begin_inset Formula $t$
+\end_inset
+
+ when these algorithms rest on the assumption of either Gaussian or Poisson
+ noise.
+ Fortunately, there is an easy way out: the 
+\emph on
+Anscombe transform
+\emph default
+ 
+\begin_inset Formula 
+\[
+q_{t}(x,y)=2\sqrt{k_{t}(x,y)+\frac{3}{8}}
+\]
+
+\end_inset
+
+turns a Poisson distributed signal 
+\begin_inset Formula $k_{t}(x,y)$
+\end_inset
+
+ into an approximately Gaussian distributed one 
+\begin_inset Formula $q_{t}(x,y)$
+\end_inset
+
+ with unit variance, regardless of the value of 
+\begin_inset Formula $k$
+\end_inset
+
+ (as long as 
+\begin_inset Formula $k\ge4$
+\end_inset
+
+).
+ However, in order to apply the Anscombe transform, we need to know the
+ coefficients 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+ that map the observed gray values 
+\begin_inset Formula $k'$
+\end_inset
+
+ back into the Poisson distributed counts 
+\begin_inset Formula $k$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+q(x,y)=2\sqrt{\frac{k'(x,y)-b}{a}+\frac{3}{8}}\label{eq:anscombe-transform}
+\end{equation}
+
+\end_inset
+
+Dermining 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+ turns out to be a difficult problem.
+ The standard solution is to record dedicated calibration images where the
+ mean and variance of 
+\begin_inset Formula $k'$
+\end_inset
+
+ can be computed easily.
+ Then, a linear regression through a set of pairs 
+\begin_inset Formula $\left(E[k'],\, Var[k']\right)$
+\end_inset
+
+ with different 
+\begin_inset Formula $k'$
+\end_inset
+
+ directly provides the desired coefficients.
+ However, this approach is inconvenient when the camera is mounted on a
+ microscope, and it must be repeated whenever any camera or amplifier settings
+ change.
+ Therefore, we seek to determine these coefficients by self-calibration,
+ i.e.
+ from the raw localization images themselves.
+ 
+\end_layout
+
+\begin_layout Standard
+Among a large number of ideas we tried, the following turned out to be the
+ most stable.
+ Consider a pixel 
+\begin_inset Formula $(x,y)$
+\end_inset
+
+ whose gray value is constant over time, i.e.
+ the pixel contains background or a bead, but no blinking molecule.
+ Then we can easily compute its average intensity and variance over time
+ and obtain a pair for the linear regression.
+ The difficulty is that we do not know which pixels have this property.
+ The following consideration shows a way to identify them: Whenever the
+ true intensity is not constant, the apparent variance is larger than it
+ would otherwise be, because
+\begin_inset Formula 
+\[
+Var\left[f(t)+n(t)\right]=Var\left[f(t)\right]+Var\left[n(t)\right]
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $f(t)$
+\end_inset
+
+ is a time-dependent signal and 
+\begin_inset Formula $n(t)$
+\end_inset
+
+ denotes noise which is uncorrelated with the temporal behavior of 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ When 
+\begin_inset Formula $f(t)$
+\end_inset
+
+ is actually constant over time, its variance is zero, resulting in the
+ minimal possible value of 
+\begin_inset Formula $Var\left[f(t)+n(t)\right]$
+\end_inset
+
+.
+ Otherwise, this value always increases.
+ This leads to the following algorithm
+\end_layout
+
+\begin_layout Enumerate
+Select 
+\begin_inset Formula $n$
+\end_inset
+
+ image locations at random.
+\end_layout
+
+\begin_layout Enumerate
+Compute mean and variance of the corresponding pixels over the first 
+\begin_inset Formula $T$
+\end_inset
+
+ frames of the sequence (
+\begin_inset Formula $T=200$
+\end_inset
+
+ works well in practice, but the value can be adjusted).
+ Create the scatter plot of the resulting mean/variance pairs.
+\end_layout
+
+\begin_layout Enumerate
+Use the RANSAC algorithm to compute the lower leaning line of the scatter
+ plot.
+ The lower leaning line contains precisely the points whose intensity was
+ constant over time, and the parameters of the line are the coefficients
+ 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+.
+ All other points are ignored.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Details of RANSAC.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Figure ??? shows two examples of the fit according to this algorithm.
+ It can be seen that it does indeed detect the lower leaning line of the
+ scatter plot, which corresponds to the pixels with constant intensity.
+\end_layout
+
+\begin_layout Standard
+Explain the optimization of a and b for unit variance???
+\end_layout
+
+\begin_layout Subsection
+Background Subtraction
+\end_layout
+
+\begin_layout Standard
+Once the noise model is known, we transform the observed images 
+\begin_inset Formula $k_{t}'(x,y)$
+\end_inset
+
+ into noise-normalized ones 
+\begin_inset Formula $q_{t}(x,y)$
+\end_inset
+
+ according to (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:anscombe-transform"
+
+\end_inset
+
+) and subsequent local optimization???.
+ The next step is the estimation of the background intensity.
+ It is based on the standard assumption that thes background intensity varies
+ mauch slower then the actual signal both spatially and over time.
+ We split the data set into non-overlapping blocks of size 
+\begin_inset Formula $\rho^{2}\times\tau$
+\end_inset
+
+, where 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is the block size in the two spatial directions, and 
+\begin_inset Formula $\text{\tau}$
+\end_inset
+
+ is the block size along the time direction.
+ Default values of 
+\begin_inset Formula $\rho=30$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau=20$
+\end_inset
+
+ work well in most experiments.
+ If necessary, the user can adjust these settings.
+ This is easy because the user can determine how fast the background varies
+ by simple visual inspection of the data.
+ 
+\end_layout
+
+\begin_layout Standard
+In each block, the median of the gray values 
+\begin_inset Formula $s$
+\end_inset
+
+ is computed.
+ The median is preferrable to the mean because it is more stable when the
+ block contains non-background pixels (blinking spots and beads): These
+ pixels lead to a significant upward bias in the mean, whereas the median
+ increases only marginally.
+ The meadian values are placed on the grid defined by the centers of the
+ blocks, and interpolated to the original image resolution (both in spatial
+ and time direction) using a Catmull-Rom spline which ensures smooth (i.e.
+ differentiable) interpolation and thus avoids blocking artifacts in the
+ background estimate 
+\begin_inset Formula $\beta_{t}(x,y)$
+\end_inset
+
+,.
+ After subtracting 
+\begin_inset Formula $\beta_{t}$
+\end_inset
+
+ from the noise normalized signal 
+\begin_inset Formula $q_{t}$
+\end_inset
+
+, we obtain the signal 
+\begin_inset Formula $s_{t}$
+\end_inset
+
+ which has unit variance in all pixels and zero mean in the background:
+\begin_inset Formula 
+\[
+s_{t}(x,y)=q_{t}(x,y)-\beta_{t}(x,y)
+\]
+
+\end_inset
+
+The images 
+\begin_inset Formula $s_{t}$
+\end_inset
+
+ now conform to the requirements of the matched filter method, which relies
+ on the noise being additive with constant variance and the background being
+ zero.
+\end_layout
+
+\begin_layout Subsection
+Estimation of the PSF
+\end_layout
+
+\begin_layout Standard
+In order to apply the matched filter method, the PSF must be known.
+ Accurate PSF estimates are crucial for the matched filter to perform optimally.
+ We investigated two approaches to PSF estimation, a non-parametric and
+ a parametric one.
+ In both cases, the PSF is estimated by averaging over the response of many
+ spots in order to get rid of the noise.
+ 
+\end_layout
+
+\begin_layout Standard
+The non-parametric method is based on the 
+\emph on
+magnitude spectrum
+\emph default
+ of the signal.
+ ??? use a square ROI for PSF estimation???
+\end_layout
+
+\begin_layout Standard
+The parameteric method assumes that the PSF is shaped as a Gaussian, which
+ is a very good approximation for typical microscopes.
+ Under this assumptions, the self-calibration only needs to determine a
+ single parameter, the PSF scale.
+ Clearly, the variance of the estimate of a single parameter from a given
+ number of examples is much smaller than the the variance of an entire PSF
+ etimate in the non-parametric case.
+ On the other hand, deviations between the model and the real PSF can lead
+ to noticeable bias.
+ Nonetheless, experiments showed (see section ???) that the parametric estimate
+ is usually superior.
+ It can be performed both in the spatial and in the Fourier domain.
+ The Fourier domain approach starts in the same way as in the non-parametric
+ case, i.e.
+ an average over many spots is formed by computing the average magnitude
+ spectrum of a set of squared ROIs.
+ However, the magnitude spectrum does not define the matched filter directly,
+ but is used to fit a Gaussian (recall that the Fourier transform of a Gaussian
+ PSF is again a rotationally symmetric Gaussian function, and so is the
+ magnitude spectrum).
+ The model is 
+\begin_inset Formula 
+\[
+w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $r=\sqrt{u^{2}+v^{2}}$
+\end_inset
+
+ is the distance of the point from the origin.
+ The parameters 
+\begin_inset Formula $w_{i}$
+\end_inset
+
+ are choosen by means of non-linear least-squares optimization (Levenberg-Marqua
+rdt algorithm) such that the squared difference between the model and the
+ power spectrum is minimized
+\begin_inset Formula 
+\[
+w_{1},w_{2},w_{3}=\mbox{argmin}_{w_{i}}\sum_{u,v}\left[w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}-\mbox{MTF}(r)\right]^{2}
+\]
+
+\end_inset
+
+The desired PSF scale in the spatial domain can be obtained from the parameter
+ 
+\begin_inset Formula $w_{2}$
+\end_inset
+
+ be the simple relation
+\begin_inset Formula 
+\[
+\sigma_{\mbox{PSF}}=\frac{W}{2\pi w_{2}}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $W$
+\end_inset
+
+ is again the width of the ROI used to compute the magnitude spectrum (recall
+ that we use a squared ROI to simplify matters).
+ 
+\end_layout
+
+\end_body
+\end_document
