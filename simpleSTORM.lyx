@@ -442,7 +442,14 @@ To use matched filters in localization microscopy, the following requirements
 
 \begin_layout Enumerate
 The PSF must be known.
- We address this in section ???.
+ We address this in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:psf-estimation"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -452,8 +459,8 @@ The PSF should be uniform throughout the image.
 \begin_inset Formula $h$
 \end_inset
 
- degrades gracefully: Although it is no longer the best possible filter,
- it still performs reasonably as long as the PSF is not too far off.
+ degrades gracefully: Although no longer the best possible filter, it still
+ performs reasonably as long as the PSF is not too far off.
  
 \end_layout
 
@@ -476,7 +483,14 @@ Each image should contain only one spot.
 \begin_layout Enumerate
 The image's background intensity must be zero.
  We use a standard background subtraction procedure as described in section
- ???.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:background-subtraction"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -490,10 +504,23 @@ The noise must be additive Gaussian.
 \emph on
 noise normalization
 \emph default
- procedure is described in section ???.
+ procedure is described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:noise-normalization"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:noise-normalization"
+
+\end_inset
+
 Noise Normalization
 \end_layout
 
@@ -799,7 +826,7 @@ Use the RANSAC algorithm to compute the lower leaning line of the scatter
 \end_inset
 
 .
- All other points are ignored.
+ Points not near the lower leaning line are ignored.
 \end_layout
 
 \begin_deeper
@@ -819,6 +846,12 @@ Explain the optimization of a and b for unit variance???
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:background-subtraction"
+
+\end_inset
+
 Background Subtraction
 \end_layout
 
@@ -903,9 +936,9 @@ In each block, the median of the gray values
 
  which has unit variance in all pixels and zero mean in the background:
 \begin_inset Formula 
-\[
-s_{t}(x,y)=q_{t}(x,y)-\beta_{t}(x,y)
-\]
+\begin{equation}
+s_{t}(x,y)=q_{t}(x,y)-\beta_{t}(x,y)\label{eq:background-subtraction}
+\end{equation}
 
 \end_inset
 
@@ -919,6 +952,12 @@ The images
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:psf-estimation"
+
+\end_inset
+
 Estimation of the PSF
 \end_layout
 
@@ -944,25 +983,29 @@ magnitude spectrum
 \begin_layout Standard
 The parameteric method assumes that the PSF is shaped as a Gaussian, which
  is a very good approximation for typical microscopes.
- Under this assumptions, the self-calibration only needs to determine a
- single parameter, the PSF scale.
- Clearly, the variance of the estimate of a single parameter from a given
- number of examples is much smaller than the the variance of an entire PSF
- etimate in the non-parametric case.
- On the other hand, deviations between the model and the real PSF can lead
- to noticeable bias.
- Nonetheless, experiments showed (see section ???) that the parametric estimate
- is usually superior.
- It can be performed both in the spatial and in the Fourier domain.
+ Under this assumption, the self-calibration only needs to determine a single
+ parameter, the PSF scale.
+ Clearly, the variance of a single parameter estimate is much smaller than
+ the variance of an entire PSF estimate from a same number of examples,
+ as required in the non-parametric case.
+ The Gaussian model is therefore preferable when it conforms to the actual
+ PSF shape, whereas deviations between model and real PSF will lead to noticeabl
+e bias in spot localization.
+ 
+\end_layout
+
+\begin_layout Standard
+The Gaussian fit can be performed both in the spatial and in the Fourier
+ domain.
  The Fourier domain approach starts in the same way as in the non-parametric
  case, i.e.
  an average over many spots is formed by computing the average magnitude
  spectrum of a set of squared ROIs.
- However, the magnitude spectrum does not define the matched filter directly,
- but is used to fit a Gaussian (recall that the Fourier transform of a Gaussian
- PSF is again a rotationally symmetric Gaussian function, and so is the
- magnitude spectrum).
- The model is 
+ However, instead of using the magnitude spectrum directly, it is used to
+ fit a Gaussian.
+ Since the Fourier transform of a Gaussian PSF and the corresponding magnitude
+ spectrum are again rotationally symmetric Gaussian functions, the model
+ is 
 \begin_inset Formula 
 \[
 w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}
@@ -989,7 +1032,16 @@ w_{1},w_{2},w_{3}=\mbox{argmin}_{w_{i}}\sum_{u,v}\left[w_{1}\,\exp\left(-\frac{r
 
 \end_inset
 
-The desired PSF scale in the spatial domain can be obtained from the parameter
+Parameters 
+\begin_inset Formula $w_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{3}$
+\end_inset
+
+ account for the signal and noise intensities respectively, whereas the
+ desired PSF scale in the spatial domain can be obtained from the parameter
  
 \begin_inset Formula $w_{2}$
 \end_inset
@@ -1006,9 +1058,137 @@ where
 \begin_inset Formula $W$
 \end_inset
 
- is again the width of the ROI used to compute the magnitude spectrum (recall
+ is the width of the ROI used to compute the magnitude spectrum (recall
  that we use a squared ROI to simplify matters).
- 
+ The fit in the spatial domain is performed similarly, but the automtic
+ averaging achieved by computing the power spectrum is not possible here.
+ Instead, we fit the PSF independently to a number of easy-to-detect spots,
+ and than define 
+\begin_inset Formula $\sigma_{\mbox{PSF}}$
+\end_inset
+
+ as the median of the individual estimates.
+ Experiments reported in section ??? reveal that the parametric estimate
+ is usually superior to the non-parametric one, confirming that the Gaussian
+ model is indeed feasible in practice.
+ Moreover, it turns out that the spatial domain estimate is better because
+ ???.
+\end_layout
+
+\begin_layout Subsection
+Spot Detection
+\end_layout
+
+\begin_layout Standard
+After the self-calibration phase, the actual data processing starts.
+ Now, the parameters estimated during calibration are used to preprocess
+ every frame of the sequence.
+ Spot detection is performed after noise normalization and background subtractio
+n according to equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:anscombe-transform"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:background-subtraction"
+
+\end_inset
+
+).
+ Since the background contains now only Gaussian additive noise with zero
+ mean and unit variance, a standard statistical test can be used to detect
+ pixels whose intensity is unlikely to be background.
+ For a given 
+\begin_inset Formula $p$
+\end_inset
+
+-value, corresponding to the probability of false positives, the intensity
+ threshold is
+\begin_inset Formula 
+\[
+t\ge\sqrt{2}\mbox{erfi}(2p-1)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\mbox{erfi}(.)$
+\end_inset
+
+ is the inverse error function.
+ That is, a normalized pixel with intensity at least 
+\begin_inset Formula $t$
+\end_inset
+
+ has a probability of at most 
+\begin_inset Formula $p$
+\end_inset
+
+ to represent background.
+ For example, 
+\begin_inset Formula $p$
+\end_inset
+
+-values of 1% and 0.1% correspond to thresholds 2.3 and 3.1 and indicate that
+ one gets one false positive on average per 10x10 and 30x30 window respectively.
+ Note that these thresholds are independent of the image content.
+ Thanks to noise normalization and background subtraction, there is no need
+ for manual adjustment of the threshold or complicated selection heuristics.
+\end_layout
+
+\begin_layout Standard
+Nonetheless, the error rate is still rather high, and further increases
+ of the threshold are undesirable because this would reduce the sensitivity
+ of the detector for true positives.
+ However, we can still do better by noticing that true spots cover several
+ pixels (according to the width of the PSF), whereas the noise of neighboring
+ pixels is uncorrelated.
+ Therefore, the probability that multiple adjacent are above threshold 
+\emph on
+simultaneously
+\emph default
+ is much lower for background pixels, whereas this event is very probable
+ for a true spot.
+ In practice, we accept a spot if at least three connected pixels exceed
+ the threshold for the chosen 
+\begin_inset Formula $p$
+\end_inset
+
+-value.
+ The probability of false positives in this setting can be approximated
+ by a binomial distribution with parameter 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ For example, for 
+\begin_inset Formula $p=1\%$
+\end_inset
+
+, the probability that three or more background pixels are above threshold
+ in a given 3x3 window is only 
+\begin_inset Formula $0.01\%$
+\end_inset
+
+ (one false positive in every 100x100 window), for 
+\begin_inset Formula $p=0.1\%$
+\end_inset
+
+ the resulting probability is 
+\begin_inset Formula $10^{-5}\%$
+\end_inset
+
+.
+ This approximation slightly over-estimates the accuracy of our algorithm
+ because the approximation assumes that 3x3 windows are independent which
+ is clearly not true for overlapping windows.
+ However, experiments show that the false positive rate (number of false
+ positives over total number of background pixels) is indeed very low, namely
+ ???, see section ??? for details.
 \end_layout
 
 \end_body
