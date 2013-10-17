@@ -278,6 +278,12 @@ Results
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:matched-filters"
+
+\end_inset
+
 Matched Filters
 \end_layout
 
@@ -1137,11 +1143,11 @@ where
  one gets one false positive on average per 10x10 and 30x30 window respectively.
  Note that these thresholds are independent of the image content.
  Thanks to noise normalization and background subtraction, there is no need
- for manual adjustment of the threshold or complicated selection heuristics.
+ for manual threshold adjustment or complicated threshold selection heuristics.
 \end_layout
 
 \begin_layout Standard
-Nonetheless, the error rate is still rather high, and further increases
+Nonetheless, the error rate is still rather high, but further increases
  of the threshold are undesirable because this would reduce the sensitivity
  of the detector for true positives.
  However, we can still do better by noticing that true spots cover several
@@ -1189,6 +1195,154 @@ simultaneously
  However, experiments show that the false positive rate (number of false
  positives over total number of background pixels) is indeed very low, namely
  ???, see section ??? for details.
+ The result of this step is a set of spot masks, i.e.
+ connected regions above threshold that contain at least three pixels.
+\end_layout
+
+\begin_layout Subsection
+Spot Localization
+\end_layout
+
+\begin_layout Standard
+In order to perform spot localization, we first subject the normalized image
+ to the matched filter described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:matched-filters"
+
+\end_inset
+
+, i.e.
+ we filter with a Gaussian whose size 
+\begin_inset Formula $\sigma_{\mbox{PSF}}$
+\end_inset
+
+ has been determined according to section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:psf-estimation"
+
+\end_inset
+
+.
+ We don't apply this filter before spot 
+\emph on
+detection
+\emph default
+ because this would introduce complicated correlation between the noise
+ of neighboring pixels, making the differentiation between signal and noise
+ more difficult.
+ 
+\end_layout
+
+\begin_layout Standard
+The theory of matched filtering suggests that each local maximum of the
+ filtered image corresponds to a location of best match between the data
+ and the spot model.
+ This location needs to be determined to subpixel accuracy, and a residual
+ error of 1/10 of a pixel is typically achievable.
+ The simplest possibility to do so is via cubic spline interpolation of
+ the filtered image to the desired resolution.
+ The upsampling ratio can be chosen by the user and is typically between
+ 8 and 16.
+ To save time, the interpolation is only performed in sufficiently large
+ rectangles around each spot mask (i.e.
+ the bounding rectangle plus ??? pixels in every direction).
+ Each local maximum of the interpolated image which is covered by one of
+ the spot masks is returned as a detected spot.
+ 
+\end_layout
+
+\begin_layout Standard
+Important spot properties such as signal-to-noise ratio and anisotropy can
+ be readily read from the properties of the interpolated image.
+ Let 
+\begin_inset Formula $g$
+\end_inset
+
+ be the intensity of the interpolated image at the local maximum position,
+ and 
+\begin_inset Formula $g_{xx}$
+\end_inset
+
+, 
+\begin_inset Formula $g_{xy}$
+\end_inset
+
+, 
+\begin_inset Formula $g_{yy}$
+\end_inset
+
+ the corresponding second derivatives (these derivatives can be easily computed
+ analytically by the spline interpolator, see ???).
+ Since the noise had unit variance before filtering, the signal-to-noise
+ ratio is simply given by 
+\begin_inset Formula 
+\[
+\mbox{SNR}=2g
+\]
+
+\end_inset
+
+(The factor of 2 accounts for the smoothing effect of the matched filter.)
+ Maximal and minimal radii can be computed from the eigenvalues of the second
+ derivative matrix
+\begin_inset Formula 
+\[
+\kappa_{1,2}=\frac{1}{2}\left(g_{xx}+g_{yy}\pm\sqrt{g_{xx}^{2}+g_{yy}^{2}+4\, g_{xy}^{2}-2\, g_{xx}g_{yy}}\right)
+\]
+
+\end_inset
+
+by the expressions 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+check???
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+s_{\mbox{max}} & = & \sqrt{g/\kappa_{2}+\sigma_{\mbox{PSF}}^{2}}\\
+s_{\mbox{min}} & = & \sqrt{g/\kappa_{1}+\sigma_{\mbox{PSF}}^{2}}
+\end{eqnarray*}
+
+\end_inset
+
+and their ratio gives the spot anisotropy
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mbox{AI}=\frac{s_{\mbox{max}}}{s_{\mbox{min}}}
+\]
+
+\end_inset
+
+Spot width and anisotropy can serve as additional filter criteria to remove
+ undesired anisotropic spots, or as a means to determine spot depth in 3D
+ localization microscopy with cylindrical lenses.
+\end_layout
+
+\begin_layout Standard
+It should be noted that each spot mask can contain multiple local maxima.
+ This is desirable because it allows us to detect overlapping spots, provided
+ that the overlap is not too big.
+ Specifically, overlapping spots remain separable when their centers have
+ a distance of more than 
+\begin_inset Formula $2\sqrt{2}\sigma_{\mbox{PSF}}$
+\end_inset
+
+.
+ This is a big advantage of the matched filtering method over reconstruction
+ algorithms that directly fit the PSF to the image data: The fitting approach
+ only works reliably when the spots do not overlap significantly, i.e.
+ when the spot distance is about twice as big.
 \end_layout
 
 \end_body
