@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass article
+\textclass svglobal3
 \begin_preamble
 \date{}
 \end_preamble
@@ -85,10 +85,18 @@ Introduction
 
 \begin_layout Standard
 Localization microscopy techniques such as STORM and PALM have become major
- tools for ??? Despite differences in the experimental procedures, these
- techniques rest on a unified computational principle: Super-resolution
- images are constructed by means of subpixel-accurate spot detection in
- a sequence of images taken at optical resolution.
+ tools for cell biology 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bates_08_super-resolution,heilemann_10_fluorescence,henriques_09_palm-and-storm,huang_10_super-resolution"
+
+\end_inset
+
+.
+ Despite differences in the experimental procedures, these techniques rest
+ on a unified computational principle: Super-resolution images are constructed
+ by means of subpixel-accurate spot detection in a sequence of images taken
+ at optical resolution.
  Various algorithms have been proposed for this task (see below for a short
  review), and many of them are available in open-source software.
  ??? 
@@ -293,10 +301,17 @@ Many existing reconstruction algorithms determine spot positions by fitting
  Under certain conditions, an equivalent effect can be achieved in a simpler
  and numerically more robust way by means of 
 \emph on
-matched filters.
- 
+matched filters
 \emph default
-We briefly recall the underlying theory cite???.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "turin_60_matched-filters"
+
+\end_inset
+
+.
+ We briefly recall the underlying theory.
  Let the image 
 \begin_inset Formula $s(x,y)$
 \end_inset
@@ -438,7 +453,14 @@ matched filter
 \begin_inset Formula $g$
 \end_inset
 
-, see section ???.
+, see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:spot-localization"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -663,7 +685,14 @@ incorrect
  noise.
  Fortunately, there is an easy way out: the 
 \emph on
-Anscombe transform
+Anscombe transform 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "anscombe_48_noise-normalization"
+
+\end_inset
+
+
 \emph default
  
 \begin_inset Formula 
@@ -820,10 +849,31 @@ Compute mean and variance of the corresponding pixels over the first
 
 \begin_layout Enumerate
 Use the RANSAC algorithm to compute the lower leaning line of the scatter
- plot.
- The lower leaning line contains precisely the points whose intensity was
- constant over time, and the parameters of the line are the coefficients
- 
+ plot: Repeat 
+\begin_inset Formula $k=???$
+\end_inset
+
+ times:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Select two points at random and compute the line through these points.
+\end_layout
+
+\begin_layout Enumerate
+Determine the number of inliers of this line, i.e.
+ the number of points whose distance from the line is at most ???.
+\end_layout
+
+\begin_layout Enumerate
+Keep the line with the maximum number of inliers as the best estimate of
+ the lower leaning line.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The coefficients 
 \begin_inset Formula $a$
 \end_inset
 
@@ -831,18 +881,81 @@ Use the RANSAC algorithm to compute the lower leaning line of the scatter
 \begin_inset Formula $b$
 \end_inset
 
-.
- Points not near the lower leaning line are ignored.
+ now correspond to the slope and intercept of the lower leaning line, because
+ this line contains precisely the points whose intensity was constant over
+ time.
+ All points not near the lower leaning line are 
+\begin_inset Quotes eld
+\end_inset
+
+contaminated
+\begin_inset Quotes erd
+\end_inset
+
+ by intensity variations and therefore ignored.
+ 
 \end_layout
 
-\begin_deeper
-\begin_layout Enumerate
-Details of RANSAC.
-\end_layout
-
-\end_deeper
 \begin_layout Standard
-Figure ??? shows two examples of the fit according to this algorithm.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figures/lower-leaning-line.png
+	lyxscale 50
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:lower-leaning-line"
+
+\end_inset
+
+RANSAC-fitting of a lower leaning line to a scatter plot showing variance
+ vs.
+ mean intensity for randomly selected pixels.
+ Slope and intercept of this line determine the correction coefficients
+ in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:anscombe-transform"
+
+\end_inset
+
+).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:lower-leaning-line"
+
+\end_inset
+
+ shows two examples of the fit according to this algorithm.
  It can be seen that it does indeed detect the lower leaning line of the
  scatter plot, which corresponds to the pixels with constant intensity.
 \end_layout
@@ -902,9 +1015,9 @@ reference "eq:anscombe-transform"
 \begin_inset Formula $\tau=20$
 \end_inset
 
- work well in most experiments.
+ work well in all our experiments.
  If necessary, the user can adjust these settings.
- This is easy because the user can determine how fast the background varies
+ This is easy because the she can determine how fast the background varies
  by simple visual inspection of the data.
  
 \end_layout
@@ -927,7 +1040,7 @@ In each block, the median of the gray values
 \begin_inset Formula $\beta_{t}(x,y)$
 \end_inset
 
-,.
+.
  After subtracting 
 \begin_inset Formula $\beta_{t}$
 \end_inset
@@ -955,6 +1068,7 @@ The images
  now conform to the requirements of the matched filter method, which relies
  on the noise being additive with constant variance and the background being
  zero.
+ Figure ??? shows an example.
 \end_layout
 
 \begin_layout Subsection
@@ -1200,6 +1314,12 @@ simultaneously
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:spot-localization"
+
+\end_inset
+
 Spot Localization
 \end_layout
 
@@ -1255,7 +1375,7 @@ The theory of matched filtering suggests that each local maximum of the
 
 \begin_layout Standard
 Important spot properties such as signal-to-noise ratio and anisotropy can
- be readily read from the properties of the interpolated image.
+ be readily obtained from the properties of the interpolated image.
  Let 
 \begin_inset Formula $g$
 \end_inset
@@ -1275,8 +1395,18 @@ Important spot properties such as signal-to-noise ratio and anisotropy can
 
  the corresponding second derivatives (these derivatives can be easily computed
  analytically by the spline interpolator, see ???).
- Since the noise had unit variance before filtering, the signal-to-noise
+ Since the noise has unit variance before filtering, the signal-to-noise
  ratio is simply given by 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+consistency with matched filter derivation???
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Formula 
 \[
 \mbox{SNR}=2g
@@ -1284,7 +1414,7 @@ Important spot properties such as signal-to-noise ratio and anisotropy can
 
 \end_inset
 
-(The factor of 2 accounts for the smoothing effect of the matched filter.)
+(the factor of 2 accounts for the smoothing effect of the matched filter).
  Maximal and minimal radii can be computed from the eigenvalues of the second
  derivative matrix
 \begin_inset Formula 
@@ -1294,26 +1424,17 @@ Important spot properties such as signal-to-noise ratio and anisotropy can
 
 \end_inset
 
-by the expressions 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-check???
-\end_layout
-
-\end_inset
-
-
+by the expressions
 \begin_inset Formula 
 \begin{eqnarray*}
-s_{\mbox{max}} & = & \sqrt{g/\kappa_{2}+\sigma_{\mbox{PSF}}^{2}}\\
-s_{\mbox{min}} & = & \sqrt{g/\kappa_{1}+\sigma_{\mbox{PSF}}^{2}}
+s_{\mbox{max}} & = & \sqrt{-g/\kappa_{1}-\sigma_{\mbox{PSF}}^{2}}\\
+s_{\mbox{min}} & = & \sqrt{-g/\kappa_{2}-\sigma_{\mbox{PSF}}^{2}}
 \end{eqnarray*}
 
 \end_inset
 
-and their ratio gives the spot anisotropy
+(these equations follow from basic properties of Gaussian filters) and their
+ ratio gives the spot anisotropy
 \end_layout
 
 \begin_layout Standard
@@ -1324,25 +1445,37 @@ and their ratio gives the spot anisotropy
 
 \end_inset
 
-Spot width and anisotropy can serve as additional filter criteria to remove
- undesired anisotropic spots, or as a means to determine spot depth in 3D
- localization microscopy with cylindrical lenses.
+Spot radii and anisotropy can serve as additional selection criteria to
+ remove undesired anisotropic spots, or as a means to determine spot depth
+ in 3D localization microscopy with cylindrical lenses.
 \end_layout
 
 \begin_layout Standard
 It should be noted that each spot mask can contain multiple local maxima.
  This is desirable because it allows us to detect overlapping spots, provided
  that the overlap is not too big.
- Specifically, overlapping spots remain separable when their centers have
- a distance of more than 
+ Specifically, overlapping spots of equal intensity remain separable (i.e.
+ give rise to distinct maxima) when their centers have a distance of more
+ than 
 \begin_inset Formula $2\sqrt{2}\sigma_{\mbox{PSF}}$
 \end_inset
 
 .
- This is a big advantage of the matched filtering method over reconstruction
+ This is an advantage of the matched filtering method over reconstruction
  algorithms that directly fit the PSF to the image data: The fitting approach
  only works reliably when the spots do not overlap significantly, i.e.
  when the spot distance is about twice as big.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "C:/Users/ukoethe/Papers/references"
+options "spbasic"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
