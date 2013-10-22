@@ -27,16 +27,16 @@
 \output_sync 0
 \bibtex_command default
 \index_command default
-\paperfontsize default
+\paperfontsize 10
 \spacing single
 \use_hyperref false
 \papersize default
-\use_geometry true
+\use_geometry false
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
 \use_mathdots 1
-\cite_engine basic
+\cite_engine natbib_authoryear
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -46,14 +46,13 @@
 \shortcut idx
 \color #008000
 \end_index
-\leftmargin 4cm
 \rightmargin 4cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
 \quotes_language english
-\papercolumns 1
+\papercolumns 2
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
@@ -97,20 +96,20 @@ key "bates_08_super-resolution,heilemann_10_fluorescence,henriques_09_palm-and-s
  on a unified computational principle: Super-resolution images are constructed
  by means of subpixel-accurate spot detection in a sequence of images taken
  at optical resolution.
- Various algorithms have been proposed for this task (see below for a short
- review), and many of them are available in open-source software.
- ??? 
+ Various algorithms have been proposed for this task and many of them are
+ available in open-source software.
+ We will briefly review existing algorithms below.
 \end_layout
 
 \begin_layout Standard
-Existing reconstruction algorithms for localization microscopy usually offer
- a plethora of configuration settings that must be adjusted carefully in
- order to obtain good results.
- This parameter tuning is difficult even for experts and raises the entry
- threshold for localization microscopy novices.
- To overcome this difficulty, simpleSTORM was designed to determine all
- necessary parameters automatically from the raw image data itself during
- an initial 
+While many existing algorithms are in principle able to obtain good reconstructi
+ons, practical success requires a careful adjustment of various configuration
+ settings.
+ This parameter tuning may be difficult even for experts and raises the
+ entry threshold for localization microscopy novices.
+ To overcome this problem, simpleSTORM was designed to determine all necessary
+ parameters automatically from the raw image data itself during an initial
+ 
 \emph on
 self-calibration phase
 \emph default
@@ -232,9 +231,9 @@ target "https://github.com/ukoethe/simple-STORM"
 
 \begin_layout Standard
 \begin_inset Float figure
-wide false
+wide true
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -279,6 +278,36 @@ Example result from simpleSTORM (data courtesy of Mike Heilemann).
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Related Work
+\end_layout
+
+\begin_layout Standard
+The classical reconstruction approach is based on direct fitting of the
+ PSF to every spot candidate.
+ A model of the PSF with adjustable parameters must be given.
+ Usually, an isotropic Gaussian model like (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:gaussian-psf"
+
+\end_inset
+
+) or an anisotropic version of it is sufficiently accurate 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "thompson_02_precise"
+
+\end_inset
+
+.
+ The free parameters of the model are optimized by a non-linear fitting
+ algorithm (e.g.
+ the Levenberg-Marquart method) in order to minimize the least-squares residual
+ between the fitted model and the intensities of a spot candidate.
+ 
 \end_layout
 
 \begin_layout Section
@@ -906,7 +935,7 @@ status open
 \begin_inset Graphics
 	filename figures/lower-leaning-line.png
 	lyxscale 50
-	width 90text%
+	width 100col%
 
 \end_inset
 
@@ -1068,7 +1097,84 @@ The images
  now conform to the requirements of the matched filter method, which relies
  on the noise being additive with constant variance and the background being
  zero.
- Figure ??? shows an example.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:background-subtraction"
+
+\end_inset
+
+ shows an example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figures/Tubulin2OrigFrame50.png
+	width 40text%
+
+\end_inset
+
+
+\begin_inset Formula $\qquad$
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/Tubulin2normalprocessFrame50.png
+	width 40text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:background-subtraction"
+
+\end_inset
+
+Left: original image (frame 50 of the Tubulin2 dataset more???).
+ Right: the same frame after noise normalization and background subtraction
+ according to equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:anscombe-transform"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:background-subtraction"
+
+\end_inset
+
+).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1127,9 +1233,9 @@ The Gaussian fit can be performed both in the spatial and in the Fourier
  spectrum are again rotationally symmetric Gaussian functions, the model
  is 
 \begin_inset Formula 
-\[
-w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}
-\]
+\begin{equation}
+w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}\label{eq:gaussian-psf}
+\end{equation}
 
 \end_inset
 
