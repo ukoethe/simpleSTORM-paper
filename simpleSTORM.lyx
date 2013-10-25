@@ -990,7 +990,7 @@ reference "fig:lower-leaning-line"
 \end_layout
 
 \begin_layout Standard
-Explain the optimization of a and b for unit variance???
+Explain the post-optimization of a and b for unit variance???
 \end_layout
 
 \begin_layout Subsection
@@ -1198,22 +1198,110 @@ In order to apply the matched filter method, the PSF must be known.
 \end_layout
 
 \begin_layout Standard
-The non-parametric method is based on the 
+The non-parametric method estimates the PSF in the form of an optimal 
+\emph on
+Wiener filter
+\emph default
+ which is based on the 
 \emph on
 magnitude spectrum
 \emph default
  of the signal.
- ??? use a square ROI for PSF estimation???
-\end_layout
+ Let
+\begin_inset Formula 
+\[
+S_{t}=\mathcal{F}[s_{t}]
+\]
 
-\begin_layout Standard
-The parameteric method assumes that the PSF is shaped as a Gaussian, which
- is a very good approximation for typical microscopes.
+\end_inset
+
+the Fourier transform of frame 
+\begin_inset Formula $s_{t}$
+\end_inset
+
+ (after noise normalization and background subtraction).
+ Then the average power spectrum over T frames is
+\begin_inset Formula 
+\[
+P=\frac{1}{T}\sum_{t=1}^{T}\left|S_{t}\right|^{2}
+\]
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\left|S_{t}\right|$
+\end_inset
+
+ is the point-wise magnitude of the complex frequency response.
+ The Wiener filter is then defined as
+\begin_inset Formula 
+\[
+W=\left(\frac{P-P_{N}}{P}\right)_{+}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $P_{N}$
+\end_inset
+
+ is the expected power spectrum of the noise and 
+\begin_inset Formula $\left(.\right)_{+}=\max\left(0,.\right)$
+\end_inset
+
+ is the hinge function that truncates negative values at zero (negative
+ values can occur because we estimate 
+\begin_inset Formula $W$
+\end_inset
+
+ from only finitely many frames).
+ Since the noise is (thanks to noise normalization and background subtraction)
+ additive Gaussian noise with zero mean and unit variance, its expected
+ power spectrum is simply 
+\begin_inset Formula $P_{N}=1$
+\end_inset
+
+.
+ The matched filter can now be computed by multiplication of each frame's
+ Fourier transform with the Wiener filter, followed by inverse Fourier transform
+\begin_inset Formula 
+\[
+\hat{s}_{t}=\mathcal{F}^{-1}[S_{t}\cdot W]
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+In contrast, the parameteric method assumes that the PSF is shaped like
+ a Gaussian, which is a very good approximation for typical microscopes.
  Under this assumption, the self-calibration only needs to determine a single
  parameter, the PSF scale.
  Clearly, the variance of a single parameter estimate is much smaller than
- the variance of an entire PSF estimate from a same number of examples,
- as required in the non-parametric case.
+ the variance of an entire non-parametric PSF estimate from the same number
+ of samples.
  The Gaussian model is therefore preferable when it conforms to the actual
  PSF shape, whereas deviations between model and real PSF will lead to noticeabl
 e bias in spot localization.
@@ -1225,10 +1313,23 @@ The Gaussian fit can be performed both in the spatial and in the Fourier
  domain.
  The Fourier domain approach starts in the same way as in the non-parametric
  case, i.e.
- an average over many spots is formed by computing the average magnitude
- spectrum of a set of squared ROIs.
- However, instead of using the magnitude spectrum directly, it is used to
- fit a Gaussian.
+ we compute the average power spectrum of the noise-normalized signal.
+ To simplify subsequent computations, we cut out 
+\begin_inset Formula $T'$
+\end_inset
+
+ sufficiently large square ROIs from the original frames and compute their
+ average power spectrum 
+\begin_inset Formula $P'$
+\end_inset
+
+.
+ Now, instead of using the power spectrum directly to define a Wiener filter,
+ we compute the average magnitude spectrum 
+\begin_inset Formula $\sqrt{P'}$
+\end_inset
+
+ and use it to fit a Gaussian function.
  Since the Fourier transform of a Gaussian PSF and the corresponding magnitude
  spectrum are again rotationally symmetric Gaussian functions, the model
  is 
@@ -1253,7 +1354,7 @@ rdt algorithm) such that the squared difference between the model and the
  power spectrum is minimized
 \begin_inset Formula 
 \[
-w_{1},w_{2},w_{3}=\mbox{argmin}_{w_{i}}\sum_{u,v}\left[w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}-\mbox{MTF}(r)\right]^{2}
+w_{1},w_{2},w_{3}=\mbox{argmin}_{w_{i}}\sum_{u,v}\left[w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}-\sqrt{P'(r)}\right]^{2}
 \]
 
 \end_inset
@@ -1284,17 +1385,33 @@ where
 \begin_inset Formula $W$
 \end_inset
 
- is the width of the ROI used to compute the magnitude spectrum (recall
- that we use a squared ROI to simplify matters).
- The fit in the spatial domain is performed similarly, but the automtic
- averaging achieved by computing the power spectrum is not possible here.
+ is the width of theROI used to compute the magnitude spectrum (recall that
+ we select squared ROIs to simplify matters).
+ The fit in the spatial domain is performed similarly, but the simple averaging
+ via the average power spectrum is not possible here.
  Instead, we fit the PSF independently to a number of easy-to-detect spots,
  and than define 
 \begin_inset Formula $\sigma_{\mbox{PSF}}$
 \end_inset
 
  as the median of the individual estimates.
- Experiments reported in section ??? reveal that the parametric estimate
+ Finally, the result of matched filtering is 
+\begin_inset Formula 
+\[
+\hat{s}_{t}=s_{t}\star\mbox{gauss}_{\sigma_{\mbox{PSF}}}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\star$
+\end_inset
+
+ denotes convolution.
+\end_layout
+
+\begin_layout Standard
+Experiments reported in section ??? reveal that the parametric estimate
  is usually superior to the non-parametric one, confirming that the Gaussian
  model is indeed feasible in practice.
  Moreover, it turns out that the spatial domain estimate is better because
