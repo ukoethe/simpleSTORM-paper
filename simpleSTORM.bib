@@ -1,0 +1,557 @@
+% This file was created with JabRef 2.9.2.
+% Encoding: Cp1252
+
+@ARTICLE{andersson_08_localization,
+  author = {Andersson, Sean B.},
+  title = {Localization of a fluorescent source without numerical fitting},
+  journal = {Optics express},
+  year = {2008},
+  volume = {16},
+  pages = {18714-18724},
+  number = {23},
+  file = {andersson_08_localization.pdf:andersson_08_localization.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Optical Society of America},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{anscombe_48_noise-normalization,
+  author = {Anscombe, F. J.},
+  title = {The Transformation of Poisson, Binomial and Negative-Binomial Data},
+  journal = {Biometrika},
+  year = {1948},
+  volume = {35},
+  pages = {246-254},
+  number = {3/4},
+  file = {anscombe_48_noise-normalization.pdf:anscombe_48_noise-normalization.pdf:PDF},
+  issn = {00063444},
+  language = {English},
+  owner = {ukoethe},
+  publisher = {Biometrika Trust},
+  timestamp = {2013.07.30},
+  url = {http://www.jstor.org/stable/2332343}
+}
+
+@ARTICLE{anthony_09_Gaussian-fitting,
+  author = {Stephen M. Anthony and Steve Granick},
+  title = {Image Analysis with Rapid and Accurate {Two-Dimensional} Gaussian
+	Fitting},
+  journal = {Langmuir},
+  year = {2009},
+  volume = {25},
+  pages = {8152--8160},
+  number = {14},
+  month = jul,
+  abstract = {A computationally rapid image analysis method, weighted overdetermined
+	regression, is presented for two-dimensional (2D) Gaussian fitting
+	of particle location with subpixel resolution from a pixelized image
+	of light intensity. Compared to least-squares Gaussian iterative
+	fitting, which is most exact but prohibitively slow for large data
+	sets, the precision of this new method is equivalent when the signal-to-noise
+	ratio is high and approaches it when the signal-to-noise ratio is
+	low, while enjoying a more than 100-fold improvement in computational
+	time. Compared to another widely used approximation method, nine-point
+	regression, we show that precision and speed are both improved. Additionally,
+	weighted regression runs nearly as fast and with greatly improved
+	precision compared to the simplest method, the moment method, which,
+	despite its limited precision, is frequently employed because of
+	its speed. Quantitative comparisons are presented for both circular
+	and elliptical Gaussian intensity distributions. This new image analysis
+	method may be useful when dealing with large data sets such as those
+	frequently met in astronomy or in single-particle and single-molecule
+	tracking using microscopy and may facilitate advances such as real-time
+	quantification of microscopy images.},
+  annote = {{PMID:} 19419178},
+  doi = {10.1021/la900393v},
+  file = {anthony_09_Gaussian-fitting.pdf:anthony_09_Gaussian-fitting.pdf:PDF},
+  owner = {ukoethe},
+  review = {Algorithm:
+	
+	* Use least-sqaures to minimize the algebraic distance in the space
+	one gets by taking the logarithm of the Gaussian.
+	
+	* Background must be subtracted from the intensities before fitting.
+	
+	* Noise is ignored in the fitting model, but used to weight the samples
+	according to w = 1 / log((v+n)/(v-n)) = 1 / log((SNR+1) / (SNR-1))
+	(where v is the intensity and n the noise standard deviation). Since
+	higher intensities have higher SNR (if the noise is independent of
+	intensity), they are weighted up by this model. (Note that the weighting
+	formula can only be found in the code provided as supplementary).
+	
+	Empirical results are very good. In particular, the model has a very
+	low probability not to converge to a reasonable solution (in contrast
+	to Levenberg-Marquart).},
+  timestamp = {2011.03.04},
+  url = {http://dx.doi.org/10.1021/la900393v}
+}
+
+@ARTICLE{bates_08_super-resolution,
+  author = {Mark Bates and Bo Huang and Xiaowei Zhuang},
+  title = {Super-resolution microscopy by nanoscale localization of photo-switchable
+	fluorescent probes},
+  journal = {Current Opinion in Chemical Biology},
+  year = {2008},
+  volume = {12},
+  pages = {505 - 514},
+  number = {5},
+  abstract = {A new form of super-resolution fluorescence microscopy has emerged
+	in recent years, based on the high accuracy localization of individual
+	photo-switchable fluorescent labels. Image resolution as high as
+	20nm in the lateral dimensions and 50nm in the axial direction has
+	been attained with this concept, representing an order of magnitude
+	improvement over the diffraction limit. The demonstration of multicolor
+	imaging with molecular specificity, three-dimensional (3D) imaging
+	of cellular structures, and time-resolved imaging of living cells
+	further illustrates the exciting potential of this method for biological
+	imaging at the nanoscopic scale. },
+  doi = {http://dx.doi.org/10.1016/j.cbpa.2008.08.008},
+  file = {bates_08_super-resolution.pdf:bates_08_super-resolution.pdf:PDF},
+  issn = {1367-5931},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://www.sciencedirect.com/science/article/pii/S1367593108001233}
+}
+
+@ARTICLE{betzig_06_imaging,
+  author = {Betzig, Eric and Patterson, George H and Sougrat, Rachid and Lindwasser,
+	O Wolf and Olenych, Scott and Bonifacino, Juan S and Davidson, Michael
+	W and Lippincott-Schwartz, Jennifer and Hess, Harald F},
+  title = {Imaging intracellular fluorescent proteins at nanometer resolution},
+  journal = {Science},
+  year = {2006},
+  volume = {313},
+  pages = {1642--1645},
+  number = {5793},
+  file = {betzig_06_imaging.pdf:betzig_06_imaging.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {American Association for the Advancement of Science},
+  timestamp = {2013.10.21}
+}
+
+@ARTICLE{boulanger_10_patch-based,
+  author = {Boulanger, J. and Kervrann, C. and Bouthemy, P. and Elbau, P. and
+	Sibarita, J.-B. and Salamero, J.},
+  title = {Patch-Based Nonlocal Functional for Denoising Fluorescence Microscopy
+	Image Sequences},
+  journal = {Medical Imaging, IEEE Transactions on},
+  year = {2010},
+  volume = {29},
+  pages = {442-454},
+  number = {2},
+  abstract = {We present a nonparametric regression method for denoising 3-D image
+	sequences acquired via fluorescence microscopy. The proposed method
+	exploits the redundancy of the 3-D+time information to improve the
+	signal-to-noise ratio of images corrupted by Poisson-Gaussian noise.
+	A variance stabilization transform is first applied to the image-data
+	to remove the dependence between the mean and variance of intensity
+	values. This preprocessing requires the knowledge of parameters related
+	to the acquisition system, also estimated in our approach. In a second
+	step, we propose an original statistical patch-based framework for
+	noise reduction and preservation of space-time discontinuities. In
+	our study, discontinuities are related to small moving spots with
+	high velocity observed in fluorescence video-microscopy. The idea
+	is to minimize an objective nonlocal energy functional involving
+	spatio-temporal image patches. The minimizer has a simple form and
+	is defined as the weighted average of input data taken in spatially-varying
+	neighborhoods. The size of each neighborhood is optimized to improve
+	the performance of the pointwise estimator. The performance of the
+	algorithm (which requires no motion estimation) is then evaluated
+	on both synthetic and real image sequences using qualitative and
+	quantitative criteria.},
+  doi = {10.1109/TMI.2009.2033991},
+  file = {boulanger_10_patch-based.pdf:boulanger_10_patch-based.pdf:PDF},
+  issn = {0278-0062},
+  keywords = {Gaussian noise;fluorescence;image denoising;image sequences;medical
+	image processing;regression analysis;3D image denoising;Poisson-Gaussian
+	noise;fluorescence video microscopy;image sequences;nonparametric
+	regression method;patch based nonlocal functional;pointwise estimator;space-time
+	discontinuities;Additive noise;Deconvolution;Fluorescence;Image sequences;Mathematics;Microscopy;Motion
+	estimation;Noise reduction;Protein engineering;Signal to noise ratio;Adaptive
+	estimation;Poisson noise;energy minimization;fluorescence;image sequence
+	denoising;patch-based approach;variance stabilization;video-microscopy;Algorithms;HeLa
+	Cells;Humans;Image Processing, Computer-Assisted;Microscopy, Fluorescence;Microscopy,
+	Video;Normal Distribution;Poisson Distribution},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@INPROCEEDINGS{boulanger_08_non-parametric,
+  author = {Boulanger, J. and Sibarita, J.-B. and Kervrann, C. and Bouthemy,
+	P.},
+  title = {Non-parametric regression for patch-based fluorescence microscopy
+	image sequence denoising},
+  booktitle = {Biomedical Imaging: From Nano to Macro, 2008. ISBI 2008. 5th IEEE
+	International Symposium on},
+  year = {2008},
+  pages = {748-751},
+  abstract = {We present a non-parametric regression method for denoising fluorescence
+	video-microscopy volume sequences. The designed method aims at using
+	the 3D+t information in order to restore acquired data contaminated
+	by Poisson and Gaussian noise. We propose to use a variance stabilization
+	transform to deal with the combination of Poisson and Gaussian noise.
+	Consequently, we further propose an adaptive patch-based framework
+	able to preserve space-time discontinuities and reduce significantly
+	noise level using the 3D+t space-time context. This approach lead
+	to an algorithm whose parameters are calibrated and then ready for
+	intensive use. The performance of the proposed method are then demonstrated
+	on both synthetic and real image sequences using quantitative as
+	well as qualitative criteria.},
+  doi = {10.1109/ISBI.2008.4541104},
+  file = {boulanger_08_non-parametric.pdf:boulanger_08_non-parametric.pdf:PDF},
+  keywords = {Gaussian noise;adaptive estimation;biomedical optical imaging;cellular
+	biophysics;fluorescence;image restoration;image sequences;medical
+	image processing;optical microscopy;regression analysis;space-time
+	adaptive processing;video signal processing;3D+t space-time context;Gaussian
+	noise;Poisson noise;adaptive estimation;image sequence denoising;image
+	sequence restoration;nonparametric regression method;patch-based
+	fluorescence microscopy;space-time discontinuities;variance stabilization
+	transform;video-microscopy;Dictionaries;Fluorescence;Gaussian noise;Image
+	restoration;Image sequences;Microscopy;Motion estimation;Noise reduction;Statistics;Wiener
+	filter;Poisson noise;Video-microscopy;adaptive estimation;image sequence
+	denoising;patch-based approach},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@INPROCEEDINGS{gruell_11_fpga-storm,
+  author = {Gr{\"u}ll, Frederik and Kirchgessner, Manfred and Kaufmann, Rainer
+	and Hausmann, Michael and Kebschull, Udo},
+  title = {Accelerating image analysis for localization microscopy with {FPGAs}},
+  booktitle = {Field Programmable Logic and Applications (FPL), 2011 International
+	Conference on},
+  year = {2011},
+  pages = {1-5},
+  file = {gruell_11_fpga-storm.pdf:gruell_11_fpga-storm.pdf:PDF},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{heilemann_10_fluorescence,
+  author = {Mike Heilemann},
+  title = {Fluorescence microscopy beyond the diffraction limit },
+  journal = {Journal of Biotechnology },
+  year = {2010},
+  volume = {149},
+  pages = {243 - 251},
+  number = {4},
+  note = {<ce:title>BioImaging - Contributions from Biology, Physics and Informatics</ce:title>
+	},
+  abstract = {In the recent past, a variety of fluorescence microscopy methods emerged
+	that proved to bypass a fundamental limit in light microscopy, the
+	diffraction barrier. Among diverse methods that provide subdiffraction
+	spatial resolution, far-field microscopic techniques are in particular
+	important as they can be operated in complex biological samples such
+	as cells or tissue. Valuable new insights into biomolecular structure,
+	organization and even dynamic processes in living cells have been
+	gained with these novel microscopic techniques. In the present review,
+	the most important concepts of far-field microscopy with subdiffraction
+	resolution are introduced. The underlying physical concepts are discussed,
+	and practical considerations for the application of these methods
+	are made. },
+  doi = {http://dx.doi.org/10.1016/j.jbiotec.2010.03.012},
+  file = {heilemann_10_fluorescence.pdf:heilemann_10_fluorescence.pdf:PDF},
+  issn = {0168-1656},
+  keywords = {Fluorescence microscopy, review},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://www.sciencedirect.com/science/article/pii/S0168165610001574}
+}
+
+@MANUAL{henriques_12_quickpalm,
+  title = {QuickPALM ImageJ Plugin},
+  author = {Ricardo Henriques},
+  year = {2012},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://code.google.com/p/quickpalm/}
+}
+
+@ARTICLE{henriques_10_quick-palm,
+  author = {Henriques, Ricardo and Lelek, Mickael and Fornasiero, Eugenio F and
+	Valtorta, Flavia and Zimmer, Christophe and Mhlanga, Musa M},
+  title = {{QuickPALM:} 3D real-time photoactivation nanoscopy image processing
+	in ImageJ},
+  journal = {Nature methods},
+  year = {2010},
+  volume = {7},
+  pages = {339-340},
+  number = {5},
+  file = {henriques_10_quick-palm.pdf:henriques_10_quick-palm.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Nature Publishing Group},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{henriques_09_palm-and-storm,
+  author = {Henriques, Ricardo and Mhlanga, Musa M.},
+  title = {{PALM} and {STORM}: What hides beyond the Rayleigh limit?},
+  journal = {Biotechnology Journal},
+  year = {2009},
+  volume = {4},
+  pages = {846-857},
+  number = {6},
+  abstract = {Super-resolution imaging allows the imaging of fluorescently labeled
+	probes at a resolution of just tens of nanometers, surpassing classic
+	light microscopy by at least one order of magnitude. Recent advances
+	such as the development of photo-switchable fluorophores, high-sensitivity
+	microscopes and single particle localization algorithms make super-resolution
+	imaging rapidly accessible to the wider life sciences research community.
+	As we take our first steps in deciphering the roles and behaviors
+	of individual molecules inside their living cellular environment,
+	a new world of research opportunities beckons. Here we discuss some
+	of the latest developments achieved with these techniques and emerging
+	areas where super-resolution will give fundamental new “eye” sight
+	to cell biology.},
+  doi = {10.1002/biot.200900024},
+  file = {henriques_09_palm-and-storm.pdf:henriques_09_palm-and-storm.pdf:PDF},
+  issn = {1860-7314},
+  keywords = {Fluorescent proteins, Microscopy, Nanoscopy, Single molecule, Super-resolution},
+  owner = {ukoethe},
+  publisher = {WILEY-VCH Verlag},
+  timestamp = {2013.10.18},
+  url = {http://dx.doi.org/10.1002/biot.200900024}
+}
+
+@MANUAL{herbert_12_peakfit,
+  title = {PeakFit ImageJ Plugins for Single-molecule Light Microscopy},
+  author = {Alex Herbert},
+  year = {2012},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://www.sussex.ac.uk/gdsc/intranet/microscopy/imagej/smlm_plugins}
+}
+
+@ARTICLE{holden_11_daostorm,
+  author = {Holden, S.J. and Uphoff, S. and Kapanidis, A.N.},
+  title = {{DAOSTORM:} an algorithm for high-density super-resolution microscopy.},
+  journal = {Nature methods},
+  year = {2011},
+  volume = {8},
+  pages = {279},
+  number = {4},
+  file = {holden_11_daostorm.pdf:holden_11_daostorm.pdf:PDF},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{huang_10_super-resolution,
+  author = {Bo Huang},
+  title = {Super-resolution optical microscopy: multiple choices },
+  journal = {Current Opinion in Chemical Biology },
+  year = {2010},
+  volume = {14},
+  pages = {10 - 14},
+  number = {1},
+  note = {<ce:title>Molecular Imaging</ce:title> },
+  abstract = {The recent invention of super-resolution optical microscopy enables
+	the visualization of fine features in biological samples with unprecedented
+	clarity. It creates numerous opportunities in biology because vast
+	amount of previously obscured subcellular processes now can be directly
+	observed. Rapid development in this field in the past two years offers
+	many imaging modalities that address different needs but they also
+	complicates the choice of the ‘perfect’ method for answering a specific
+	question. Here I will briefly describe the principles of super-resolution
+	optical microscopy techniques and then focus on comparing their characteristics
+	in various aspects of practical applications. },
+  doi = {http://dx.doi.org/10.1016/j.cbpa.2009.10.013},
+  file = {huang_10_super-resolution.pdf:huang_10_super-resolution.pdf:PDF},
+  issn = {1367-5931},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://www.sciencedirect.com/science/article/pii/S1367593109001598}
+}
+
+@ARTICLE{huang_11_simultaneous,
+  author = {Huang, Fang and Schwartz, Samantha L and Byars, Jason M and Lidke,
+	Keith A},
+  title = {Simultaneous multiple-emitter fitting for single molecule super-resolution
+	imaging},
+  journal = {Biomed. Opt. Express},
+  year = {2011},
+  volume = {2},
+  pages = {1377-1393},
+  number = {5},
+  file = {huang_11_simultaneous.pdf:huang_11_simultaneous.pdf:PDF},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{izeddin_12_wavelet,
+  author = {Izeddin, I and Boulanger, J and Racine, V and Specht, CG and Kechkar,
+	A and Nair, D and Triller, A and Choquet, D and Dahan, M and Sibarita,
+	JB},
+  title = {Wavelet analysis for single molecule localization microscopy},
+  journal = {Opt Express},
+  year = {2012},
+  volume = {20},
+  pages = {2081-2095},
+  number = {3},
+  file = {izeddin_12_wavelet.pdf:izeddin_12_wavelet.pdf:PDF},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{krizek_11_minimizing,
+  author = {K{\v{r}}{\'\i}{\v{z}}ek, Pavel and Ra{\v{s}}ka, Ivan and Hagen, Guy
+	M},
+  title = {Minimizing detection errors in single molecule localization microscopy},
+  journal = {Optics Express},
+  year = {2011},
+  volume = {19},
+  pages = {3226-3235},
+  number = {4},
+  file = {krizek_11_minimizing.pdf:krizek_11_minimizing.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Optical Society of America},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{olivo-marin_02_extraction,
+  author = {Olivo-Marin, Jean-Christophe},
+  title = {Extraction of spots in biological images using multiscale products},
+  journal = {Pattern Recognition},
+  year = {2002},
+  volume = {35},
+  pages = {1989-1996},
+  number = {9},
+  file = {olivo-marin_02_extraction.pdf:olivo-marin_02_extraction.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Elsevier},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{smith_10_fast,
+  author = {Smith, Carlas S. and Joseph, Nikolai and Rieger, Bernd and Lidke,
+	Keith A.},
+  title = {Fast, single-molecule localization that achieves theoretically minimum
+	uncertainty},
+  journal = {Nature methods},
+  year = {2010},
+  volume = {7},
+  pages = {373-375},
+  number = {5},
+  file = {smith_10_fast.pdf:smith_10_fast.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Nature Publishing Group},
+  timestamp = {2013.10.18}
+}
+
+@MANUAL{stuurman_12_plugin,
+  title = {Localization Microscopy MicroManager Plugin},
+  author = {Nico Stuurman},
+  year = {2012},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://micro-manager.org/wiki/Localization_Microscopy}
+}
+
+@ARTICLE{thompson_02_precise,
+  author = {Thompson, Russell E and Larson, Daniel R and Webb, Watt W},
+  title = {Precise nanometer localization analysis for individual fluorescent
+	probes},
+  journal = {Biophysical journal},
+  year = {2002},
+  volume = {82},
+  pages = {2775--2783},
+  number = {5},
+  file = {thompson_02_precise.pdf:thompson_02_precise.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Elsevier},
+  timestamp = {2013.10.18}
+}
+
+@ARTICLE{turin_60_matched-filters,
+  author = {Turin, G.L.},
+  title = {An introduction to matched filters},
+  journal = {Information Theory, IRE Transactions on},
+  year = {1960},
+  volume = {6},
+  pages = {311-329},
+  number = {3},
+  abstract = {In a tutorial exposition, the following topics are discussed: definition
+	of a matched filter; where matched filters arise; properties of matched
+	filters; matched-filter synthesis and signal specification; some
+	forms of matched filters.},
+  doi = {10.1109/TIT.1960.1057571},
+  file = {turin_60_matched-filters.pdf:turin_60_matched-filters.pdf:PDF},
+  issn = {0096-1000},
+  keywords = {Matched filters;Bibliographies;Density functional theory;Estimation
+	theory;Filtering theory;Fourier transforms;Information theory;Matched
+	filters;Milling machines;Nonlinear filters;Probability density function;Signal
+	synthesis;Testing;Transfer functions},
+  owner = {ukoethe},
+  timestamp = {2013.10.18}
+}
+
+@MANUAL{wolter_13_rapidstorm,
+  title = {rapidSTORM manual},
+  author = {Steve Wolter and Sven Proppert},
+  year = {2013},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {https://idefix.biozentrum.uni-wuerzburg.de/doc/rapidstorm/manual.html}
+}
+
+@ARTICLE{wolter_10_rapid-storm,
+  author = {Wolter, S. and Sch{\"u}ttpelz, M. and Tscherepanow, M. and van de
+	Linde, S. and Heilemann, M. and Sauer, M.},
+  title = {Real-time computation of subdiffraction-resolution fluorescence images},
+  journal = {Journal of Microscopy},
+  year = {2010},
+  volume = {237},
+  pages = {12-22},
+  number = {1},
+  abstract = {In the recent past, single-molecule based localization or photoswitching
+	microscopy methods such as stochastic optical reconstruction microscopy
+	(STORM) or photoactivated localization microscopy (PALM) have been
+	successfully implemented for subdiffraction-resolution fluorescence
+	imaging. However, the computational effort needed to localize numerous
+	fluorophores is tremendous, causing long data processing times and
+	thereby limiting the applicability of the technique. Here we present
+	a new computational scheme for data processing consisting of noise
+	reduction, detection of likely fluorophore positions, high-precision
+	fluorophore localization and subsequent visualization of found fluorophore
+	positions in a super-resolution image. We present and benchmark different
+	algorithms for noise reduction and demonstrate the use of non-maximum
+	suppression to quickly find likely fluorophore positions in high
+	depth and very noisy images. The algorithm is evaluated and compared
+	in terms of speed, accuracy and robustness by means of simulated
+	data. On real biological samples, we find that real-time data processing
+	is possible and that super-resolution imaging with organic fluorophores
+	of cellular structures with ~20 nm optical resolution can be completed
+	in less than 10 s.},
+  doi = {10.1111/j.1365-2818.2009.03287.x},
+  file = {wolter_10_rapid-storm.pdf:wolter_10_rapid-storm.pdf:PDF},
+  issn = {1365-2818},
+  keywords = {Super-resolution imaging, real-time dSTORM, photoswitching microscopy},
+  owner = {ukoethe},
+  publisher = {Blackwell Publishing Ltd},
+  timestamp = {2013.10.18},
+  url = {http://dx.doi.org/10.1111/j.1365-2818.2009.03287.x}
+}
+
+@MANUAL{yu_11_octane,
+  title = {Octane ImageJ Plugin for super-resolution imaging and single molecule
+	tracking},
+  author = {Ji Yu},
+  year = {2011},
+  owner = {ukoethe},
+  timestamp = {2013.10.18},
+  url = {http://www.ccam.uchc.edu/yu/Software.shtml}
+}
+
+@ARTICLE{zhu_12_faster-storm,
+  author = {Zhu, Lei and Zhang, Wei and Elnatan, Daniel and Huang, Bo},
+  title = {Faster {STORM} using compressed sensing},
+  journal = {Nature methods},
+  year = {2012},
+  volume = {9},
+  pages = {721-723},
+  number = {7},
+  file = {zhu_12_faster-storm.pdf:zhu_12_faster-storm.pdf:PDF},
+  owner = {ukoethe},
+  publisher = {Nature Publishing Group},
+  timestamp = {2013.10.18}
+}
+
