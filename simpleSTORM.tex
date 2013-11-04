@@ -11,6 +11,7 @@
 \usepackage[authoryear]{natbib}
 \usepackage[unicode=true]
  {hyperref}
+\usepackage{subfig}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
@@ -594,6 +595,41 @@ This is an advantage of the matched filtering method over reconstruction
 algorithms that directly fit the PSF to the image data: The fitting
 approach only works reliably when the spots do not overlap significantly,
 i.e. when the spot distance is about twice as big.
+
+
+\section{Validation}
+\subsection{PSF width estimation}
+As described above the performance of the matched filter depends on the proper estimation of the PSF width. For SimpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the oportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localisazion accuracy and the chance of near PSFs merge into one due to filtering. Therefore it can be favorable to use a smaller filter to avoid merging PSFs.
+The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. it tended to overestimate the true PSF width.
+
+To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density data set) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms.
+
+\begin{figure}
+\subfloat[Long sequence data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
+\subfloat[Long sequence data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}\hfill%
+\subfloat[Tubulin 1 data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
+\subfloat[Tubulin 2 data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}
+	\caption{Histograms for three training data sets from the ISBI localisation challenge}%
+	\label{histogram_of_sigmas}%
+\end{figure}
+
+\subsection{Gain estimation}
+One key feature is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the set one. For validation purpose a series of 500 frames of an average cell culture sample with phalloidin labeled actin fillaments were captured several times with different gain settings. Figure \ref{gain_verification} shows the linear relation between the estimated gain factor and the set one.
+
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{figures/gain_estimation}
+\caption{Scatter plot of estimated gain over set gain. The same sample was imaged multiple times with different gain factors set in the camera settings.}
+\label{gain_verification}
+\end{figure}
+
+\subsection{Background estimation}
+To check weather the the background estimation and Anscombe transdormation worked as supposed, the false positive to background pixel rate was determined. The $p-$value determins the rate of false positives per background pixels. The number of background pixels that are errornously detected as signal was calculated for the training data sets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbours that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
+
+\begin{figure}
+\subfloat[False positive to background pixel rate.]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}}\label{fp_rate}\hfill%
+\subfloat[False positive rate only considering false positives with at least 2 neighbours.]{\includegraphics[width = 0.24\textwidth]{figures/FP3_BgRatioTubulin1.png}}\label{fp3_rate}\hfill%	
+\caption{False positives rates.}%
+\end{figure}
 
 \bibliographystyle{spbasic}
 \bibliography{simpleSTORM}
