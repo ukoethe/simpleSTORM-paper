@@ -613,8 +613,15 @@ The estimation of the PSF width using the Fourier transformed imaged proved to b
 	\label{sigmas}%
 \end{figure}
 
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{figures/RMSEoverFilterwidth.png}
+	\caption{RSME for different filterwidths.}%
+	\label{sigmas_quantitative}%
+\end{figure}
 
-To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density data set) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms.
+
+
+To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density data set) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms. The calculated values for the training datasets are 109~nm which means 1.09 pixels for the high density and long sequence dataset and 0.73 pixels respectively. The estimated PSF width lies withing a then percent range according to the calculated on. The only exception is the high density dataset for which the PSF width is overestimated because of the many overlapping PSFs.
 
 \begin{figure}
 \subfloat[Long sequence data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
