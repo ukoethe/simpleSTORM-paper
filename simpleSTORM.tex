@@ -598,17 +598,29 @@ i.e. when the spot distance is about twice as big.
 
 
 \section{Validation}
+For validation purposes the trainingsdata sets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
+There are four different data sets. Two data sets with simulated tubulin tubes, we will refere to this data sets as tubulin 1 and tubulin 2 data set. The tubulin 1 and tubulin 2 data set consist of  2400 frames and simulated autofluorescent background. The tubulin 2 data set has the same structure as tubulin 1 data set but a higher level of noise.\newline
+The other two data sets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both data sets will be refered to as long sequence data set and high density data set respectively. 
 \subsection{PSF width estimation}
-As described above the performance of the matched filter depends on the proper estimation of the PSF width. For SimpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the oportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localisazion accuracy and the chance of near PSFs merge into one due to filtering. Therefore it can be favorable to use a smaller filter to avoid merging PSFs.
+As described above the performance of the matched filter depends on the proper estimation of the PSF width. For SimpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the oportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localisazion accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitative}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filterwidth increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perfom best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs.
 The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. it tended to overestimate the true PSF width.
+
+\begin{figure}
+\subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped.png}}\hfill%
+\subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped.png}}\hfill%
+\subfloat[$\sigma = 1.5$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_5_croped.png}}\hfill%
+	\caption{The effect of different filter widths on data sets with a high PSF density per frame.}%
+	\label{sigmas}%
+\end{figure}
+
 
 To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density data set) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms.
 
 \begin{figure}
-\subfloat[Long sequence data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
-\subfloat[Long sequence data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}\hfill%
-\subfloat[Tubulin 1 data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
-\subfloat[Tubulin 2 data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}
+\subfloat[Long sequence data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
+\subfloat[High density data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}\hfill%
+\subfloat[Tubulin 1 data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
+\subfloat[Tubulin 2 data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}
 	\caption{Histograms for three training data sets from the ISBI localisation challenge}%
 	\label{histogram_of_sigmas}%
 \end{figure}
@@ -626,10 +638,60 @@ One key feature is the estimation of the camera gain directly from the data. Thi
 To check weather the the background estimation and Anscombe transdormation worked as supposed, the false positive to background pixel rate was determined. The $p-$value determins the rate of false positives per background pixels. The number of background pixels that are errornously detected as signal was calculated for the training data sets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbours that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
 
 \begin{figure}
-\subfloat[False positive to background pixel rate.]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}}\label{fp_rate}\hfill%
-\subfloat[False positive rate only considering false positives with at least 2 neighbours.]{\includegraphics[width = 0.24\textwidth]{figures/FP3_BgRatioTubulin1.png}}\label{fp3_rate}\hfill%	
+\subfloat[False positive to background pixel rate.]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}\label{fp_rate}}\hfill%
+\subfloat[False positive rate only considering false positives with at least 2 neighbours.]{\includegraphics[width = 0.24\textwidth]{figures/FP3_BgRatioTubulin1.png}\label{fp3_rate}}\hfill%	
 \caption{False positives rates.}%
 \end{figure}
+
+\subsection{Results on the trainingsdata sets}
+To give a objective impression of the SimpleSTORM algorithm the four trainingdata sets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Tabels \ref{result_Training_0_1} to \ref{result_Training_1} show the results for Jaccard index, f-score, precision and RSME. For the evaluation only ground truth localisations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.1, 0.3, 0.5 and 1 to the pixelsize of the raw data. The RSME is given in nanometers.
+\begin{table}
+\caption{Radius 0.1}
+\begin{tabular}{l|ccccc}
+&Jaccard&F-Score&Precision&RSME\\ \hline
+Tubulin1&0.261&0.414&0.630&9.19\\
+Tubulin2&0.126&0.224&0.508&9.64\\
+LS&0.442&0.613&0.669&6.154\\
+HD&0.007&0.013&0.094&7.038
+\end{tabular}
+\label{result_Training_0_1}
+\end{table}
+
+\begin{table}
+\caption{Radius 0.3}
+\begin{tabular}{l|ccccc}
+&Jaccard&F-Score&Precision&RSME\\ \hline
+Tubulin1&0.445&0.615&0.937&15.6\\
+Tubulin2&0.252&0.403&0.915&18.1\\
+LS&0.770&0.870&0.949&9.80\\
+HD&0.038&0.073&0.509&20.4
+\end{tabular}
+\label{result_Training_0_1}
+\end{table}
+
+\begin{table}
+\caption{Radius 0.5}
+\begin{tabular}{l|ccccc}
+&Jaccard&F-Score&Precision&RSME\\ \hline
+Tubulin1&0.470&0.640&0.974&19.6\\
+Tubulin2&0.270&0.426&0.966&22.9\\
+LS&0.805&0.892&0.974&11.6\\
+HD&0.060&0.112&0.788&32.168
+\end{tabular}
+\label{result_Training_0_1}
+\end{table}
+
+\begin{table}
+\caption{Radius 1}
+\begin{tabular}{l|ccccc}
+&Jaccard&F-Score&Precision&RSME\\ \hline
+Tubulin1&0.487&0.655&0.997&26.6\\
+Tubulin2&0.282&0.439&0.997&31.0\\
+LS&0.836&0.911&0.994&15.7\\
+HD&0.075&0.139&0.976&55.1
+\end{tabular}
+\label{result_Training_1}
+\end{table}
 
 \bibliographystyle{spbasic}
 \bibliography{simpleSTORM}
