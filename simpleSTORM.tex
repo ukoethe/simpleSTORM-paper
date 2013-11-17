@@ -5,6 +5,7 @@
 \usepackage[latin9]{inputenc}
 \usepackage{babel}
 \usepackage{amstext}
+\usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{esint}
@@ -12,6 +13,11 @@
 \usepackage[unicode=true]
  {hyperref}
 \usepackage{subfig}
+
+\newcommand{\argmin}{\operatorname*{argmin}}
+\newcommand{\erfi}{\operatorname{erfi}}
+\newcommand{\psf}{\operatorname{PSF}}
+\newcommand{\snr}{\operatorname{SNR}}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
@@ -147,7 +153,7 @@ Proper noise modeling is a critical ingredient for reliable distinction between 
 
 Moreover, it has been shown in \cite{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelarated version of this method is described in \cite{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they differ from the Poisson-distributed photon counts by various aplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \cite{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \cite{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \cite{boulanger_10_patch-based}, who adaptiveliy subdivide the real images to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
 
-\section{Results}
+\section{Methods}
 
 \subsection{\label{sec:matched-filters}Matched Filters}
 
@@ -162,41 +168,42 @@ by noise, we cannot simply detect the spot by looking for the point
 of maximum intensity in $s$. To simplify matters, we assume that
 the noise is additive Gaussian noise with zero mean and variance $\sigma^{2}$,
 i.e. our image model is
-\begin{equation}
-s(x,y)=\mathrm{PSF}(x-x_{0},y-y_{0})+n(x,y),\qquad n(x,y)\sim\mathcal{N}(0,\sigma^{2})\label{eq:simple-signal-model}
-\end{equation}
+\begin{eqnarray}
+s(x,y)=\psf(x-x_{0},y-y_{0})&+&n(x,y) \label{eq:simple-signal-model} \\ && n(x,y)\sim\mathcal{N}(0,\sigma^{2}) \nonumber
+\end{eqnarray}
 We now seek a filter function $h(x,y)$ such that filtering of $s$
 with $h$ maximizes the signal-to-noise ratio of the filtered image
-$g(x,y)=g_{\mbox{PSF}}(x,y)+g_{n}(x,y)$. The signal and noise parts
+$g(x,y)=g_{\psf}(x,y)+g_{n}(x,y)$. The signal and noise parts
 of the filtered image are given by the convolution integrals
 \begin{eqnarray*}
-g_{\mathrm{PSF}}(x,y) & = & h\star\mbox{PSF}=\int_{\mathbb{R}^{2}}h(x',y')\,\mathrm{PSF}(x-x',y-y')\, dx'\, dy'\\
-g_{n}(x,y) & = & h\star n\quad=\int_{\mathbb{R}^{2}}h(x',y')\, n(x-x',y-y')\, dx'\, dy'
+g_{\psf}(x,y) & = & h\star\psf \\ &=&\int_{\mathbb{R}^{2}}h(x',y')\,\psf(x-x',y-y')\, dx'\, dy'\\
+g_{n}(x,y) & = & h\star n \\ &=&\int_{\mathbb{R}^{2}}h(x',y')\, n(x-x',y-y')\, dx'\, dy'
 \end{eqnarray*}
 Signal and noise energies are defined by the squares of these expressions.
 Since the noise is, by assumption, uncorrelated with the filter, the
 noise energy simplifies to $g_{n}(x,y)^{2}=\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'$
-according to Parseval's theorem. The signal-to-noise ratio at a point
+according to Parseval's theorem. The signal-to-noise ratio (SNR) at a point
 $(x,y)$ is the quotient of the corresponding energies, i.e.
 \[
-\mathrm{SNR}(x,y)=\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\mathrm{PSF}(x-x',y-y')\, dx'\, dy'\right)^{2}}{\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'}
+\snr(x,y)=\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\psf(x-x',y-y')\, dx'\, dy'\right)^{2}}{\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'}
 \]
 The energy of the PSF is given by 
-\[
-E_{\mathrm{PSF}}=\int_{\mathbb{R}^{2}}\mathrm{PSF}(x',y')^{2}\, dx'\, dy'=\int_{\mathbb{R}^{2}}\mathrm{PSF}(x-x',y-y')^{2}\, dx'\, dy'
-\]
+\begin{eqnarray*}
+E_{\psf}&=&\int_{\mathbb{R}^{2}}\psf(x',y')^{2}\, dx'\, dy'\\ &=&\int_{\mathbb{R}^{2}}\psf(x-x',y-y')^{2}\, dx'\, dy'
+\end{eqnarray*}
 where the second identity follows from translation invariance. We
 can therefore rewrite the SNR as
-\[
-\mbox{SNR}(x,y)=\frac{E_{\mbox{PSF}}}{\sigma^{2}}\,\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\mathrm{PSF}(x-x',y-y')\, dx'\, dy'\right)^{2}}{\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'\int_{\mathbb{R}^{2}}\mathrm{PSF}(x-x',y-y')^{2}\, dx'\, dy'}
-\]
+\begin{multline*}
+\snr(x,y)=\frac{E_{\psf}}{\sigma^{2}} \cdot\\
+\quad\,\,\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\psf(x-x',y-y')\, dx'\, dy'\right)^{2}}{\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'\int_{\mathbb{R}^{2}}\psf(x-x',y-y')^{2}\, dx'\, dy'}
+\end{multline*}
 The second quotient is easily recognized as the square of the correlation
 coefficient $\rho$ between the filter $h$ and the mirrored PSF.
 We must therefore maximize the correlation coefficient in order to
 maximize the SNR for given signal and noise energy. The correlation
 coefficient assumes its highest possible value $\rho=1$ when 
 \[
-h(x,y)=\kappa\,\mbox{PSF}(-x,-y)
+h(x,y)=\kappa\,\psf(-x,-y)
 \]
 for any $\kappa\ne0$. In other words, the filter should have the
 same shape as the signal we want to detect, but mirrored at the origin.
@@ -459,36 +466,36 @@ fit a Gaussian function. Since the Fourier transform of a Gaussian
 PSF and the corresponding magnitude spectrum are again rotationally
 symmetric Gaussian functions, the model is 
 \begin{equation}
-w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}\label{eq:gaussian-psf}
+g(r | w_1, w_2, w_3) = w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}\label{eq:gaussian-psf}
 \end{equation}
 where $r=\sqrt{u^{2}+v^{2}}$ is the distance of the point from the
 origin. The parameters $w_{i}$ are choosen by means of non-linear
-least-squares optimization (Levenberg-Marquardt algorithm) such that
+least-squares optimization (typically using the Levenberg-Marquardt algorithm) such that
 the squared difference between the model and the power spectrum is
 minimized
 \[
-w_{1},w_{2},w_{3}=\mbox{argmin}_{w_{i}}\sum_{u,v}\left[w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}-\sqrt{P'(r)}\right]^{2}
+w_{1},w_{2},w_{3}=\argmin_{w_{i}}\sum_{u,v}\left[g(r | w_1, w_2, w_3)-\sqrt{P'(r)}\right]^{2}
 \]
 Parameters $w_{1}$ and $w_{3}$ account for the signal and noise
 intensities respectively, whereas the desired PSF scale in the spatial
 domain can be obtained from the parameter $w_{2}$ be the simple relation
 \[
-\sigma_{\mbox{PSF}}=\frac{W}{2\pi w_{2}}
+\sigma_{\psf}=\frac{W}{2\pi w_{2}}
 \]
-where $W$ is the width of theROI used to compute the magnitude spectrum
+where $W$ is the width of the ROI used to compute the magnitude spectrum
 (recall that we select squared ROIs to simplify matters). The fit
 in the spatial domain is performed similarly, but the simple averaging
 via the average power spectrum is not possible here. Instead, we fit
 the PSF independently to a number of easy-to-detect spots, and than
-define $\sigma_{\mbox{PSF}}$ as the median of the individual estimates.
+define $\sigma_{\psf}$ as the median of the individual estimates.
 Finally, the result of matched filtering is 
 \[
-\hat{s}_{t}=s_{t}\star\mbox{gauss}_{\sigma_{\mbox{PSF}}}
+\hat{s}_{t}=s_{t}\star\mathrm{gauss}_{\sigma_{\psf}}
 \]
 where $\star$ denotes convolution.
 
 Experiments reported in section ??? reveal that the parametric estimate
-is usually superior to the non-parametric one, confirming that the
+is usually superior to the non-para\-metric one, confirming that the
 Gaussian model is indeed feasible in practice. Moreover, it turns
 out that the spatial domain estimate is better because ???.
 
@@ -505,9 +512,9 @@ a standard statistical test can be used to detect pixels whose intensity
 is unlikely to be background. For a given $p$-value, corresponding
 to the probability of false positives, the intensity threshold is
 \[
-t\ge\sqrt{2}\mbox{erfi}(2p-1)
+t\ge\sqrt{2}\,\erfi(2p-1)
 \]
-where $\mbox{erfi}(.)$ is the inverse error function. That is, a
+where $\erfi(.)$ is the inverse error function. That is, a
 normalized pixel with intensity at least $t$ has a probability of
 at most $p$ to represent background. For example, $p$-values of
 1\% and 0.1\% correspond to thresholds 2.3 and 3.1 and indicate that
@@ -545,7 +552,7 @@ above threshold that contain at least three pixels.
 
 In order to perform spot localization, we first subject the normalized
 image to the matched filter described in section \ref{sec:matched-filters},
-i.e. we filter with a Gaussian whose size $\sigma_{\mbox{PSF}}$ has
+i.e. we filter with a Gaussian whose size $\sigma_{\psf}$ has
 been determined according to section \ref{sec:psf-estimation}. We
 don't apply this filter before spot \emph{detection} because this
 would introduce complicated correlation between the noise of neighboring
@@ -573,7 +580,7 @@ by the spline interpolator, see ???). Since the noise has unit variance
 before filtering, the (unfiltered) signal-to-noise ratio is simply
 given by  
 \[
-\mbox{SNR}=2g
+\snr=2g
 \]
 (the factor of 2 accounts for the smoothing effect of the matched
 filter).  Maximal and minimal radii can be computed from the eigenvalues
@@ -583,14 +590,14 @@ of the second derivative matrix
 \]
 by the expressions
 \begin{eqnarray*}
-s_{\mbox{max}} & = & \sqrt{-g/\kappa_{1}-\sigma_{\mbox{PSF}}^{2}}\\
-s_{\mbox{min}} & = & \sqrt{-g/\kappa_{2}-\sigma_{\mbox{PSF}}^{2}}
+s_{\max} & = & \sqrt{-g/\kappa_{1}-\sigma_{\psf}^{2}}\\
+s_{\min} & = & \sqrt{-g/\kappa_{2}-\sigma_{\psf}^{2}}
 \end{eqnarray*}
 (these equations follow from basic properties of Gaussian filters)
 and their ratio gives the spot anisotropy
 
 \[
-\mbox{AI}=\frac{s_{\mbox{max}}}{s_{\mbox{min}}}
+\mbox{AI}=\frac{s_{\max}}{s_{\min}}
 \]
 Spot radii and anisotropy can serve as additional selection criteria
 to remove undesired anisotropic spots, or as a means to determine
@@ -600,14 +607,15 @@ It should be noted that each spot mask can contain multiple local
 maxima. This is desirable because it allows us to detect overlapping
 spots, provided that the overlap is not too big. Specifically, overlapping
 spots of equal intensity remain separable (i.e. give rise to distinct
-maxima) when their centers have a distance of more than $2\sqrt{2}\sigma_{\mbox{PSF}}$.
+maxima) when their centers have a distance of more than $2\sqrt{2}\sigma_{\psf}$.
 This is an advantage of the matched filtering method over reconstruction
 algorithms that directly fit the PSF to the image data: The fitting
 approach only works reliably when the spots do not overlap significantly,
 i.e. when the spot distance is about twice as big.
 
 
-\section{Validation}
+\section{Results}
+\subsection{Validation}
 For validation purposes the trainingsdata sets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
 There are four different data sets. Two data sets with simulated tubulin tubes, we will refere to this data sets as tubulin 1 and tubulin 2 data set. The tubulin 1 and tubulin 2 data set consist of  2400 frames and simulated autofluorescent background. The tubulin 2 data set has the same structure as tubulin 1 data set but a higher level of noise.\newline
 The other two data sets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both data sets will be refered to as long sequence data set and high density data set respectively. 
