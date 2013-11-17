@@ -8,6 +8,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{bm}
 \usepackage{esint}
 \usepackage[authoryear]{natbib}
 \usepackage[unicode=true]
@@ -583,7 +584,11 @@ given by
 \snr=2g
 \]
 (the factor of 2 accounts for the smoothing effect of the matched
-filter).  Maximal and minimal radii can be computed from the eigenvalues
+filter). The standard deviation of the 2D localization error $\Delta \bm{x}$ is then
+\[
+\mathrm{StdDev}[\Delta \bm{x}]=\frac{2\sqrt{\pi}\, \sigma^2_{\psf}}{g}
+\]
+The maximum and minimum radius of a potentially unisotropic spot can be computed from the eigenvalues
 of the second derivative matrix
 \[
 \kappa_{1,2}=\frac{1}{2}\left(g_{xx}+g_{yy}\pm\sqrt{g_{xx}^{2}+g_{yy}^{2}+4\, g_{xy}^{2}-2\, g_{xx}g_{yy}}\right)
@@ -607,7 +612,7 @@ It should be noted that each spot mask can contain multiple local
 maxima. This is desirable because it allows us to detect overlapping
 spots, provided that the overlap is not too big. Specifically, overlapping
 spots of equal intensity remain separable (i.e. give rise to distinct
-maxima) when their centers have a distance of more than $2\sqrt{2}\sigma_{\psf}$.
+maxima) when their centers have a distance of more than $2\sqrt{2}\,\sigma_{\psf}$.
 This is an advantage of the matched filtering method over reconstruction
 algorithms that directly fit the PSF to the image data: The fitting
 approach only works reliably when the spots do not overlap significantly,
