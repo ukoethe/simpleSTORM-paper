@@ -415,7 +415,7 @@ In order to apply the matched filter method, the PSF must be known.
 Accurate PSF estimates are crucial for the matched filter to perform
 optimally. We investigated two approaches to PSF estimation, a non-parametric
 and a parametric one. In both cases, the PSF is estimated by averaging
-over the response of many spots in order to get rid of the noise. 
+over the response of many spots in order to get rid of the noise. It should also be noted that we estimate $\sigma_{\psf}$ after noise normalization and background subtraction. This estimate is related to the PSF size $\sigma^*_{\psf}$ in the raw data by the relation $\sigma_{\psf}=\sqrt{2}\,\sigma^*_{\psf}$.
 
 The non-parametric method estimates the PSF in the form of an optimal
 \emph{Wiener filter} which is based on the \emph{magnitude spectrum}
@@ -488,7 +488,7 @@ where $W$ is the width of the ROI used to compute the magnitude spectrum
 in the spatial domain is performed similarly, but the simple averaging
 via the average power spectrum is not possible here. Instead, we fit
 the PSF independently to a number of easy-to-detect spots, and than
-define $\sigma_{\psf}$ as the median of the individual estimates.
+define $\sigma_{\psf}$ as the median of the parameter $w_2$ of the individual estimates.
 Finally, the result of matched filtering is 
 \[
 \hat{s}_{t}=s_{t}\star\mathrm{gauss}_{\sigma_{\psf}}
@@ -577,8 +577,7 @@ can be readily obtained from the properties of the interpolated image.
 Let $g$ be the intensity of the interpolated image at the local maximum
 position, and $g_{xx}$, $g_{xy}$, $g_{yy}$ the corresponding second
 derivatives (these derivatives can be easily computed analytically
-by the spline interpolator, see ???). Since the noise has unit variance
-before filtering, the (unfiltered) signal-to-noise ratio is simply
+from the spline representation). Then the following relations can be derived from basic properties of Gaussian functions. Since the noise has unit variance before matched filtering, the (unfiltered) signal-to-noise ratio is simply
 given by  
 \[
 \snr=2g
@@ -586,8 +585,10 @@ given by
 (the factor of 2 accounts for the smoothing effect of the matched
 filter). The standard deviation of the 2D localization error $\Delta \bm{x}$ is then
 \[
-\mathrm{StdDev}[\Delta \bm{x}]=\frac{2\sqrt{\pi}\, \sigma^2_{\psf}}{g}
+\mathrm{StdDev}[\Delta \bm{x}]=\frac{2\sqrt{\pi}\, \sigma_{\psf}}{g}
 \]
+This is of the expected form, because $g$ is proportional to $\sqrt{N}$ (the square root of the photon count) due to the action of the Anscombe transform. Recall also that $\sigma_{\psf}$ denotes the PSF size after the Anscombe transform and is related to the  PSF in the original data by $\sigma_{\psf}=\sqrt{2}\,\sigma^*_{\psf}$.
+
 The maximum and minimum radius of a potentially unisotropic spot can be computed from the eigenvalues
 of the second derivative matrix
 \[
@@ -598,7 +599,6 @@ by the expressions
 s_{\max} & = & \sqrt{-g/\kappa_{1}-\sigma_{\psf}^{2}}\\
 s_{\min} & = & \sqrt{-g/\kappa_{2}-\sigma_{\psf}^{2}}
 \end{eqnarray*}
-(these equations follow from basic properties of Gaussian filters)
 and their ratio gives the spot anisotropy
 
 \[
@@ -745,7 +745,7 @@ HD&0.031&0.449&20.55&7.2
 
 \section*{Acknowledgement}
 
-This research was supported by contract research ´Methoden für die Lebenswissenschaften´ of the Baden-W{\"u}rttemberg Stiftung.
+This research was supported by contract research ``Methoden f{\"u}r die Lebenswissenschaften'' of the Baden-W{\"u}r\-ttemberg Stiftung.
 
 \bibliographystyle{spbasic}
 \bibliography{simpleSTORM}
