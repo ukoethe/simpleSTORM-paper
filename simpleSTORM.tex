@@ -367,7 +367,7 @@ into noise-normalized ones $q_{t}(x,y)$ according to (\ref{eq:anscombe-transform
 and subsequent local optimization???. The next step is the estimation
 of the background intensity. It is based on the standard assumption
 that thes background intensity varies mauch slower then the actual
-signal both spatially and over time. We split the data set into non-overlapping
+signal both spatially and over time. We split the dataset into non-overlapping
 blocks of size $\rho^{2}\times\tau$, where $\rho$ is the block size
 in the two spatial directions, and $\text{\ensuremath{\tau}}$ is
 the block size along the time direction. Default values of $\rho=30$
@@ -622,18 +622,18 @@ i.e. when the spot distance is about twice as big.
 
 \section{Results}
 \subsection{Validation}
-For validation purposes the trainingsdata sets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
-There are four different data sets. Two data sets with simulated tubulin tubes, we will refere to this data sets as tubulin 1 and tubulin 2 data set. The tubulin 1 and tubulin 2 data set consist of  2400 frames and simulated autofluorescent background. The tubulin 2 data set has the same structure as tubulin 1 data set but a higher level of noise.\newline
-The other two data sets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both data sets will be refered to as long sequence data set and high density data set respectively. 
+For validation purposes the trainings datasets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
+There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise.\newline
+The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. 
 \subsection{PSF width estimation}
-As described above the performance of the matched filter depends on the proper estimation of the PSF width. For SimpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the oportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localisazion accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitativeA}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filterwidth increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perfom best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs. Figure \ref{sigmas_quantitativeB} shows that for high density datasets it is even more favorable to use a smaller filter width instead of the true PSF width.
-The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. it tended to overestimate the true PSF width.
+As described above the performance of the matched filter depends on the proper estimation of the PSF width. For SimpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the opportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localization accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitativeA}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filter width increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perform best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs. Figure \ref{sigmas_quantitativeB} shows that for high density datasets it is even more favorable to use a smaller filter width instead of the true PSF width.
+The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. It tended to overestimate the true PSF width.
 
 \begin{figure}
 \subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped.png}}\hfill%
 \subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped.png}}\hfill%
 \subfloat[$\sigma = 1.5$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_5_croped.png}}\hfill%
-	\caption{The effect of different filter widths on data sets with a high PSF density per frame.}%
+	\caption{The effect of different filter widths on datasets with a high PSF density per frame.}%
 	\label{sigmas}%
 \end{figure}
 
@@ -642,25 +642,25 @@ The estimation of the PSF width using the Fourier transformed imaged proved to b
 \includegraphics[width=0.22\textwidth]{figures/RMSEoverFilterwidth.png}\label{sigmas_quantitativeA}}\hfill%
 \subfloat[High density dataset]{
 \includegraphics[width=0.22\textwidth]{figures/RMSEoverFilterwidth_hd.png}\label{sigmas_quantitativeB}}
-	\caption{RSME for different filterwidths.}%
+	\caption{RSME for different filter widths.}%
 	\label{sigmas_quantitative}%
 \end{figure}
 
 
 
-To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density data set) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms. The calculated values for the training datasets are 109~nm which means 1.09 pixels for the high density and long sequence dataset and 0.73 pixels respectively. The estimated PSF width lies withing a then percent range according to the calculated on. The only exception is the high density dataset for which the PSF width is overestimated because of the many overlapping PSFs.
+To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density dataset) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms. The calculated values for the training datasets are 109~nm which means 1.09 pixels for the high density and long sequence dataset and 0.73 pixels respectively. The estimated PSF width lies within a then percent range according to the calculated on. The only exception is the high density dataset for which the PSF width is overestimated because of the many overlapping PSFs.
 
 \begin{figure}
-\subfloat[Long sequence data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
-\subfloat[High density data set, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}\hfill%
-\subfloat[Tubulin 1 data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
-\subfloat[Tubulin 2 data set, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}
-	\caption{Histograms for three training data sets from the ISBI localisation challenge}%
+\subfloat[Long sequence dataset, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
+\subfloat[High density dataset, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}\hfill%
+\subfloat[Tubulin 1 dataset, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
+\subfloat[Tubulin 2 dataset, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}
+	\caption{Histograms for three training datasets from the ISBI localization challenge}%
 	\label{histogram_of_sigmas}%
 \end{figure}
 
 \subsection{Gain estimation}
-One key feature is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the set one. For validation purpose a series of 500 frames of an average cell culture sample with phalloidin labeled actin fillaments were captured several times with different gain settings. Figure \ref{gain_verification} shows the linear relation between the estimated gain factor and the set one.
+One key feature is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the set one. For validation purpose a series of 500 frames of an average cell culture sample with phalloidin labeled actin filaments were captured several times with different gain settings. Figure \ref{gain_verification} shows the linear relation between the estimated gain factor and the set one.
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{figures/gain_estimation}
@@ -669,7 +669,7 @@ One key feature is the estimation of the camera gain directly from the data. Thi
 \end{figure}
 
 \subsection{Background estimation}
-To check weather the the background estimation and Anscombe transdormation worked as supposed, the false positive to background pixel rate was determined. The $p-$value determins the rate of false positives per background pixels. The number of background pixels that are errornously detected as signal was calculated for the training data sets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbours that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
+To check whether the background estimation and Anscombe transformation worked as supposed, the false positive to background pixel rate was determined. The $p-$value determines the rate of false positives per background pixels. The number of background pixels that are erroreously detected as signal was calculated for the training datasets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbors that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
 
 \begin{figure}
 \subfloat[False positive to background pixel rate.]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}\label{fp_rate}}\hfill%
@@ -677,9 +677,9 @@ To check weather the the background estimation and Anscombe transdormation worke
 \caption{False positives rates.}%
 \end{figure}
 
-\subsection{Results on the trainingsdata sets}
-No parameter has to be set to produce reasonable results using SimpleSTORM. However advanced users can adjust the settings to optimize the output according to the total number of fluorophores detected or the RSME or something inbetween. It is not possible to optimize Jaccard index and RSME at the same time. 
-SimpleSTORM gives the oportunity to set the p-value, an asymetry threshold and the upscaling factor. Table \ref{improvements} shows the changes for Jaccard index, f-score and RSME for the long sequence dataset evaluated for a lateral tolerance of 50~nm which corresponds to half of the width of the raw image. Baseline settings are, camera parameters automatically detected,  p-value = 0.1~\%, upscale factor = 10 and asymmetry threshold off.
+\subsection{Results on the trainings datasets}
+No parameter has to be set to produce reasonable results using SimpleSTORM. However advanced users can adjust the settings to optimize the output according to the total number of fluorophores detected or the RSME or something in between. It is not possible to optimize Jaccard index and RSME at the same time. 
+SimpleSTORM gives the opportunity to set the p-value, an asymmetry threshold and the upscaling factor. Table \ref{improvements} shows the changes for Jaccard index, f-score and RSME for the long sequence dataset evaluated for a lateral tolerance of 50~nm which corresponds to half of the width of the raw image. Baseline settings are, camera parameters automatically detected,  p-value = 0.1~\%, upscale factor = 10 and asymmetry threshold off.
 \begin{table}
 \caption{Effect of different settings.}
 \begin{tabular}{l|ccc}
@@ -691,9 +691,9 @@ upscale factor = 100&0.619&0.764&11.45
 \end{tabular}
 \label{improvements}
 \end{table}
-Lowering the p-value does not alter the results significantly. The reason is that even for the baselines p-value, almost no false positives are detected. Applying an asymmetry threshold discards many true positives but also improves the localization error due to the selection the best and undisturbed PSFs. A higher upsampling factor increases the localization acuraccy without removing any points but increases the reconstruction time.\newline
+Lowering the p-value does not alter the results significantly. The reason is that even for the baselines p-value, almost no false positives are detected. Applying an asymmetry threshold discards many true positives but also improves the localization error due to the selection the best and undisturbed PSFs. A higher upsampling factor increases the localization accuracy without removing any points but increasing the reconstruction time.\newline
 
-To give a objective impression of the SimpleSTORM algorithm the four trainingdata sets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 (0.01~\%) was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Tabel \ref{result_Training_0_3} shows the results for Jaccard index, f-score, precision and RSME. For the evaluation only ground truth localisations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.3 the pixelsize of the raw data. The RSME is given in nanometers.
+To give an objective impression of the SimpleSTORM algorithm the four training datasets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 (0.01~\%) was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Table \ref{result_Training_0_3} shows the results for Jaccard index, f-score, precision and RSME. For the evaluation only ground truth localizations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.3 the pixel size of the raw data. The RSME is given in nanometers.
 %\begin{table}
 %\caption{Radius 0.1}
 %\begin{tabular}{l|ccccc}
@@ -710,7 +710,7 @@ To give a objective impression of the SimpleSTORM algorithm the four trainingdat
 \caption{Radius 0.3}
 \begin{tabular}{l|cccccc}
 &Jaccard&Precision&RSME&time in sec.\\ \hline
-Tubulin1&0.437&0.93615.7&55.9\\
+Tubulin1&0.437&0.936&15.7&55.9\\
 Tubulin2&0.232&0.904&18.8&46.2\\
 LS&0.761&0.946&9.97&50.1\\
 HD&0.031&0.449&20.55&7.2
