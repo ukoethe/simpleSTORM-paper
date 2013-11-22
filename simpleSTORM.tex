@@ -397,8 +397,9 @@ variance and the background being zero. Figure \ref{fig:background-subtraction}
 shows an example.
 
 \begin{figure*}
+\begin{center}
 \includegraphics[width=0.4\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.4\textwidth]{figures/Tubulin2normalprocessFrame50}
-
+\end{center}
 \caption{\label{fig:background-subtraction}Left: original image (frame 50
 of the Tubulin2 dataset more???). Right: the same frame after noise
 normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
@@ -544,7 +545,7 @@ over-estimates the accuracy of our algorithm because the approximation
 assumes that 3x3 windows are independent which is clearly not true
 for overlapping windows. However, experiments show that the false
 positive rate (number of false positives over total number of background
-pixels) is indeed very low, namely ???, see section ??? for details.
+pixels) is indeed very low, namely 228 false positives out of 46 million for $p=1\%$ and 16 for $p=0.1\%$, see section ??? for details.
 The result of this step is a set of spot masks, i.e. connected regions
 above threshold that contain at least three pixels.
 
@@ -583,11 +584,11 @@ given by
 \snr=2g
 \]
 (the factor of 2 accounts for the smoothing effect of the matched
-filter). The standard deviation of the 2D localization error $\Delta \bm{x}$ is then
-\[
-\mathrm{StdDev}[\Delta \bm{x}]=\frac{2\sqrt{\pi}\, \sigma_{\psf}}{g}
-\]
-This is of the expected form, because $g$ is proportional to $\sqrt{N}$ (the square root of the photon count) due to the action of the Anscombe transform. Recall also that $\sigma_{\psf}$ denotes the PSF size after the Anscombe transform and is related to the  PSF in the original data by $\sigma_{\psf}=\sqrt{2}\,\sigma^*_{\psf}$.
+filter). The standard deviation of the 2D localization error $\Delta \bm{x}$ in units of the pixel spacing is then
+\begin{equation}
+\mathrm{StdDev}[\Delta \bm{x}]=\frac{1}{g \sqrt{\pi}}\label{eq:spot-std-dev}
+\end{equation}
+This is of the expected form, because $g$ is proportional to $\sqrt{N}$ (the square root of the photon count) due to the action of the Anscombe transform.
 
 The maximum and minimum radius of a potentially unisotropic spot can be computed from the eigenvalues
 of the second derivative matrix
@@ -690,7 +691,7 @@ upscale factor = 100&0.619&0.764&11.45
 \end{tabular}
 \label{improvements}
 \end{table}
-Lowering the p-value does not alter the results significantly. The reason is that even for the baselines p-value, almost no false positives are detected. Applying an asymmetry threshold discards many true positives but also improves the localization error due to the selection the best and undisturbed PSFs. A higher upsampling factor increases the localization acuraccy without removing any points but increasing the reconstruction time.\newline
+Lowering the p-value does not alter the results significantly. The reason is that even for the baselines p-value, almost no false positives are detected. Applying an asymmetry threshold discards many true positives but also improves the localization error due to the selection the best and undisturbed PSFs. A higher upsampling factor increases the localization acuraccy without removing any points but increases the reconstruction time.\newline
 
 To give a objective impression of the SimpleSTORM algorithm the four trainingdata sets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 (0.01~\%) was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Tabel \ref{result_Training_0_3} shows the results for Jaccard index, f-score, precision and RSME. For the evaluation only ground truth localisations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.3 the pixelsize of the raw data. The RSME is given in nanometers.
 %\begin{table}
