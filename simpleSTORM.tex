@@ -49,37 +49,37 @@ rest on a unified computational principle: Super-resolution images
 are constructed by means of subpixel-accurate spot detection in a
 sequence of images taken at optical resolution. Various algorithms
 have been proposed for this task and many of them are available in
-open-source software. We will briefly review existing algorithms below.
+open-source software. We will briefly review existing algorithms in section \ref{sec:related-work}.
 
-While many existing algorithms are in principle able to obtain good
-reconstructions, practical success requires a careful adjustment of
+While many of these algorithms are in principle able to obtain good
+reconstructions, their practical success requires a careful adjustment of
 various configuration settings. This parameter tuning may be difficult
 even for experts and raises the entry threshold for localization microscopy
-novices. To overcome this problem, simpleSTORM was designed to determine
+novices. To overcome this problem, SimpleSTORM was designed to determine
 all necessary parameters automatically from the raw image data itself
 during an initial \emph{self-calibration phase} that precedes the
 actual reconstruction phase. It can thus produce good reconstructions
-with virtually no user input, while still allowing optional configuration
+with minimal user input, while still allowing optional configuration
 by experts for non-standard use cases.
 
-simpleSTORM is based on an accurate model of the image acquisition
-process. It assumes that photon counting noise is the dominant noise
-source and follows a Poisson distribution. However, photon counts
-are not directly observed, but are transformed by various amplification
-stages and digitization. We assume that the combined transformation
-can be described by a linear equation. Poisson-distributed intensities
-can thus be recovered by inverting this linear equation, provided
-its parameters (gain and offset) are known. Furthermore, we assume
-that the point spread function (PSF) is a Gaussian with unknown (but
-fixed) width. Finally, we assume that the background intensity varies
-at a much coarser scale than the PSF and that less than half of the
+SimpleSTORM is based on an accurate model of the image acquisition
+process. It assumes that Poisson-distributed photon counting noise is 
+the dominant noise source. However, we explicitly account for the fact that photon counts
+are only observed after a number of transformations by amplification
+stages and digitization. In the assumption that the combined transformation
+can be described by a linear equation, we can recover Poisson-distributed intensities
+by inverting this linear equation after robust estimation of its parameters (gain and offset). Furthermore, we assume
+that the point spread function (PSF) is fixed throughout the image sequence and 
+can be determined as a non-parametric or parametric (Gaussian) model. 
+Finally, we assume that the background intensity varies
+at a much coarser scale than the PSF width and that less than half of the
 pixels in any sufficiently large window contain signal. Under these
 assumptions, the model parameters (gain and offset, PSF width, local
 background intensity) can be estimated automatically in a self-calibration
 and preprocessing phase.
 
 In the reconstruction phase, the model parameters are used to transform
-each frame such that it can be considered as a sum of background-free
+each frame such that it can be considered as a sum of a background-free
 fluorescence signal and additive Gaussian noise with zero mean and
 unit variance. Fluorescence spots can thus be recognized by a simple
 statistical test: A pixel whose intensity is higher than three times
@@ -95,8 +95,7 @@ to the PSF) for optimal noise reduction and interpolated to the desired
 resolution using a cubic spline. The coordinates of local intensity
 maxima after interpolation are reported as the detected spots.
 
-\noindent \newpage{}Specifically, the algorithm proceeds in these
-steps:
+Specifically, our algorithm proceeds in these steps:
 \begin{enumerate}
 \item Robust estimation of the gain and offset parameters
 \item Estimation of the width of a Gaussian PSF via the power spectrum
@@ -115,17 +114,17 @@ On a standard laptop, our algorithm is able to process about 20 frames
 per second for a typical raw image size of 200x200 pixels. It performed
 favorably in the recent ISBI Localization Microscopy Challenge (\href{http://bigwww.epfl.ch/smlm/challenge/}{bigwww.epfl.ch/smlm/challenge/})
 that carefully tested more than 20 reconstruction algorithms. In particular,
-simpleSTORM achieved high localization accuracy on high-density data,
+SimpleSTORM achieved high localization accuracy on high-density data,
 where a relatively large number of spots was simultaneously switched
 on in order to minimize total acquisition time. Software for our algorithm
-is freely available in an easy-to-use GUI program at \href{https://github.com/ukoethe/simple-STORM}{github.com/ukoethe/simple-STORM}.
+is freely available in an easy-to-use GUI program.\footnote{\href{https://github.com/ukoethe/simple-STORM}{github.com/ukoethe/simple-STORM}}
 
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.45\textwidth]{figures/RawImage}$\qquad$\includegraphics[width=0.45\textwidth]{figures/reconstructedImage}
 \par\end{centering}
 
-\caption{Example result from simpleSTORM (data courtesy of Mike Heilemann).
+\caption{Example result from SimpleSTORM (data courtesy of Mike Heilemann).
 Left: one frame of the raw data. Right: reconstructed high-resolution
 image.}
 
@@ -134,28 +133,28 @@ image.}
 
 
 
-\section{Related Work}
+\section{Related Work}\label{sec:related-work}
 
 The classical reconstruction approach is based on direct fitting of
 the PSF to every spot candidate. A model of the PSF with adjustable
 parameters must be given. Usually, an isotropic Gaussian PSF like
-(\ref{eq:gaussian-psf}) or an anisotropic variant of it is sufficiently
+(\ref{eq:gaussian-psf}) or an an\-iso\-tropic variant of it is sufficiently
 accurate \cite{thompson_02_precise}. The free parameters of the
 model are optimized by a non-linear fitting algorithm (e.g. the Levenberg-Marquart
 method) in order to minimize the least-squares residual between the
 fitted model and the intensities of a spot candidate. This method is the basis of the 
-popular rapidSTORM software \cite{wolter_10_rapid-storm}, the ImageJ plugins PeakFit \cite{herbert_12_peakfit}, GrapsJ (offering GPU accelaration) \cite{brede_12_graspj} and Octane \cite{yu_11_octane}, as well as the Localization Microscopy MicroManager plugin \cite{stuurman_12_plugin} and PYME (the Python localization microscopy environment) \cite{baddeley_12_pyme}.
+popular rapidSTORM software \cite{wolter_10_rapid-storm}, the ImageJ plugins Octane \cite{yu_11_octane}, PeakFit \cite{herbert_12_peakfit} and GraspJ (offering GPU accelaration) \cite{brede_12_graspj}, as well as the Localization Microscopy MicroManager plugin \cite{stuurman_12_plugin} and PYME (the Python localization microscopy environment) \cite{baddeley_12_pyme}.
 
 An even simpler approach avoids iterative optimization by computing the centroid of 
 each spot directly, either in terms of the intensity-weighted mean \cite{thompson_02_precise} or the 
 fluoroBancroft method \cite{andersson_08_localization}. These methods were found to be only 
-slightly less accurate then the least-squares fit when properly parameterized \cite{thompson_02_precise,hedde_09_localization-microscopy} and form the basis of fast reconstruction solutions such as the hardware-accelerated method of \cite{gruell_11_fpga-storm} and the QuickPALM ImageJ plugin \cite{henriques_10_quick-palm}.
+slightly less accurate then the least-squares fit when properly parametrized \cite{thompson_02_precise,hedde_09_localization-microscopy} and form the basis of fast reconstruction solutions such as the hardware-accelerated method of \cite{gruell_11_fpga-storm} and the QuickPALM ImageJ plugin \cite{henriques_10_quick-palm}.
 
 Both fitting and direct methods have difficulties with the reconstruction of high density image sequences, because these images violate the basic model assumption that neighboring spots do not overlap. Greedy procedures to fit overlapping spots where proposed by \cite{egner_07_nanoscopy}, who adapt H{\"o}gbom's classical CLEAN algorithm \cite{hoegbom_74_clean} to localization microscopy, the DAOSTORM algorithm from \cite{holden_11_daostorm}, an adaptation of DAOPHOT, a well-known algorithm from astronomy \cite{stetson_87_daophot}, and the multi-emitter fitting algorithm of \cite{huang_11_simultaneous}, who fit up to $N_{\max}$ overlapping PSFs simultaneously and select the most likely spot number by a statistical test. A more principled model for overlapping spots is provided by {\em compressed sensing} \cite{zhu_12_faster-storm}. Here, a PSF candidate is initialized at all pixels of a fine grid (e.g. having one-eighth the pixel size of the original image). The fit is then performed under a strong {\em sparsity prior} which ensures that only the center pixels of true spots get non-zero activation. While this method is more accurate than DAOSTORM, it is also very expensive (about a hundred times slower). Recently, substantial improvements of the sparse reconstruction approach have been achieved by more sophisticated modeling and optimization methods \cite{kim_13_localization-microscopy,min_13_localization-microscopy}. However, it is as yet unclear if the improvements over simple algorithms like SimpleSTORM warrant the added complexity.
 
 Proper noise modeling is a critical ingredient for reliable distinction between true spot and noise artefacts. Many authors simply use a generic additive noise model and select spots whose intensity exceeds the background by a certain multiple of the background's noise standard deviation \cite{thompson_02_precise,gruell_11_fpga-storm}. Frequently, the image is preprocessed by averaging filters \cite{wolter_10_rapid-storm,huang_11_simultaneous}, Gaussian filters \cite{krizek_11_minimizing} or a wavelet transform \cite{izeddin_12_wavelet} before thresholding. However, non-uniform background intensity and intensity-dependent background noise  make the choice of an appropriate threshold very difficult. Heuristic solutions to this problem lead to algorithms with many adjustable parameters that are very hard to use.
 
-Moreover, it has been shown in \cite{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelarated version of this method is described in \cite{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they differ from the Poisson-distributed photon counts by various aplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \cite{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \cite{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \cite{boulanger_10_patch-based}, who adaptiveliy subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
+Moreover, it has been shown in \cite{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelera\-ted version of this method is described in \cite{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they differ from the Poisson-distributed photon counts by various aplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \cite{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \cite{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \cite{boulanger_10_patch-based}, who adaptiveliy subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
 
 \section{Methods}
 
@@ -391,9 +390,10 @@ has unit variance in all pixels and zero mean in the background:
 \begin{equation}
 s_{t}(x,y)=q_{t}(x,y)-\beta_{t}(x,y)\label{eq:background-subtraction}
 \end{equation}
-The images $s_{t}$ now conform to the requirements of the matched
-filter method, which relies on the noise being additive with constant
-variance and the background being zero. Figure \ref{fig:background-subtraction}
+We call the resulting image $s_{t}$ the {\em standardized} image because it 
+now exhibits additive noise with unit variance and zero mean background
+and thus conforms to the requirements of the matched
+filter method. Figure \ref{fig:background-subtraction}
 shows an example.
 
 \begin{figure*}
@@ -496,17 +496,13 @@ Finally, the result of matched filtering is
 \]
 where $\star$ denotes convolution.
 
-Experiments reported in section ??? reveal that the parametric estimate
-is usually superior to the non-para\-metric one, confirming that the
-Gaussian model is indeed feasible in practice. Moreover, it turns
-out that the spatial domain estimate is better because ???.
-
+The three estimation methods perform similarly in experiments. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which occasionally failed to converge to the correct solution. Since Gaussian filtering is faster than Wiener filtering, we prefer the former in practice. Another advantage of the Gaussian filter is the possibility to change the filter strength, i.e. to use $\sigma_{\mathrm{filter}}\ne\sigma_{\psf}$. This is is useful for high density data with overlapping spots. Here, the matched filter may cause neighboring spots to be fused into one, leading to a detection error. In this case, it is possible to reduce filter strength to keep the spots separate at the price of slightly reduced localization accuracy of well-separated spots, cf. the experiment reported in section ???.
 
 \subsection{Spot Detection}
 
 After the self-calibration phase, the actual data processing starts.
 Now, the parameters estimated during calibration are used to preprocess
-every frame of the sequence. Spot detection is performed after noise
+every frame of the sequence. Spot detection is performed after standardization, i.e. after noise
 normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
 and (\ref{eq:background-subtraction}). Since the background contains
 now only Gaussian additive noise with zero mean and unit variance,
