@@ -327,12 +327,12 @@ $T$ frames of the sequence ($T=200$ works well in practice, but
 the value can be adjusted). Create the scatter plot of the resulting
 mean/variance pairs.
 \item Use the RANSAC algorithm to compute the lower leaning line of the
-scatter plot: Repeat $k=???$ times:
+scatter plot: Repeat $k=10000$ times:
 
 \begin{enumerate}
 \item Select two points at random and compute the line through these points.
 \item Determine the number of inliers of this line, i.e. the number of points
-whose distance from the line is at most ???.
+whose distance from the line is at most a twentyth of the range between the minimal and the maximal value.
 \item Keep the line with the maximum number of inliers as the best estimate
 of the lower leaning line.
 \end{enumerate}
@@ -357,7 +357,17 @@ according to this algorithm. It can be seen that it does indeed detect
 the lower leaning line of the scatter plot, which corresponds to the
 pixels with constant intensity.
 
-Explain the post-optimization of a and b for unit variance???
+
+An inaccurate gain estimation due to missing beads could decrease the
+performance of background estimation described later.
+Therefore after the estimation of the gain and offset a post-optimization for the
+gain is applied. The estimated parameters are used to transform the 
+data. A histogramm of the intensities is created for the first 200 frames. 
+Most pixels of these frames are background pixels which should be distributed
+with unit variance around zero. A Gaussian is fitted to the histogram.
+The gain factor is multiplied with the fitted variance and the variance of the
+background pixels is estimated again. This is done until the fitted variance
+is within a range of 0.05 around one.
 
 
 \subsection{\label{sec:background-subtraction}Background Subtraction}
@@ -740,6 +750,37 @@ HD&0.031&0.449&20.55&7.2
 %\end{tabular}
 %\label{result_Training_1}
 %\end{table}
+
+\subsection{ISBI Localization Microscopy Challenge results}
+The performance of the SimpleSTORM algorithm was tested in the  ISBI Localization Microscopy Challenge. The results for different meassures like the f-score, the Jaccard index or the RSME were calculated from the organizers of the challenge. The Jaccard index and the RSME are contrary measures. Increasing the number of detected fluorophores by lowering the intensity threshold increases also the RSME. This is because the number of fluorophores with lower intensity increases which can not be fitted as accurate as brighter fluorophores. Lowering the Jaccard index leads therefore to an decreasing RSME. There were three test datasets used for the challenge. Each in a high density and a low density version. To present the results of the different softwares the rank for each software was calculated for each measure and dataset individually. After that the mean rank on both, the Jaccard index (higher is better and therefore yields a lower rank) and the RSME (lower is better) for each dataset was calculated. Figure \ref{scatterplot_challenge} shows the results for the high density datasets and the low density datasets. Software that achieved high Jaccard indices are present in the lower part of the scatter plot, software with small RSME can be found on the left. The nearer an algorithm is located to the origin, the better it performs. SimpleSTORM is closest to the origin for the high density datasets and within the best 5 algorithms for the low density datasets. 
+
+\begin{figure}
+\subfloat[High density datasets]{\includegraphics[width = 0.49\textwidth]{figures/high_Density_scatter.pdf}}\hfill%
+\subfloat[Low density datasets]{\includegraphics[width = 0.49\textwidth]{figures/low_Density_scatter.pdf}}\hfill%
+	\caption{Histograms for three training datasets from the ISBI localization challenge}%
+	\label{histogram_of_sigmas}%
+\end{figure}
+
+\section{Pictures}
+
+\newpage
+\begin{figure*}
+\begin{centering}
+\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
+\par\end{centering}
+
+\caption{Example result from simpleSTORM (data courtesy of Mike Heilemann).
+Left: one frame of the raw data. Right: reconstructed high-resolution
+image.}
+\end{figure*}
+
+\begin{figure*}
+\begin{centering}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt.png}
+\par\end{centering}
+
+\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge.}
+\end{figure*}
 
 
 
