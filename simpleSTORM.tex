@@ -125,11 +125,11 @@ where a relatively large number of spots was simultaneously switched
 on in order to minimize total acquisition time. Software for our algorithm
 is freely available in an easy-to-use GUI program.\footnote{\href{https://github.com/ukoethe/simple-STORM}{github.com/ukoethe/simple-STORM}}
 
+
 \begin{figure*}
 \begin{centering}
-\includegraphics[width=0.45\textwidth]{figures/RawImage}$\qquad$\includegraphics[width=0.45\textwidth]{figures/reconstructedImage}
+\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
 \par\end{centering}
-
 \caption{Example result from SimpleSTORM (data courtesy of Mike Heilemann).
 Left: one frame of the raw data. Right: reconstructed high-resolution
 image.}
@@ -332,12 +332,12 @@ $T$ frames of the sequence ($T=200$ works well in practice, but
 the value can be adjusted). Create the scatter plot of the resulting
 mean/variance pairs.
 \item Use the RANSAC algorithm to compute the lower leaning line of the
-scatter plot: Repeat $k=???$ times:
+scatter plot: Repeat $k=10000$ times:
 
 \begin{enumerate}
 \item Select two points at random and compute the line through these points.
 \item Determine the number of inliers of this line, i.e. the number of points
-whose distance from the line is at most ???.
+whose distance from the line is at most a twentyth of the range between the minimal and the maximal value.
 \item Keep the line with the maximum number of inliers as the best estimate
 of the lower leaning line.
 \end{enumerate}
@@ -362,14 +362,24 @@ according to this algorithm. It can be seen that it does indeed detect
 the lower leaning line of the scatter plot, which corresponds to the
 pixels with constant intensity.
 
-Explain the post-optimization of a and b for unit variance???
+
+An inaccurate gain estimation due to missing beads could decrease the
+performance of background estimation described later.
+Therefore after the estimation of the gain and offset a post-optimization for the
+gain is applied. The estimated parameters are used to transform the 
+data. A histogramm of the intensities is created for the first 200 frames. 
+Most pixels of these frames are background pixels which should be distributed
+with unit variance around zero. A Gaussian is fitted to the histogram.
+The gain factor is multiplied with the fitted variance and the variance of the
+background pixels is estimated again. This is done until the fitted variance
+is within a range of 0.05 around one.
 
 
 \subsection{\label{sec:background-subtraction}Background Subtraction}
 
 Once the noise model is known, we transform the observed images $k_{t}'(x,y)$
 into noise-normalized ones $q_{t}(x,y)$ according to (\ref{eq:anscombe-transform})
-and subsequent local optimization???. The next step is the estimation
+and subsequent local optimization. The next step is the estimation
 of the background intensity. It is based on the standard assumption
 that thes background intensity varies mauch slower then the actual
 signal both spatially and over time. We split the dataset into non-overlapping
@@ -403,15 +413,12 @@ filter method. Figure \ref{fig:background-subtraction}
 shows an example.
 
 \begin{figure*}
-\begin{center}
-\includegraphics[width=0.4\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.4\textwidth]{figures/Tubulin2normalprocessFrame50}
-\end{center}
-\caption{\label{fig:background-subtraction}Left: original image (frame 50
-of the Tubulin2 dataset more???). Right: the same frame after noise
-normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
+\includegraphics[width=0.3\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Hela1_pfa_tub647_654_frame_3_raw_croped.png}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin2normalprocessFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4_bgsubtracted.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Hela1_pfa_tub647_654_frame_3_bgsubtracted_croped.png}
+
+\caption{\label{fig:background-subtraction}Upper row from left to right: original image (frame 50
+of the Tubulin2 dataset), real dataset (actin conjugated to mEos2), real dataset (tubulin labeld with Cy5) .Lower row: the same frames after noise normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
 and (\ref{eq:background-subtraction}).}
-
-
 \end{figure*}
 
 
@@ -569,7 +576,7 @@ interpolation of the filtered image to the desired resolution. The
 upsampling ratio can be chosen by the user and is typically between
 8 and 16. To save time, the interpolation is only performed in sufficiently
 large rectangles around each spot mask (i.e. the bounding rectangle
-plus ??? pixels in every direction). Each local maximum of the interpolated
+plus four pixels in every direction). Each local maximum of the interpolated
 image which is covered by one of the spot masks is returned as a detected
 spot. 
 
@@ -631,7 +638,7 @@ For validation purposes the trainings datasets released for the ISBI Single-Mole
 There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise.\newline
 The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. 
 \subsection{PSF width estimation}
-As described above the performance of the matched filter depends on the proper estimation of the PSF width. For SimpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the opportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localization accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitativeA}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filter width increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perform best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs. Figure \ref{sigmas_quantitativeB} shows that for high density datasets it is even more favorable to use a smaller filter width instead of the true PSF width.
+As described above the performance of the matched filter depends on the proper estimation of the PSF width. For simpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the opportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localization accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitativeA}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filter width increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perform best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs. Figure \ref{sigmas_quantitativeB} shows that for high density datasets it is even more favorable to use a smaller filter width instead of the true PSF width.
 The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. It tended to overestimate the true PSF width.
 
 \begin{figure}
@@ -644,10 +651,10 @@ The estimation of the PSF width using the Fourier transformed imaged proved to b
 
 \begin{figure}
 \subfloat[Long sequence dataset]{
-\includegraphics[width=0.22\textwidth]{figures/RMSEoverFilterwidth.png}\label{sigmas_quantitativeA}}\hfill%
+\includegraphics[width=0.23\textwidth]{figures/RMSE_filterwidthLD.png}\label{sigmas_quantitativeA}}\hfill%
 \subfloat[High density dataset]{
-\includegraphics[width=0.22\textwidth]{figures/RMSEoverFilterwidth_hd.png}\label{sigmas_quantitativeB}}
-	\caption{RSME for different filter widths.}%
+\includegraphics[width=0.23\textwidth]{figures/RMSE_filterwidthHD.png}\label{sigmas_quantitativeB}}
+	\caption{RMSE for different filter widths.}%
 	\label{sigmas_quantitative}%
 \end{figure}
 
@@ -683,12 +690,12 @@ To check whether the background estimation and Anscombe transformation worked as
 \end{figure}
 
 \subsection{Results on the trainings datasets}
-No parameter has to be set to produce reasonable results using SimpleSTORM. However advanced users can adjust the settings to optimize the output according to the total number of fluorophores detected or the RSME or something in between. It is not possible to optimize Jaccard index and RSME at the same time. 
-SimpleSTORM gives the opportunity to set the p-value, an asymmetry threshold and the upscaling factor. Table \ref{improvements} shows the changes for Jaccard index, f-score and RSME for the long sequence dataset evaluated for a lateral tolerance of 50~nm which corresponds to half of the width of the raw image. Baseline settings are, camera parameters automatically detected,  p-value = 0.1~\%, upscale factor = 10 and asymmetry threshold off.
+No parameter has to be set to produce reasonable results using simpleSTORM. However advanced users can adjust the settings to optimize the output according to the total number of fluorophores detected or the RMSE or something in between. It is not possible to optimize Jaccard index and RMSE at the same time. 
+SimpleSTORM gives the opportunity to set the p-value, an asymmetry threshold and the upscaling factor. Table \ref{improvements} shows the changes for Jaccard index, f-score and RMSE for the long sequence dataset evaluated for a lateral tolerance of 50~nm which corresponds to half of the width of the raw image. Baseline settings are, camera parameters automatically detected,  p-value = 0.1~\%, upscale factor = 10 and asymmetry threshold off.
 \begin{table}
 \caption{Effect of different settings.}
 \begin{tabular}{l|ccc}
-&Jaccard&f-score&RSME\\\hline
+&Jaccard&f-score&RMSE\\\hline
 baseline&0.824&0.903&12.88\\
 p-val = 0.001~\%&0.815&0.898&12.76\\
 asymmetry (1.5)&0.620&0.765&12.13\\
@@ -698,11 +705,11 @@ upscale factor = 100&0.619&0.764&11.45
 \end{table}
 Lowering the p-value does not alter the results significantly. The reason is that even for the baselines p-value, almost no false positives are detected. Applying an asymmetry threshold discards many true positives but also improves the localization error due to the selection the best and undisturbed PSFs. A higher upsampling factor increases the localization accuracy without removing any points but increasing the reconstruction time.\newline
 
-To give an objective impression of the SimpleSTORM algorithm the four training datasets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 (0.01~\%) was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Table \ref{result_Training_0_3} shows the results for Jaccard index, f-score, precision and RSME. For the evaluation only ground truth localizations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.3 the pixel size of the raw data. The RSME is given in nanometers.
+To give an objective impression of the simpleSTORM algorithm the four training datasets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 (0.01~\%) was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Table \ref{result_Training_0_3} shows the results for Jaccard index, f-score, precision and RMSE. For the evaluation only ground truth localizations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.3 the pixel size of the raw data. The RMSE is given in nanometers.
 %\begin{table}
 %\caption{Radius 0.1}
 %\begin{tabular}{l|ccccc}
-%&Jaccard&F-Score&Precision&RSME\\ \hline
+%&Jaccard&F-Score&Precision&RMSE\\ \hline
 %Tubulin1&0.261&0.414&0.630&9.19\\
 %Tubulin2&0.126&0.224&0.508&9.64\\
 %LS&0.442&0.613&0.669&6.154\\
@@ -714,7 +721,7 @@ To give an objective impression of the SimpleSTORM algorithm the four training d
 \begin{table}
 \caption{Radius 0.3}
 \begin{tabular}{l|cccccc}
-&Jaccard&Precision&RSME&time in sec.\\ \hline
+&Jaccard&Precision&RMSE&time in sec.\\ \hline
 Tubulin1&0.437&0.936&15.7&55.9\\
 Tubulin2&0.232&0.904&18.8&46.2\\
 LS&0.761&0.946&9.97&50.1\\
@@ -726,7 +733,7 @@ HD&0.031&0.449&20.55&7.2
 %\begin{table}
 %\caption{Radius 0.5}
 %\begin{tabular}{l|ccccc}
-%&Jaccard&F-Score&Precision&RSME\\ \hline
+%&Jaccard&F-Score&Precision&RMSE\\ \hline
 %Tubulin1&0.470&0.640&0.974&19.6\\
 %Tubulin2&0.270&0.426&0.966&22.9\\
 %LS&0.805&0.892&0.974&11.6\\
@@ -738,7 +745,7 @@ HD&0.031&0.449&20.55&7.2
 %\begin{table}
 %\caption{Radius 1}
 %\begin{tabular}{l|ccccc}
-%&Jaccard&F-Score&Precision&RSME\\ \hline
+%&Jaccard&F-Score&Precision&RMSE\\ \hline
 %Tubulin1&0.487&0.655&0.997&26.6\\
 %Tubulin2&0.282&0.439&0.997&31.0\\
 %LS&0.836&0.911&0.994&15.7\\
@@ -746,6 +753,48 @@ HD&0.031&0.449&20.55&7.2
 %\end{tabular}
 %\label{result_Training_1}
 %\end{table}
+
+\subsection{ISBI Localization Microscopy Challenge results}
+The performance of the simpleSTORM algorithm was tested in the  ISBI Localization Microscopy Challenge. The results for different meassures like the f-score, the Jaccard index or the RMSE were calculated from the organizers of the challenge. The Jaccard index and the RMSE are contrary measures. Increasing the number of detected fluorophores by lowering the intensity threshold increases also the RMSE. This is because the number of fluorophores with lower intensity increases which can not be fitted as accurate as brighter fluorophores. Lowering the Jaccard index leads therefore to an decreasing RMSE. There were three test datasets used for the challenge. Each in a high density and a low density version. To present the results of the different softwares the rank for each software was calculated for each measure and dataset individually. After that the mean rank on both, the Jaccard index (higher is better and therefore yields a lower rank) and the RMSE (lower is better) for each dataset was calculated. Figure \ref{scatterplot_challenge} shows the results for the high density datasets and the low density datasets. Software that achieved high Jaccard indices are present in the lower part of the scatter plot, software with small RMSE can be found on the left. The nearer an algorithm is located to the origin, the better it performs. SimpleSTORM is closest to the origin for the high density datasets and within the best 5 algorithms for the low density datasets. 
+
+
+\begin{figure}
+\subfloat[High density datasets]{\includegraphics[width = 0.49\textwidth]{figures/high_Density_scatter.pdf}}\hfill%
+\subfloat[Low density datasets]{\includegraphics[width = 0.49\textwidth]{figures/low_Density_scatter.pdf}}\hfill%
+	\caption{Histograms for three training datasets from the ISBI localization challenge}%
+	\label{histogram_of_sigmas}%
+\end{figure}
+
+\section{Pictures}
+%\begin{figure*}
+%\begin{centering}
+%\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
+%\par\end{centering}
+
+%\caption{Example result from simpleSTORM (data courtesy of Mike Heilemann).
+%Left: one frame of the raw data. Right: reconstructed high-resolution
+%image.}
+%\end{figure*}
+
+\begin{figure*}
+\begin{centering}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt.png}
+\par\end{centering}
+
+\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge.}
+\end{figure*}
+
+
+\section{Pictures}
+\begin{figure*}
+\begin{centering}
+\includegraphics[width=0.45\textwidth]{figures/AVG_Hela2_aTub647-i.png}$\qquad$\includegraphics[width=0.45\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_reconstructed.png}
+\par\end{centering}
+
+\caption{Example result from simpleSTORM (data courtesy of Mike Heilemann).
+Left: one frame of the raw data. Right: reconstructed high-resolution
+image.}
+\end{figure*}
 
 \begin{acknowledgements}
 This research was supported by contract research ``Methoden f{\"u}r die Lebenswissenschaften'' of the Baden-W{\"u}r\-ttemberg Stiftung.
