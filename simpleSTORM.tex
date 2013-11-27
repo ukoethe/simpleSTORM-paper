@@ -1,6 +1,6 @@
 %% LyX 2.0.5.1 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[10pt,twocolumn,english]{svjour3}
+\documentclass[10pt,twocolumn,english,referee]{svjour3}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
 \usepackage{babel}
@@ -11,8 +11,7 @@
 \usepackage{bm}
 \usepackage{esint}
 \usepackage[authoryear]{natbib}
-\usepackage[unicode=true]
- {hyperref}
+\usepackage[unicode=true,hidelinks]{hyperref}
 \usepackage{subfig}
 
 \newcommand{\argmin}{\operatorname*{argmin}}
@@ -33,12 +32,19 @@
 Localization Microscopy}
 
 
-\author{Ullrich K{\"o}the, Frank Herrmannsd{\"o}rfer, Ilia Kats, Fred A. Hamprecht\\
-Multi-Dimensional Image Processing Group, University of Heidelberg}
+\author{Ullrich K{\"o}the* \and Frank Herrmannsd{\"o}rfer* \and Ilia Kats \and Fred~A.~Hamprecht}
+\institute {* contributed equally\\%
+The authors are with the Multi-Dimensional Image Processing Group, University of Heidelberg, Speyerer Strasse 6, 69115 Heidelberg, Germany\\%
+\email{ullrich.koethe@iwr.uni-heidelberg.de}}
 \authorrunning{K{\"o}the, Herrmannsd{\"o}rfer, Kats and Hamprecht}
 \titlerunning{SimpleSTORM}
 
 \maketitle
+
+\begin{abstract}
+Our cool abstract.
+\keywords{First keyword \and Second keyword \and More}
+\end{abstract}
 
 \section{Introduction}
 
@@ -741,11 +747,9 @@ HD&0.031&0.449&20.55&7.2
 %\label{result_Training_1}
 %\end{table}
 
-
-
-\section*{Acknowledgement}
-
+\begin{acknowledgements}
 This research was supported by contract research ``Methoden f{\"u}r die Lebenswissenschaften'' of the Baden-W{\"u}r\-ttemberg Stiftung.
+\end{acknowledgements}
 
 \bibliographystyle{spbasic}
 \bibliography{simpleSTORM}
