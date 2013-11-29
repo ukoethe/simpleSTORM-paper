@@ -33,7 +33,7 @@ Localization Microscopy}
 
 
 \author{Ullrich K{\"o}the* \and Frank Herrmannsd{\"o}rfer* \and Ilia Kats \and Fred~A.~Hamprecht}
-\institute {* contributed equally\\%
+\institute{* contributed equally\\%
 The authors are with the Multi-Dimensional Image Processing Group, University of Heidelberg, Speyerer Strasse 6, 69115 Heidelberg, Germany\\%
 \email{ullrich.koethe@iwr.uni-heidelberg.de}}
 
@@ -129,11 +129,11 @@ is freely available in an easy-to-use GUI program.\footnote{\href{https://github
 
 \begin{figure*}
 \begin{centering}
-\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
+\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection_scalebar}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction_scalebar.png}
 \par\end{centering}
-\caption{Example result from SimpleSTORM (data courtesy of Mike Heilemann).
+\caption{Tubulin Example result from SimpleSTORM (data courtesy of Mike Heilemann).
 Left: maximum projection of the raw data. Right: reconstructed high-resolution
-image.}
+image. Scalebar represents 1\,micro meter}
 
 
 \end{figure*}
@@ -164,7 +164,6 @@ Proper noise modeling is a critical ingredient for reliable distinction between 
 Moreover, it has been shown in \cite{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelera\-ted version of this method is described in \cite{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they differ from the Poisson-distributed photon counts by various aplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \cite{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \cite{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \cite{boulanger_10_patch-based}, who adaptiveliy subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
 
 \section{Methods}
-
 \subsection{\label{sec:matched-filters}Matched Filters}
 
 It was shown by \cite{abraham_09_localization-estimation} that a maximum likelihood fit outperforms least-squares fitting when the noise follows a Poisson distrbution. On the other hand, it is well-known that maximum likelihood and least-squares fitting are equivalent under additive Gaussian noise. Moreover, least-squares fitting can be replaced by {\em matched filtering} \citet{turin_60_matched-filters} when the mean background intensity is zero. Under these conditions, both algorithms are mathematicaly equivalent (as we show below), but filtering is much more efficient, in particular when the matched filter is a Gaussian PSF. This motivates our desire to work on {\em standardized images}, and robust standardization of the given image sequence is at the heart of the SimpleSTORM algorithm.
@@ -635,8 +634,8 @@ i.e. when the spot distance is about twice as big.
 \section{Results}
 \subsection{Validation}\label{validatioin}
 For validation purposes the trainings datasets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
-There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise.\newline
-The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. 
+There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames with a resolution of 256 px * 256 px and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise. The pixel to nanometer ration is 1/150.\newline
+The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. Both, long sequence and high density dataset consist of images with a resolution of 256 px * 256 px and a pixel to nanometer ratio of 1/100.
 \subsection{PSF width estimation}
 As described above the performance of the matched filter depends on the proper estimation of the PSF width. For simpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the opportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localization accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitativeA}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filter width increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perform best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs. Figure \ref{sigmas_quantitativeB} shows that for high density datasets it is even more favorable to use a smaller filter width instead of the true PSF width.
 The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. It tended to overestimate the true PSF width.
@@ -721,11 +720,11 @@ To give an objective impression of the simpleSTORM algorithm the four training d
 \begin{table}
 \caption{Radius 0.3}
 \begin{tabular}{l|cccccc}
-&Jaccard&Precision&RMSE&time in sec.\\ \hline
-Tubulin1&0.437&0.936&15.7&55.9\\
-Tubulin2&0.232&0.904&18.8&46.2\\
-LS&0.761&0.946&9.97&50.1\\
-HD&0.031&0.449&20.55&7.2
+&Jaccard&Precision&RMSE&frames per sec.\\ \hline
+Tubulin1&0.437&0.936&15.7&43\\
+Tubulin2&0.232&0.904&18.8&52\\
+LS&0.761&0.946&9.97&231\\
+HD&0.031&0.449&20.55&50
 \end{tabular}
 \label{result_Training_0_3}
 \end{table}
@@ -757,6 +756,8 @@ HD&0.031&0.449&20.55&7.2
 \subsection{ISBI Localization Microscopy Challenge results}
 The performance of the simpleSTORM algorithm was tested in the  ISBI Localization Microscopy Challenge. The results for different meassures like the f-score, the Jaccard index or the RMSE were calculated from the organizers of the challenge. The Jaccard index and the RMSE are contrary measures. Increasing the number of detected fluorophores by lowering the intensity threshold increases also the RMSE. This is because the number of fluorophores with lower intensity increases which can not be fitted as accurate as brighter fluorophores. Lowering the Jaccard index leads therefore to an decreasing RMSE. There were three test datasets used for the challenge. Each in a high density and a low density version. To present the results of the different softwares the rank for each software was calculated for each measure and dataset individually. After that the mean rank on both, the Jaccard index (higher is better and therefore yields a lower rank) and the RMSE (lower is better) for each dataset was calculated. Figure \ref{scatterplot_challenge} shows the results for the high density datasets and the low density datasets. Software that achieved high Jaccard indices are present in the lower part of the scatter plot, software with small RMSE can be found on the left. The nearer an algorithm is located to the origin, the better it performs. SimpleSTORM is closest to the origin for the high density datasets and within the best 5 algorithms for the low density datasets. 
 
+Figure \ref{tubulin1} and Figure \ref{highdensity} show the average projection of the raw data, the reconstruction and a smaller part of the image with the underlying groundtruth of both the tubulin 1 training dataset and the high density dataset from the ISBI Localization Microscopy Challenge. 
+
 
 \begin{figure}
 \subfloat[High density datasets]{\includegraphics[width = 0.49\textwidth]{figures/high_Density_scatter.pdf}}\hfill%
@@ -778,22 +779,41 @@ The performance of the simpleSTORM algorithm was tested in the  ISBI Localizatio
 
 \begin{figure*}
 \begin{centering}
-\includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect2.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt2.png}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect2_hc_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt2_scalebar.png}
 \par\end{centering}
 
-\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge. Left: mean projection of the raw data. Middle: reconstructed image. Right: localizations (green) and groundtruth (red).}
+\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge. Left: mean projection of the raw data. Middle: reconstructed image. Right: localizations (green) and groundtruth (red). Scalebar represents 2\,micrometer for the first two images and 100\,nm for the third.}\label{tubulin1}
 \end{figure*}
 
+\begin{figure*}
+\begin{centering}
+\includegraphics[width=0.3\textwidth]{figures/Highdensity_raw_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/highdensityreconstruction_rect_hc_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/highdensityAusschnitt_gt_scalebar.png}
+\par\end{centering}
+
+\caption{High density dataset from the ISBI Localization Microscopy Challenge. Left: mean projection of the raw data. Middle: reconstructed image. Right: localizations (green) and groundtruth (red). Scalebar represents 1\,micrometer for the first two images and 200\,nm for the third.}\label{highdensity}
+\end{figure*}
 
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.3\textwidth]{figures/AVG_Hela2_aTub647-i.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_rect.png}
 \par\end{centering}
 
-\caption{Example result from simpleSTORM (data courtesy of Mike Heilemann).
+\caption{Beta-tubulin labeld with AlexaFluor647 in a Hela cell. Example result from simpleSTORM.
 Left: one frame of the raw data. Middle: reconstructed high-resolution
-image. Right: magnified, selected part from the reconstructed image.h}
+image. Right: magnified, selected part from the reconstructed image.}
 \end{figure*}
+
+
+\begin{figure*}
+\begin{centering}
+\includegraphics[width=0.45\textwidth]{figures/AVG_110603_HeLa2_actin-mEOS2-2_scalebar.png}$\qquad$\includegraphics[width=0.45\textwidth]{figures/110603_HeLa2_actin-mEOS2_resultHighContrast-1_scalebar.png}
+\par\end{centering}
+
+\caption{Actin labeled with mEos2 in HeLa cells..
+Left: one frame of the raw data. Middle: reconstructed high-resolution
+image. Right: magnified, selected part from the reconstructed image. Scalebar represents 3\,micrometer}
+\end{figure*}
+
 
 \begin{acknowledgements}
 This research was supported by contract research ``Methoden f{\"u}r die Lebenswissenschaften'' of the Baden-W{\"u}r\-ttemberg Stiftung.
