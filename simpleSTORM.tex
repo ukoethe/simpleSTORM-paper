@@ -33,8 +33,9 @@
 Localization Microscopy}
 
 
-\author{Ullrich K{\"o}the, Frank Herrmannsd{\"o}rfer, Ilia Kats, Fred A. Hamprecht\\
-Multi-Dimensional Image Processing Group, University of Heidelberg}
+\author{Ullrich K{\"o}the$^*$, Frank Herrmannsd{\"o}rfer$^*$, Ilia Kats, Fred A. Hamprecht\\
+Multi-Dimensional Image Processing Group, University of Heidelberg\\
+$^*$ contributed equally}
 \authorrunning{K{\"o}the, Herrmannsd{\"o}rfer, Kats and Hamprecht}
 \titlerunning{SimpleSTORM}
 
@@ -125,7 +126,7 @@ is freely available in an easy-to-use GUI program.\footnote{\href{https://github
 \includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
 \par\end{centering}
 \caption{Example result from SimpleSTORM (data courtesy of Mike Heilemann).
-Left: one frame of the raw data. Right: reconstructed high-resolution
+Left: maximum projection of the raw data. Right: reconstructed high-resolution
 image.}
 
 
@@ -407,14 +408,13 @@ filter method. Figure \ref{fig:background-subtraction}
 shows an example.
 
 \begin{figure*}
-\includegraphics[width=0.3\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Hela1_pfa_tub647_654_frame_3_raw_croped.png}
-\includegraphics[width=0.3\textwidth]{figures/Tubulin2normalprocessFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4_bgsubtracted.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Hela1_pfa_tub647_654_frame_3_bgsubtracted_croped.png}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_raw_frame2547_rotated4.png}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin2normalprocessFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4_bgsubtracted.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_processed_rotated4.png}
 
 \caption{\label{fig:background-subtraction}Upper row from left to right: original image (frame 50
 of the Tubulin2 dataset), real dataset (actin conjugated to mEos2), real dataset (tubulin labeld with Cy5) .Lower row: the same frames after noise normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
 and (\ref{eq:background-subtraction}).}
 \end{figure*}
-
 
 
 \subsection{\label{sec:psf-estimation}Estimation of the PSF}
@@ -503,7 +503,7 @@ Finally, the result of matched filtering is
 \]
 where $\star$ denotes convolution.
 
-The three estimation methods perform similarly in experiments. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which occasionally failed to converge to the correct solution. Since Gaussian filtering is faster than Wiener filtering, we prefer the former in practice. Another advantage of the Gaussian filter is the possibility to change the filter strength, i.e. to use $\sigma_{\mathrm{filter}}\ne\sigma_{\psf}$. This is is useful for high density data with overlapping spots. Here, the matched filter may cause neighboring spots to be fused into one, leading to a detection error. In this case, it is possible to reduce filter strength to keep the spots separate at the price of slightly reduced localization accuracy of well-separated spots, cf. the experiment reported in section ???.
+The three estimation methods perform similarly in experiments. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which occasionally failed to converge to the correct solution. Since Gaussian filtering is faster than Wiener filtering, we prefer the former in practice. Another advantage of the Gaussian filter is the possibility to change the filter strength, i.e. to use $\sigma_{\mathrm{filter}}\ne\sigma_{\psf}$. This is is useful for high density data with overlapping spots. Here, the matched filter may cause neighboring spots to be fused into one, leading to a detection error. In this case, it is possible to reduce filter strength to keep the spots separate at the price of slightly reduced localization accuracy of well-separated spots, cf. the experiment reported in section \ref{validatioin}.
 
 \subsection{Spot Detection}
 
@@ -543,7 +543,7 @@ setting can be approximated by a binomial distribution with parameter
 $p$. For example, for $p=1\%$, the probability that three or more
 background pixels are above threshold in a given 3x3 window is below
 $0.01\%$, for $p=0.1\%$ the resulting probability is $\approx\!10^{-5}\%$. 
-Experiments reported in section ??? validate our claim that the false
+Experiments reported in section \ref{bg_estimation} validate our claim that the false
 positive rate (number of false positives over total number of background
 pixels) is very low, namely 228 false positives out of 46 million for 
 $p=1\%$ and 16 for $p=0.1\%$.
@@ -627,7 +627,7 @@ i.e. when the spot distance is about twice as big.
 
 
 \section{Results}
-\subsection{Validation}
+\subsection{Validation}\label{validatioin}
 For validation purposes the trainings datasets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
 There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise.\newline
 The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. 
@@ -636,9 +636,9 @@ As described above the performance of the matched filter depends on the proper e
 The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. It tended to overestimate the true PSF width.
 
 \begin{figure}
-\subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped.png}}\hfill%
-\subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped.png}}\hfill%
-\subfloat[$\sigma = 1.5$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_5_croped.png}}\hfill%
+\subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped2.png}}\hfill%
+\subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped2.png}}\hfill%
+\subfloat[$\sigma = 1.5$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_5_croped2.png}}\hfill%
 	\caption{The effect of different filter widths on datasets with a high PSF density per frame.}%
 	\label{sigmas}%
 \end{figure}
@@ -654,7 +654,7 @@ The estimation of the PSF width using the Fourier transformed imaged proved to b
 
 
 
-To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density dataset) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms. The calculated values for the training datasets are 109~nm which means 1.09 pixels for the high density and long sequence dataset and 0.73 pixels respectively. The estimated PSF width lies within a then percent range according to the calculated on. The only exception is the high density dataset for which the PSF width is overestimated because of the many overlapping PSFs.
+To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density dataset) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms. The calculated values for the training datasets are 109~nm which is equivalent to 1.09 pixels for the high density and long sequence dataset and 0.73 pixels in the Tubulin datasets respectively. The estimated PSF width lies within a then percent range according to the calculated on. The only exception is the high density dataset for which the PSF width is overestimated because of the many overlapping PSFs.
 
 \begin{figure}
 \subfloat[Long sequence dataset, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
@@ -674,7 +674,7 @@ One key feature is the estimation of the camera gain directly from the data. Thi
 \label{gain_verification}
 \end{figure}
 
-\subsection{Background estimation}
+\subsection{Background estimation} \label{bg_estimation}
 To check whether the background estimation and Anscombe transformation worked as supposed, the false positive to background pixel rate was determined. The $p-$value determines the rate of false positives per background pixels. The number of background pixels that are erroreously detected as signal was calculated for the training datasets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbors that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
 
 \begin{figure}
@@ -756,10 +756,10 @@ The performance of the simpleSTORM algorithm was tested in the  ISBI Localizatio
 \subfloat[High density datasets]{\includegraphics[width = 0.49\textwidth]{figures/high_Density_scatter.pdf}}\hfill%
 \subfloat[Low density datasets]{\includegraphics[width = 0.49\textwidth]{figures/low_Density_scatter.pdf}}\hfill%
 	\caption{Histograms for three training datasets from the ISBI localization challenge}%
-	\label{histogram_of_sigmas}%
+	\label{scatterplot_challenge}%
 \end{figure}
 
-\section{Pictures}
+
 %\begin{figure*}
 %\begin{centering}
 %\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
@@ -775,11 +775,10 @@ The performance of the simpleSTORM algorithm was tested in the  ISBI Localizatio
 \includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt.png}
 \par\end{centering}
 
-\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge.}
+\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge. Image on the left shows mean projection of the raw data, the other images show the reconstruction.}
 \end{figure*}
 
 
-\section{Pictures}
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.45\textwidth]{figures/AVG_Hela2_aTub647-i.png}$\qquad$\includegraphics[width=0.45\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_reconstructed.png}
