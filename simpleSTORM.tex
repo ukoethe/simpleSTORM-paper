@@ -14,11 +14,13 @@
 \usepackage[unicode=true,hidelinks]{hyperref}
 \usepackage{subfig}
 
-\newcommand{\argmin}{\operatorname*{argmin}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
 \newcommand{\erfi}{\operatorname{erfi}}
 \newcommand{\psf}{\operatorname{PSF}}
 \newcommand{\snr}{\operatorname{SNR}}
 \newcommand{\var}{\operatorname{Var}}
+\newcommand{\intRR}{\int_{\mathbb{R}^2}}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
@@ -43,8 +45,8 @@ The authors are with the Multi-Dimensional Image Processing Group, University of
 \maketitle
 
 \begin{abstract}
-Although there are many reconstruction algorithms for localization microscopy, their use is hampered by the difficulty to adjust a possibly large number of parameters correctly. 
-\keywords{First keyword \and Second keyword \and More}
+Although there are many reconstruction algorithms for localization microscopy, their use is hampered by the difficulty to adjust a possibly large number of parameters correctly. We propose SimpleSTORM, an algorithm that determines appropriate parameter settings directly from the data in an initial self-calibration phase. The algorithm is based on a carefully designed, yet simple, model of the image acquisition process which allows us to standardize each image such that the background has zero mean and unit variance. This standardization makes it possible to detect spots by a true statistical test (instead of hand-tunes thresholds) and to de-noise the images with an efficient matched filter. By reducing the strength of the matched filter, SimpleSTORM also performs reasonably on data with high spot density, trading off localization accuracy for improved detection performance. Extensive validation experiments on the ISBI Localization Challenge Dataset, as well as real image reconstrutions, demonstrate the good performance of our algorithm. 
+\keywords{localization microscopy \and STORM \and PALM \and matched filter \and noise normalization}
 \end{abstract}
 
 \section{Introduction}
@@ -54,16 +56,16 @@ major tools for cell biology \citep{bates_08_super-resolution,heilemann_10_fluor
 Despite differences in the experimental procedures, these techniques
 rest on a unified computational principle: Super-resolution images
 are constructed by means of subpixel-accurate spot detection in a
-sequence of images taken at optical resolution. Various algorithms
+sequence of images that was taken at optical resolution. Various algorithms
 have been proposed for this task and many of them are available in
-open-source software. We will briefly review existing algorithms in section \ref{sec:related-work}.
+open-source software. We will briefly review related work in section \ref{sec:related-work}.
 
-While many of these algorithms are in principle able to obtain good
-reconstructions, their practical success requires a careful adjustment of
+While many of these algorithms are able to obtain good
+reconstructions in principle, their practical success requires a careful adjustment of
 various configuration settings. This parameter tuning may be difficult
-even for experts and raises the entry threshold for localization microscopy
+even for experts and raises the entry barrier for localization microscopy
 novices. To overcome this problem, SimpleSTORM was designed to determine
-all necessary parameters automatically from the raw image data itself
+all necessary parameters automatically from the raw image data
 during an initial \emph{self-calibration phase} that precedes the
 actual reconstruction phase. It can thus produce good reconstructions
 with minimal user input, while still allowing optional configuration
@@ -157,67 +159,75 @@ each spot directly, either in terms of the intensity-weighted mean \citep{thomps
 fluoroBancroft method \citep{andersson_08_localization}. These methods were found to be only 
 slightly less accurate then the least-squares fit when properly parametrized \citep{thompson_02_precise,hedde_09_localization-microscopy} and form the basis of fast reconstruction solutions such as the hardware-accelerated method of \citep{gruell_11_fpga-storm} and the QuickPALM ImageJ plugin \citep{henriques_10_quick-palm}.
 
-Both fitting and direct methods have difficulties with the reconstruction of high density image sequences, because these images violate the basic model assumption that neighboring spots do not overlap. Greedy procedures to fit overlapping spots where proposed by \citep{egner_07_nanoscopy}, who adapt H{\"o}gbom's classical CLEAN algorithm \citep{hoegbom_74_clean} to localization microscopy, the DAOSTORM algorithm from \citep{holden_11_daostorm}, an adaptation of DAOPHOT, a well-known algorithm from astronomy \citep{stetson_87_daophot}, and the multi-emitter fitting algorithm of \citep{huang_11_simultaneous}, who fit up to $N_{\max}$ overlapping PSFs simultaneously and select the most likely spot number by a statistical test. A more principled model for overlapping spots is provided by {\em compressed sensing} \citep{zhu_12_faster-storm}. Here, a PSF candidate is initialized at all pixels of a fine grid (e.g. having one-eighth the pixel size of the original image). The fit is then performed under a strong {\em sparsity prior} which ensures that only the center pixels of true spots get non-zero activation. While this method is more accurate than DAOSTORM, it is also very expensive (about a hundred times slower). Recently, substantial improvements of the sparse reconstruction approach have been achieved by more sophisticated modeling and optimization methods \citep{kim_13_localization-microscopy,min_13_localization-microscopy}. However, it is as yet unclear if the improvements over simple algorithms like SimpleSTORM warrant the added complexity.
+Both fitting and direct methods have difficulties with the reconstruction of high density image sequences, because these images violate the basic model assumption that neighboring spots do not overlap. Greedy procedures for fiting overlapping spots where proposed by \citep{egner_07_nanoscopy}, who adapt H{\"o}gbom's classical CLEAN algorithm \citep{hoegbom_74_clean} to localization microscopy, the DAOSTORM algorithm from \citep{holden_11_daostorm}, an adaptation of DAOPHOT, a well-known algorithm from astronomy \citep{stetson_87_daophot}, and the multi-emitter fitting algorithm of \citep{huang_11_simultaneous}, who fit up to $N_{\max}$ overlapping PSFs simultaneously and select the most likely spot number by a statistical test. A more principled model for overlapping spots is provided by {\em compressed sensing} \citep{zhu_12_faster-storm}. Here, a PSF candidate is initialized at all pixels of a fine grid (e.g. having one-eighth the pixel size of the original image). The fit is then performed under a strong {\em sparsity prior} which ensures that only the center pixels of true spots get non-zero activation. While this method is more accurate than DAOSTORM, it is also very expensive (about a hundred times slower). Recently, substantial improvements of the sparse reconstruction approach have been achieved by more sophisticated modeling and optimization methods \citep{kim_13_localization-microscopy,min_13_localization-microscopy}. However, it is as yet unclear if the improvements over simple algorithms like SimpleSTORM warrant the added complexity.
 
-Proper noise modeling is a critical ingredient for reliable distinction between true spot and noise artefacts. Many authors simply use a generic additive noise model and select spots whose intensity exceeds the background by a certain multiple of the background's noise standard deviation \citep{thompson_02_precise,gruell_11_fpga-storm}. Frequently, the image is preprocessed by averaging filters \citep{wolter_10_rapid-storm,huang_11_simultaneous}, Gaussian filters \citep{krizek_11_minimizing} or a wavelet transform \citep{izeddin_12_wavelet} before thresholding. However, non-uniform background intensity and intensity-dependent background noise  make the choice of an appropriate threshold very difficult. Heuristic solutions to this problem lead to algorithms with many adjustable parameters that are very hard to use.
+Proper noise modeling is a critical ingredient for reliable distinction between true spots and noise artefacts. Many authors simply use a generic additive noise model and select spots whose intensity exceeds the background by a certain multiple of the background's noise standard deviation \citep{thompson_02_precise,gruell_11_fpga-storm}. Frequently, the image is preprocessed by averaging filters \citep{wolter_10_rapid-storm,huang_11_simultaneous}, Gaussian filters \citep{krizek_11_minimizing} or a wavelet transform \citep{izeddin_12_wavelet} before thresholding. However, non-uniform background intensity and intensity-dependent background noise make the choice of an appropriate threshold very difficult. Heuristic solutions to this problem lead to algorithms with many adjustable parameters that are very hard to use.
 
-Moreover, it has been shown in \citep{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelera\-ted version of this method is described in \citep{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they differ from the Poisson-distributed photon counts by various aplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \citep{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \citep{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \citep{boulanger_10_patch-based}, who adaptiveliy subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
+Moreover, it has been shown in \citep{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelera\-ted version of this method is described in \citep{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they deviate from the Poisson-distributed photon counts due to the action of amplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \citep{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \citep{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \citep{boulanger_10_patch-based}, who adaptiveliy subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
 
 \section{Methods}
 \subsection{\label{sec:matched-filters}Matched Filters}
 
 It was shown by \citep{abraham_09_localization-estimation} that a maximum likelihood fit outperforms least-squares fitting when the noise follows a Poisson distrbution. On the other hand, it is well-known that maximum likelihood and least-squares fitting are equivalent under additive Gaussian noise. Moreover, least-squares fitting can be replaced by {\em matched filtering} \citep{turin_60_matched-filters} when the mean background intensity is zero. Under these conditions, both algorithms are mathematicaly equivalent (as we show below), but filtering is much more efficient, in particular when the matched filter is a Gaussian PSF. This motivates our desire to work on {\em standardized images}, and robust standardization of the given image sequence is at the heart of the SimpleSTORM algorithm.
  
-We briefly recall the underlying theory of matched filtering. Let the image $s(x,y)$ contain just a single spot
-at an unknown location $(x_{0},y_{0})$. Since the image is corrupted
-by noise, we cannot simply detect the spot by looking for the point
-of maximum intensity in $s$. To simplify matters, we assume that
-the noise is additive Gaussian noise with zero mean and variance $\sigma^{2}$,
-i.e. our image model is
+We briefly recall the relationship between matched filtering and least-squares fitting. Let the image $s(x,y)$ contain just a single spot with unknown scaling $\mu_0$ at an unknown location
+$(x_{0},y_{0})$. Due to noise, we cannot simply detect the point with maximum intensity.
+We assume that the noise is additive Gaussian noise with mean zero
+and variance $\sigma^{2}$, i.e. our image model is
 \begin{eqnarray}
-s(x,y)=\psf(x-x_{0},y-y_{0})&+&n(x,y) \label{eq:simple-signal-model} \\ && n(x,y)\sim\mathcal{N}(0,\sigma^{2}) \nonumber
+s(x,y) & = & f(x,y)+n(x,y)\label{eq:simple-signal-model}\\
+ &  & f(x,y)=\mu_{0}\,\psf(x-x_{0},y-y_{0})\nonumber \\
+ &  & n(x,y)\sim\mathcal{N}(0,\sigma^{2})\nonumber 
 \end{eqnarray}
-We now seek a filter function $h(x,y)$ such that filtering of $s$
-with $h$ maximizes the signal-to-noise ratio of the filtered image
-$g(x,y)=g_{\psf}(x,y)+g_{n}(x,y)$. The signal and noise parts
-of the filtered image are given by the convolution integrals
-\begin{eqnarray*}
-g_{\psf}(x,y) & = & h\star\psf \\ &=&\int_{\mathbb{R}^{2}}h(x',y')\,\psf(x-x',y-y')\, dx'\, dy'\\
-g_{n}(x,y) & = & h\star n \\ &=&\int_{\mathbb{R}^{2}}h(x',y')\, n(x-x',y-y')\, dx'\, dy'
-\end{eqnarray*}
-Signal and noise energies are defined by the squares of these expressions.
-Since the noise is, by assumption, uncorrelated with the filter, the
-noise energy simplifies to $g_{n}(x,y)^{2}=\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'$
-according to Parseval's theorem. The signal-to-noise ratio (SNR) at a point
-$(x,y)$ is the quotient of the corresponding energies, i.e.
+The least-squares algorithm tries to determine the scaling $\mu_{m}$ and location $x_{m},y_{m}$ of a model $h(x,y)$ such that  the least-squares residual
+\begin{multline}
+\mu_{m}^{*},x_{m}^{*},y_{m}^{*}=\nonumber \\ 
+\argmin_{\mu_{m},x_{m},y_{m}}\intRR\!\! \left(s(x,y)-\mu_{m}h(x-x_{m},y-y_{m})\right)^{2}\,d\vec{x}
+\end{multline}
+is minimized. After expanding the integrand, this is equal to
+\begin{multline}
+\argmin_{\mu_{m},x_{m},y_{m}}\intRR\!\! s(x,y)^{2}d\vec{x}+\mu_{m}^{2}\intRR\!\! h(x-x_{m},y-y_{m})^{2}d\vec{x}\nonumber \\
+\hfill -2\mu_{m}\intRR\!\! f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\quad\, \\
+-2\mu_{m}\intRR\!\! n(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}
+\end{multline}
+The first integral is a constant (since the signal is fixed), the
+last one has expected value zero (since the noise is uncorrelated),
+and both terms can be dropped from the optimization. After reversing the
+sign, we obtain the equivalent optimization problem
+\begin{multline}
+\argmax_{\mu_{m},x_{m},y_{m}}2\mu_{m}\intRR\!\! f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\nonumber \\
+-\mu_{m}^{2}\intRR\!\! h(x-x_{m},y-y_{m})^{2}\,d\vec{x}
+\end{multline}
+The maximization w.r.t. $\mu_{m}$ can be performed analytically
+and yields
 \[
-\snr(x,y)=\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\psf(x-x',y-y')\, dx'\, dy'\right)^{2}}{\sigma^{2}\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'}
+\mu_{m}=\frac{\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
 \]
-The energy of the PSF is given by 
-\begin{eqnarray*}
-E_{\psf}&=&\int_{\mathbb{R}^{2}}\psf(x',y')^{2}\, dx'\, dy'\\ &=&\int_{\mathbb{R}^{2}}\psf(x-x',y-y')^{2}\, dx'\, dy'
-\end{eqnarray*}
-where the second identity follows from translation invariance. We
-can therefore rewrite the SNR as
-\begin{multline*}
-\snr(x,y)=\frac{E_{\psf}}{\sigma^{2}} \cdot\\
-\quad\,\,\frac{\left(\int_{\mathbb{R}^{2}}h(x',y')\,\psf(x-x',y-y')\, dx'\, dy'\right)^{2}}{\int_{\mathbb{R}^{2}}h(x',y')^{2}\, dx'\, dy'\int_{\mathbb{R}^{2}}\psf(x-x',y-y')^{2}\, dx'\, dy'}
-\end{multline*}
-The second quotient is easily recognized as the square of the correlation
-coefficient $\rho$ between the filter $h$ and the mirrored PSF.
-We must therefore maximize the correlation coefficient in order to
-maximize the SNR for given signal and noise energy. The correlation
-coefficient assumes its highest possible value $\rho=1$ when 
+resulting in a simplified optimization problem for the location
 \[
-h(x,y)=\kappa\,\psf(-x,-y)
+x_{m}^{*},y_{m}^{*}=\argmax_{x_{m},y_{m}}\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
 \]
-for any $\kappa\ne0$. In other words, the filter should have the
-same shape as the signal we want to detect, but mirrored at the origin.
-The convenient choice $\kappa=1$ results in the \emph{matched filter},
-which is thus optimal under the model of additive Gaussian noise.
-The spot is localized at the point where the filter result $g=h\star s$
-assumes its local maximum. This location can be determined by spline
-interpolation of $g$, see section \ref{sec:spot-localization}.
+Expanding the numerator by Cauchy's inequality gives
+\begin{multline}
+\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}\nonumber \\
+\le\frac{\intRR f(x,y)^{2}\, d\vec{x}\intRR h(x-x_{m},y-y_{m})^{2}\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
+\end{multline}
+and equality only holds when $h(x-x_{m},y-y_{m})=\kappa\, f(x,y)$.
+Since $\kappa$ can be chosen arbitrarily, the maximum is achieved
+for $x_{m}^{*}=x_{0}$ and $y_{m}^{*}=y_{0}$ as desired, and $h(x,y)$
+must be the \emph{matched filter}
+\[
+h(x,y)=\psf(x,y)
+\]
+The optimal estimate of the spot location is therefore the point where
+the convolution
+\begin{equation}
+%x_{m}^{*},y_{m}^{*}=\argmax_{x,y}g(x,y)=\psf(x,y)\star s(x,y)
+g(x,y)=\psf(x,y)\star s(x,y)
+\end{equation}
+assumes its maximum. This point can be conveniently determined by
+spline interpolation of $g$, see section \ref{sec:spot-localization}.
+
 
 To use matched filters in localization microscopy, the following requirements
 must be met:
@@ -229,18 +239,17 @@ not a major problem in practice, because the filter $h$ degrades
 gracefully: Although no longer the best possible filter, it still
 performs reasonably as long as the PSF is not too far off. 
 \item Each image should contain only one spot. This is clearly violated
-in practice and in fact undesirable. But this is not a serios problem
-either as long as the spot density is not too high. Since the PSF
+in practice and in fact undesirable. But this is no problem as long as the spot density is not too high. Since the PSF
 decreases quickly, the filter response at point $(x,y)$ is not influenced
 by spots that are sufficiently far away. The detector suffers only
-a minor degradation in localization performance at overlapping spots
-when their distance remains larger than the PSFs full width at half
+a minor degradationat overlapping spots
+whose distance remains larger than the PSFs full width at half
 maximum (FWHM). The spot density can easily be controlled by the experimental
 setup.
 \item The image's background intensity must be zero. We use a standard background
 subtraction procedure as described in section \ref{sec:background-subtraction}.
 \item The noise must be additive Gaussian. This is the most serious obstacle,
-because the noise level actually depends on the intensity and is therefore
+because the noise variance is actually a function of the intensity and therefore
 not additive. To rescue the matched filter approach, we transform
 the original image intensities so that the noise is approximately
 turned into additive Gaussian noise. Our \emph{noise normalization}
@@ -331,7 +340,7 @@ this value always increases. This leads to the following algorithm
 $T$ frames of the sequence ($T=200$ works well in practice, but
 the value can be adjusted). Create the scatter plot of the resulting
 mean/variance pairs.
-\item Use the RANSAC algorithm to compute the lower leaning line of the
+\item Use the RANSAC algorithm \citep{fischler_81_ransac} to compute the lower leaning line of the
 scatter plot: Repeat $k=10000$ times:
 
 \begin{enumerate}
