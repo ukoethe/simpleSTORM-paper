@@ -168,30 +168,29 @@ Moreover, it has been shown in \citep{abraham_09_localization-estimation} that a
 \section{Methods}
 \subsection{\label{sec:matched-filters}Matched Filters}
 
-It was shown by \citep{abraham_09_localization-estimation} that a maximum likelihood fit outperforms least-squares fitting when the noise follows a Poisson distrbution. On the other hand, it is well-known that maximum likelihood and least-squares fitting are equivalent under additive Gaussian noise. Moreover, least-squares fitting can be replaced by {\em matched filtering} \citep{turin_60_matched-filters} when the mean background intensity is zero. Under these conditions, both algorithms are mathematicaly equivalent (as we show below), but filtering is much more efficient, in particular when the matched filter is a Gaussian PSF. This motivates our desire to work on {\em standardized images}, and robust standardization of the given image sequence is at the heart of the SimpleSTORM algorithm.
+It was shown by \citep{abraham_09_localization-estimation} that a maximum likelihood fit outperforms least-squares fitting when the noise follows a Poisson distribution. On the other hand, it is well-known that maximum likelihood and least-squares fitting are equivalent under additive Gaussian noise. Moreover, least-squares fitting can be replaced by {\em matched filtering} \citep{turin_60_matched-filters} when the mean background intensity is zero. Under these conditions, these algorithms are mathematicaly equivalent (as we show below), but filtering is much more efficient, in particular when the matched filter is a Gaussian PSF. This motivates our desire to work on {\em standardized images}, and robust standardization of the given image sequence is at the heart of the SimpleSTORM algorithm.
  
 We briefly recall the relationship between matched filtering and least-squares fitting. Let the image $s(x,y)$ contain just a single spot with unknown scaling $\mu_0$ at an unknown location
-$(x_{0},y_{0})$. Due to noise, we cannot simply detect the point with maximum intensity.
-We assume that the noise is additive Gaussian noise with mean zero
+$(x_{0},y_{0})$. We assume that the noise is additive Gaussian noise with mean zero
 and variance $\sigma^{2}$, i.e. our image model is
 \begin{eqnarray}
 s(x,y) & = & f(x,y)+n(x,y)\label{eq:simple-signal-model}\\
  &  & f(x,y)=\mu_{0}\,\psf(x-x_{0},y-y_{0})\nonumber \\
  &  & n(x,y)\sim\mathcal{N}(0,\sigma^{2})\nonumber 
 \end{eqnarray}
-The least-squares algorithm tries to determine the scaling $\mu_{m}$ and location $x_{m},y_{m}$ of a model $h(x,y)$ such that  the least-squares residual
+The least-squares algorithm determines the scaling $\mu_{m}$ and location $x_{m},y_{m}$ of a model $h(x,y)$ such that  the least-squares residual
 \begin{multline}
 \mu_{m}^{*},x_{m}^{*},y_{m}^{*}=\nonumber \\ 
 \argmin_{\mu_{m},x_{m},y_{m}}\intRR\!\! \left(s(x,y)-\mu_{m}h(x-x_{m},y-y_{m})\right)^{2}\,d\vec{x}
 \end{multline}
 is minimized. After expanding the integrand, this is equal to
 \begin{multline}
-\argmin_{\mu_{m},x_{m},y_{m}}\intRR\!\! s(x,y)^{2}d\vec{x}+\mu_{m}^{2}\intRR\!\! h(x-x_{m},y-y_{m})^{2}d\vec{x}\nonumber \\
+\argmin_{\mu_{m},x_{m},y_{m}}\intRR\!\! s(x,y)^{2}\,d\vec{x}+\mu_{m}^{2}\intRR\!\! h(x-x_{m},y-y_{m})^{2}\,d\vec{x}\nonumber \\
 \hfill -2\mu_{m}\intRR\!\! f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\quad\, \\
 -2\mu_{m}\intRR\!\! n(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}
 \end{multline}
 The first integral is a constant (since the signal is fixed), the
-last one has expected value zero (since the noise is uncorrelated),
+last one has zero expected value (since the noise is uncorrelated),
 and both terms can be dropped from the optimization. After reversing the
 sign, we obtain the equivalent optimization problem
 \begin{multline}
@@ -208,14 +207,15 @@ resulting in a simplified optimization problem for the location
 x_{m}^{*},y_{m}^{*}=\argmax_{x_{m},y_{m}}\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
 \]
 Expanding the numerator by Cauchy's inequality gives
-\begin{multline}
-\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}\nonumber \\
-\le\frac{\intRR f(x,y)^{2}\, d\vec{x}\intRR h(x-x_{m},y-y_{m})^{2}\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
-\end{multline}
-and equality only holds when $h(x-x_{m},y-y_{m})=\kappa\, f(x,y)$.
-Since $\kappa$ can be chosen arbitrarily, the maximum is achieved
+\begin{eqnarray}
+\lefteqn{\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}}\nonumber \\
+&\qquad\qquad&\le\frac{\intRR f(x,y)^{2}\, d\vec{x}\cdot\intRR h(x-x_{m},y-y_{m})^{2}\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}\nonumber \\
+&&=\intRR\!\! f(x,y)^{2}\, d\vec{x}=\mathrm{const.}\nonumber
+\end{eqnarray}
+and equality (i.e. the maximum possible value) is only achievable when $h(x-x_{m},y-y_{m})=\kappa\, f(x,y)$.
+Since $\kappa$ can be chosen arbitrarily, the maximum is obtained
 for $x_{m}^{*}=x_{0}$ and $y_{m}^{*}=y_{0}$ as desired, and $h(x,y)$
-must be the \emph{matched filter}
+must be a \emph{matched filter}
 \[
 h(x,y)=\psf(x,y)
 \]
@@ -262,25 +262,24 @@ Matched filtering is only optimal when the noise is additive and Gaussian
 distributed. However, localization microscopy is based on a photon
 counting process, which instead follows a Poisson distribution with
 intensity-dependent variance. The probability of observing $k$ photons
-in pixel $(x,y)$ when the expected count (i.e. the true intensity)
-is $\lambda=\lambda(x,y)$ is given by
+in pixel $(x,y)$ is given by
 \[
 p\left(k\right)=\frac{\lambda^{k}}{k!}e^{-\lambda}
 \]
-(we dropped the dependency on $(x,y)$ to improve readability). Moreover,
+where $\lambda=\lambda(x,y)$ is the expected vount, i.e. true intensity (we dropped the dependency on $(x,y)$ to improve readability). Moreover,
 these counts are not observed directly but are subjected to several
 amplification stages and discretized into a finite set of gray levels.
 If we assume linear amplification characteristics and neglect discretization
 effects%
-\footnote{This is possible because the discretization noise is much smaller
-than the noise from other sources in a well-calibrated setup.%
+\footnote{This is possible because the discretization noise is typically much smaller
+than the noise from other sources.%
 }, the observed image gray levels $k'$ depend on $k$ according to
 the linear function 
 \[
 k'=a\, k+b
 \]
-where $a$ denotes the combined amplification factor and $b$ the
-dark signal. The noise in $k'$ is no longer Poisson distributed.
+where $a$ denotes the total gain factor and $b$ the
+dark signal (offset). The noise in $k'$ is no longer Poisson distributed.
 One can easily see this by recalling that both the mean and variance
 of a Poisson distribution are equal to $\lambda$. In contrast, mean
 and variance of $k'$ are
@@ -288,18 +287,16 @@ and variance of $k'$ are
 E\left[k'\right] & = & a\, E\left[k\right]+b=a\,\lambda+b\\
 \var\left[k'\right] & = & a^{2}\, \var\left[k\right]=a^{2}\lambda
 \end{eqnarray*}
-and these quantities are in general different. Figure ??? illustrates
-the difference between the distributions of $k$ and $k'$ for a representative
-choice of $\lambda$, $a$, and $b$. Consequently, it is \emph{incorrect}
-to apply algorithms (e.g. matched filtering) directly to the observed
-image $k_{t}'(x,y)$ at time step $t$ when these algorithms rest
-on the assumption of either Gaussian or Poisson noise. Fortunately,
-there is an easy way out: the \emph{Anscombe transform} (\citep{anscombe_48_noise-normalization})
+and these quantities are in general different. Consequently, it is \emph{incorrect}
+to apply algorithms which rest
+on the assumption of  Gaussian or Poisson noise (like matched filtering) directly to the observed
+image $k'(x,y)$. Fortunately,
+there is an easy way out: the \emph{Anscombe transform} \citep{anscombe_48_noise-normalization}
 \[
-q_{t}(x,y)=2\sqrt{k_{t}(x,y)+\frac{3}{8}}
+q(x,y)=2\sqrt{k(x,y)+\frac{3}{8}}
 \]
-turns a Poisson distributed signal $k_{t}(x,y)$ into an approximately
-Gaussian distributed one $q_{t}(x,y)$ with unit variance, regardless
+turns a Poisson distributed signal $k(x,y)$ into an approximately
+Gaussian distributed one $q(x,y)$ with unit variance, regardless
 of the value of $k$ (as long as $k\ge4$). However, in order to apply
 the Anscombe transform, we need to know the coefficients $a$ and
 $b$ that map the observed gray values $k'$ back into the Poisson
@@ -307,21 +304,20 @@ distributed counts $k$:
 \begin{equation}
 q(x,y)=2\sqrt{\frac{k'(x,y)-b}{a}+\frac{3}{8}}\label{eq:anscombe-transform}
 \end{equation}
-Dermining $a$ and $b$ turns out to be a difficult problem. The standard
+Dermining $a$ and $b$ turns out to be tricky. The standard
 solution is to record dedicated calibration images where the mean
-and variance of $k'$ can be computed easily. Then, a linear regression
+and variance of $k'$ can be computed easily \citep{lidke_05_photon-statistics}. Then, a linear regression
 through a set of pairs $\left(E[k'],\, \var[k']\right)$ with different
 $k'$ directly provides the desired coefficients. However, this approach
 is inconvenient when the camera is mounted on a microscope, and it
 must be repeated whenever any camera or amplifier settings change.
-Therefore, we seek to determine these coefficients by self-calibration,
-i.e. from the raw localization images themselves. 
+Therefore, we seek to determine these coefficients from the raw localization images themselves by self-calibration. 
 
 Among a large number of ideas we tried, the following turned out to
-be the most stable. Consider a pixel $(x,y)$ whose gray value is
-constant over time, i.e. the pixel contains background or a bead,
+be the most stable. Consider a pixel $(x,y)$ whose true intensity is
+constant over time, i.e. the pixel shows background or a bead,
 but no blinking molecule. Then we can easily compute its average intensity
-and variance over time and obtain a pair for the linear regression.
+and variance over time and obtain a point for the linear regression.
 The difficulty is that we do not know which pixels have this property.
 The following consideration shows a way to identify them: Whenever
 the true intensity is not constant, the apparent variance is larger
@@ -330,10 +326,9 @@ than it would otherwise be, because
 \var\left[f(t)+n(t)\right]=\var\left[f(t)\right]+\var\left[n(t)\right]
 \]
 where $f(t)$ is a time-dependent signal and $n(t)$ denotes noise
-which is uncorrelated with the temporal behavior of $f$. When $f(t)$
-is actually constant over time, its variance is zero, resulting in
+which is uncorrelated with the temporal behavior of $f$. When $f(t)=\mathrm{const.}$, its variance is zero, resulting in
 the minimal possible value of $\var\left[f(t)+n(t)\right]$. Otherwise,
-this value always increases. This leads to the following algorithm
+the total variance increases. This leads to the following algorithm
 \begin{enumerate}
 \item Select $n$ image locations at random.
 \item Compute mean and variance of the corresponding pixels over the first
@@ -366,37 +361,26 @@ coefficients in equation (\ref{eq:anscombe-transform}).}
 
 
 \end{figure}
-Figure \ref{fig:lower-leaning-line} shows two examples of the fit
+Figure \ref{fig:lower-leaning-line} shows an example of the fit
 according to this algorithm. It can be seen that it does indeed detect
 the lower leaning line of the scatter plot, which corresponds to the
 pixels with constant intensity.
 
-
-An inaccurate gain estimation due to missing beads could decrease the
-performance of background estimation described later.
-Therefore after the estimation of the gain and offset a post-optimization for the
-gain is applied. The estimated parameters are used to transform the 
-data. A histogramm of the intensities is created for the first 200 frames. 
-Most pixels of these frames are background pixels which should be distributed
-with unit variance around zero. A Gaussian is fitted to the histogram.
-The gain factor is multiplied with the fitted variance and the variance of the
-background pixels is estimated again. This is done until the fitted variance
-is within a range of 0.05 around one.
-
+Occasionally, the range of intensities on the lower leaning line is rather small (e.g. when no beads are present), resulting in noisy gain estimates. This can be fixed by iterative post-optimization: We use the estimated parameters to transform the 
+data according to (\ref{eq:anscombe-transform}) and compute the average variance of all pixels over the first 200 frames. Since most pixels are not blinking, this average should be close to one. When this value is not within $5\%$ of unity, the gain factor is multiplied with the actual variance and the procedure repeated. This algorithms leads to stable gain estimates within a few iterations.
 
 \subsection{\label{sec:background-subtraction}Background Subtraction}
 
 Once the noise model is known, we transform the observed images $k_{t}'(x,y)$
-into noise-normalized ones $q_{t}(x,y)$ according to (\ref{eq:anscombe-transform})
-and subsequent local optimization. The next step is the estimation
+into noise-normalized ones $q_{t}(x,y)$ (where $t$ indicates time) according to section \ref{sec:noise-normalization}. The next step is the estimation
 of the background intensity. It is based on the standard assumption
-that thes background intensity varies mauch slower then the actual
+that the background varies much slower then the actual
 signal both spatially and over time. We split the dataset into non-overlapping
 blocks of size $\rho^{2}\times\tau$, where $\rho$ is the block size
 in the two spatial directions, and $\text{\ensuremath{\tau}}$ is
 the block size along the time direction. Default values of $\rho=30$
 and $\tau=20$ work well in all our experiments. If necessary, the
-user can adjust these settings. This is easy because the she can determine
+user can adjust these settings. This is easy because he or she can determine
 how fast the background varies by simple visual inspection of the
 data. 
 
@@ -404,8 +388,8 @@ In each block, the median of the gray values $s$ is computed. The
 median is preferrable to the mean because it is more stable when the
 block contains non-background pixels (blinking spots and beads): These
 pixels lead to a significant upward bias in the mean, whereas the
-median increases only marginally. The meadian values are placed on
-the grid defined by the centers of the blocks, and interpolated to
+median increases only marginally. The median values are placed on
+the grid points defined by the centers of the blocks, and interpolated to
 the original image resolution (both in spatial and time direction)
 using a Catmull-Rom spline which ensures smooth (i.e. differentiable)
 interpolation and thus avoids blocking artifacts in the background
@@ -416,37 +400,27 @@ has unit variance in all pixels and zero mean in the background:
 s_{t}(x,y)=q_{t}(x,y)-\beta_{t}(x,y)\label{eq:background-subtraction}
 \end{equation}
 We call the resulting image $s_{t}$ the {\em standardized} image because it 
-now exhibits additive noise with unit variance and zero mean background
-and thus conforms to the requirements of the matched
+now conforms to the requirements of the matched
 filter method. Figure \ref{fig:background-subtraction}
-shows an example.
+shows examples.
 
 \begin{figure*}
-\includegraphics[width=0.3\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_raw_frame2547_rotated4.png}
+\includegraphics[width=0.3\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_raw_frame2547_rotated4.png}\\[6pt]
 \includegraphics[width=0.3\textwidth]{figures/Tubulin2normalprocessFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4_bgsubtracted.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_processed_rotated4.png}
 
-\caption{\label{fig:background-subtraction}Upper row from left to right: original image (frame 50
-of the Tubulin2 dataset), real dataset (actin conjugated to mEos2), real dataset (tubulin labeld with Cy5) .Lower row: the same frames after noise normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
-and (\ref{eq:background-subtraction}).}
+\caption{\label{fig:background-subtraction}Top: original images (from left: frame 50
+of the artificial Tubulin2 dataset, actin conjugated to mEos2, and tubulin labeld with Cy5, see section \ref{???} for details on the data). Bottom: the same frames after standardization.}
 \end{figure*}
 
 
 \subsection{\label{sec:psf-estimation}Estimation of the PSF}
 
-In order to apply the matched filter method, the PSF must be known.
-Accurate PSF estimates are crucial for the matched filter to perform
-optimally. We investigated two approaches to PSF estimation, a non-parametric
-and a parametric one. In both cases, the PSF is estimated by averaging
-over the response of many spots in order to get rid of the noise. It should also be noted that we estimate $\sigma_{\psf}$ after noise normalization and background subtraction. This estimate is related to the PSF size $\sigma^*_{\psf}$ in the raw data by the relation $\sigma_{\psf}=\sqrt{2}\,\sigma^*_{\psf}$.
-
-The non-parametric method estimates the PSF in the form of an optimal
-\emph{Wiener filter} which is based on the \emph{magnitude spectrum}
+In order to apply the matched filter method, an accurate estimate of the PSF is required. We investigated two approaches to PSF estimation, a non-parametric and a parametric one. In both cases, the PSF is estimated {\em after} image standardization by averaging over many spots in order to get rid of the noise. The non-parametric method determines the PSF in the form of an optimal \emph{Wiener filter} which is based on the \emph{magnitude spectrum}
 of the signal. Let
 \[
 S_{t}=\mathcal{F}[s_{t}]
 \]
-the Fourier transform of frame $s_{t}$ (after noise normalization
-and background subtraction). Then the average power spectrum over
+the Fourier transform of standardized frame $s_{t}$. Then the average power spectrum over
 T frames is
 \[
 P=\frac{1}{T}\sum_{t=1}^{T}\left|S_{t}\right|^{2}
@@ -454,14 +428,12 @@ P=\frac{1}{T}\sum_{t=1}^{T}\left|S_{t}\right|^{2}
 where $\left|S_{t}\right|$ is the point-wise magnitude of the complex
 frequency response. The Wiener filter is then defined as
 \[
-W=\left(\frac{P-P_{N}}{P}\right)_{+}
+W=\left(\frac{P-P_{\mathrm{noise}}}{P}\right)_{+}
 \]
-where $P_{N}$ is the expected power spectrum of the noise and $\left(.\right)_{+}=\max\left(0,.\right)$
+where $P_{\mathrm{noise}}$ is the expected power spectrum of the noise and $\left(.\right)_{+}=\max\left(0,.\right)$
 is the hinge function that truncates negative values at zero (negative
-values can occur because we estimate $W$ from only finitely many
-frames). Since the noise is (thanks to noise normalization and background
-subtraction) additive Gaussian noise with zero mean and unit variance,
-its expected power spectrum is simply $P_{N}=1$. The matched filter
+values can occur because we estimate $W$ from a finite sample). Since the noise (after standardization) is additive Gaussian noise with zero mean and unit variance,
+its expected power spectrum is simply $P_{\mathrm{noise}}=1$. The matched filter
 can now be computed by multiplication of each frame's Fourier transform
 with the Wiener filter, followed by inverse Fourier transform
 \[
@@ -470,18 +442,17 @@ with the Wiener filter, followed by inverse Fourier transform
 In contrast, the parameteric method assumes that the PSF is shaped
 like a Gaussian, which is a very good approximation for typical microscopes.
 Under this assumption, the self-calibration only needs to determine
-a single parameter, the PSF scale. Clearly, the variance of a single
+a single parameter, the PSF scale $\sigma_{\psf}$. Clearly, the variance of a single
 parameter estimate is much smaller than the variance of an entire
-non-parametric PSF estimate from the same number of samples. The Gaussian
+non-parametric PSF estimate when the same number of samples are used. The Gaussian
 model is therefore preferable when it conforms to the actual PSF shape,
-whereas deviations between model and real PSF will lead to noticeable
-bias in spot localization. 
+whereas the Wiener filter should be applied otherwise. Due to image standardization, our estimate $\sigma_{\psf}$ is related to the PSF size $\sigma^*_{\psf}$ of the raw data by the relation $\sigma_{\psf}=\sqrt{2}\,\sigma^*_{\psf}$.
 
 The Gaussian fit can be performed both in the spatial and in the Fourier
 domain. The Fourier domain approach starts in the same way as in the
 non-parametric case, i.e. we compute the average power spectrum of
 the noise-normalized signal. To simplify subsequent computations,
-we cut out $T'$ sufficiently large square ROIs from the original
+we cut out sufficiently large {\em square} ROIs from the original
 frames and compute their average power spectrum $P'$. Now, instead
 of using the power spectrum directly to define a Wiener filter, we
 compute the average magnitude spectrum $\sqrt{P'}$ and use it to
@@ -493,7 +464,7 @@ g(r | w_1, w_2, w_3) = w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}\l
 \end{equation}
 where $r=\sqrt{u^{2}+v^{2}}$ is the distance of the point from the
 origin. The parameters $w_{i}$ are choosen by means of non-linear
-least-squares optimization (typically using the Levenberg-Marquardt algorithm) such that
+least-squares optimization (using the Levenberg-Marquardt algorithm) such that
 the squared difference between the model and the power spectrum is
 minimized
 \[
@@ -501,7 +472,7 @@ w_{1},w_{2},w_{3}=\argmin_{w_{i}}\sum_{u,v}\left[g(r | w_1, w_2, w_3)-\sqrt{P'(r
 \]
 Parameters $w_{1}$ and $w_{3}$ account for the signal and noise
 intensities respectively, whereas the desired PSF scale in the spatial
-domain can be obtained from the parameter $w_{2}$ be the simple relation
+domain can be obtained from the parameter $w_{2}$ by the simple relation
 \[
 \sigma_{\psf}=\frac{W}{2\pi w_{2}}
 \]
@@ -509,24 +480,21 @@ where $W$ is the width of the ROI used to compute the magnitude spectrum
 (recall that we select squared ROIs to simplify matters). The fit
 in the spatial domain is performed similarly, but the simple averaging
 via the average power spectrum is not possible here. Instead, we fit
-the PSF independently to a number of easy-to-detect spots, and than
+the PSF independently to a number of easy-to-detect spots, and then
 define $\sigma_{\psf}$ as the median of the parameter $w_2$ of the individual estimates.
+(Thus, we also use the standard fitting algorithm of \citep{thompson_02_precise}, but only to estimate $\sigma_{\psf}$.)
+
 Finally, the result of matched filtering is 
 \[
-\hat{s}_{t}=s_{t}\star\mathrm{gauss}_{\sigma_{\psf}}
+\hat{g}_{t}=s_{t}\star\mathrm{gauss}_{\sigma_{\psf}}
 \]
 where $\star$ denotes convolution.
 
-The three estimation methods perform similarly in experiments. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which occasionally failed to converge to the correct solution. Since Gaussian filtering is faster than Wiener filtering, we prefer the former in practice. Another advantage of the Gaussian filter is the possibility to change the filter strength, i.e. to use $\sigma_{\mathrm{filter}}\ne\sigma_{\psf}$. This is is useful for high density data with overlapping spots. Here, the matched filter may cause neighboring spots to be fused into one, leading to a detection error. In this case, it is possible to reduce filter strength to keep the spots separate at the price of slightly reduced localization accuracy of well-separated spots, cf. the experiment reported in section \ref{validatioin}.
+The three estimation methods perform similarly in experiments. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which occasionally failed to converge to the correct solution. Since Gaussian filtering is faster than Wiener filtering, we prefer the former in practice. Another advantage of the Gaussian filter is the possibility to change the filter strength, i.e. to use $\sigma_{\mathrm{filter}}\ne\sigma_{\psf}$. This is useful for high density data with overlapping spots. Here, the matched filter may cause neighboring spots to be fused into one, leading to detection errors. To avoid this, it is possible to reduce filter strength to keep the spots separate at the price of slightly reduced localization accuracy of well-separated spots, cf. the experiment reported in section \ref{validation}.
 
 \subsection{Spot Detection}
 
-After the self-calibration phase, the actual data processing starts.
-Now, the parameters estimated during calibration are used to preprocess
-every frame of the sequence. Spot detection is performed after standardization, i.e. after noise
-normalization and background subtraction according to equations (\ref{eq:anscombe-transform})
-and (\ref{eq:background-subtraction}). Since the background contains
-now only Gaussian additive noise with zero mean and unit variance,
+Spot detection is performed in each frame after image standardization. Since the background now contains only Gaussian additive noise with zero mean and unit variance,
 a standard statistical test can be used to detect pixels whose intensity
 is unlikely to be background. For a given $p$-value, corresponding
 to the probability of false positives, the intensity threshold is
@@ -539,18 +507,13 @@ at most $p$ to represent background. For example, $p$-values of
 1\% and 0.1\% correspond to thresholds 2.3 and 3.1 and indicate that
 one gets one false positive on average per 10x10 and 30x30 window
 respectively. Note that these thresholds are independent of the image
-content. Thanks to noise normalization and background subtraction,
-there is no need for manual threshold adjustment or complicated threshold
-selection heuristics.
+content. In contrast to many existing algorithms, there is no need for manual threshold adjustment or complicated threshold
+selection heuristics in SimpleSTORM.
 
-Nonetheless, the error rate is still rather high, but further increases
-of the threshold are undesirable because this would reduce the sensitivity
-of the detector for true positives. However, we can still do better
-by noticing that true spots always cover several pixels (according to the
-width of the PSF), whereas the noise of neighboring pixels is uncorrelated.
-Therefore, the probability that multiple adjacent are above threshold
-\emph{simultaneously} is much lower for background pixels, whereas
-this event is very probable for a true spot. In practice, we accept
+The false positive rate can be further reduced 
+by noticing that true spots always cover several pixels, whereas the noise in neighboring pixels is uncorrelated.
+Therefore, the probability that multiple adjacent pixels are above threshold
+\emph{simultaneously} is low for background pixels, but high for true spots. In practice, we accept
 a spot if at least three connected pixels exceed the threshold for
 the chosen $p$-value. The probability of false positives in this
 setting can be approximated by a binomial distribution with parameter
@@ -573,12 +536,12 @@ i.e. we filter with a Gaussian whose size $\sigma_{\psf}$ has
 been determined according to section \ref{sec:psf-estimation}. We
 don't apply this filter before spot \emph{detection} because this
 would introduce complicated correlation between the noise of neighboring
-pixels, making the differentiation between signal and noise more difficult. 
+pixels, making the distinction between signal and noise more difficult. 
 
 The theory of matched filtering suggests that each local maximum of
 the filtered image corresponds to a location of best match between
 the data and the spot model. This location needs to be determined
-to subpixel accuracy, and a residual error of 1/10 of a pixel is typically
+to subpixel accuracy, and a residual error of 1/5 to 1/10 of a pixel is typically
 achievable. The simplest possibility to do so is via cubic spline
 interpolation of the filtered image to the desired resolution. The
 upsampling ratio can be chosen by the user and is typically between
@@ -599,13 +562,13 @@ given by
 \snr=2g
 \]
 (the factor of 2 accounts for the smoothing effect of the matched
-filter). The standard deviation of the 2D localization error $\Delta \bm{x}$ after matched filtering, defined in units of the pixel spacing, is then
+filter). The standard deviation of the 2D localization error $\Delta \vec{x}$ after matched filtering, defined in units of the pixel spacing, is then
 \begin{equation}
-\mathrm{StdDev}[\Delta \bm{x}]=\frac{1}{\sqrt{\pi}\,g}\label{eq:spot-std-dev}
+\mathrm{StdDev}[\Delta \vec{x}]=\frac{1}{\sqrt{\pi}\,g}\label{eq:spot-std-dev}
 \end{equation}
 This is of the expected form, because $g$ is proportional to $\sqrt{N}$ (the square root of the photon count) due to the action of the Anscombe transform.
 
-The maximum and minimum radius of a potentially unisotropic spot can be computed from the eigenvalues
+The maximum and minimum radius of a potentially anisotropic spot can be computed from the eigenvalues
 of the second derivative matrix
 \[
 \kappa_{1,2}=\frac{1}{2}\left(g_{xx}+g_{yy}\pm\sqrt{g_{xx}^{2}+g_{yy}^{2}+4\, g_{xy}^{2}-2\, g_{xx}g_{yy}}\right)
@@ -631,7 +594,7 @@ spots of equal intensity remain separable (i.e. give rise to distinct
 maxima) when the distance of their centers exceeds $2\,\sigma_{\psf}$.
 The localization error $\Delta \bm{x}'$ then becomes
 \[
-\mathrm{StdDev}[\Delta \bm{x}']=\frac{\pi\,\sigma^2_{\psf}}{\sqrt{3}\,g'}
+\mathrm{StdDev}[\Delta \vec{x}']=\frac{\pi\,\sigma^2_{\psf}}{\sqrt{3}\,g'}
 \]
 where $g'$ is the intensity at the location of the maximum and $\sigma_{\psf}$ is taken in units of the pixel spacing.
 This possibility is an advantage of our method over reconstruction
@@ -641,7 +604,7 @@ i.e. when the spot distance is about twice as big.
 
 
 \section{Results}
-\subsection{Validation}\label{validatioin}
+\subsection{Validation}\label{validation}
 For validation purposes the trainings datasets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
 There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames with a resolution of 256 px * 256 px and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise. The pixel to nanometer ration is 1/150.\newline
 The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. Both, long sequence and high density dataset consist of images with a resolution of 256 px * 256 px and a pixel to nanometer ratio of 1/100.
