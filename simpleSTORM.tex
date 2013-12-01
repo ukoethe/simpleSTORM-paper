@@ -127,20 +127,14 @@ SimpleSTORM achieved high localization accuracy on high-density data,
 where a relatively large number of spots was simultaneously switched
 on in order to minimize total acquisition time. Software for our algorithm
 is freely available in an easy-to-use GUI program.\footnote{\href{https://github.com/ukoethe/simple-STORM}{github.com/ukoethe/simple-STORM}}
-
-
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.45\textwidth]{figures/Bildmike_projection_scalebar}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction_scalebar.png}
 \par\end{centering}
 \caption{Microtubuli, labeld with ATTO520 in HeLa-cells (data courtesy of Mike Heilemann).
 Left: maximum projection of the raw data. Right: reconstructed high-resolution
-image. Scalebar represents $1\mu m$}
-
-
+image. Scalebar represents $1\mu m$}\label{fig:microtubuli}
 \end{figure*}
-
-
 
 \section{Related Work}\label{sec:related-work}
 
@@ -699,7 +693,7 @@ upscale factor = 100&0.619&0.764&11.45\,nm
 \end{table}
 Lowering the p-value does not alter the results significantly, because the false positive rate is already very low. Applying an asymmetry threshold improves the RMSE, but discards a number of true positives along with the undesirable distorted spots. A higher upsampling factor increases the localization accuracy without removing any points, but increases the reconstruction time.
 
-Finally, we also applied SimpleSTORM to real data. A qualitative impression is given in figures \ref{fig:hela2-tubulin} and \ref{fig:hela2-actine}. In figure \ref{fig:hela2-tubulin}, we can even make a qualitative statement: the depicted microtubuli have a true diameter of about 25nm, whereas the diameter in the reconstruction is about 60nm. Considering the expected RMSE and the average distance of the fluorescent marker form the actual molecule, this is in the expected range.
+Finally, we also applied SimpleSTORM to real data. A qualitative impression is given in figures \ref{fig:microtubuli}, \ref{fig:hela2-tubulin} and \ref{fig:hela2-actine}. In figure \ref{fig:microtubuli}, we can even make a qualitative statement: the depicted microtubuli have a true diameter of about 25nm, whereas the diameter in the reconstruction is about 60nm. Considering the expected RMSE and the average distance of the fluorescent marker form the actual molecule, this is in the expected range.
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.3\textwidth]{figures/AVG_Hela2_aTub647-i.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_rect.png}
