@@ -197,25 +197,22 @@ sign, we obtain the equivalent optimization problem
 \argmax_{\mu_{m},x_{m},y_{m}}2\mu_{m}\intRR\!\! f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\nonumber \\
 -\mu_{m}^{2}\intRR\!\! h(x-x_{m},y-y_{m})^{2}\,d\vec{x}
 \end{multline}
-The maximization w.r.t. $\mu_{m}$ can be performed analytically
-and yields
+Setting the derivative w.r.t. $\mu_{m}$ to zero gives an analytic solution for $\mu^*_m$
 \[
-\mu_{m}=\frac{\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
+\mu^*_{m}=\frac{\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
 \]
-resulting in a simplified optimization problem for the location
+resulting in a reduced optimization problem for the location
 \[
 x_{m}^{*},y_{m}^{*}=\argmax_{x_{m},y_{m}}\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}
 \]
-Expanding the numerator by Cauchy's inequality gives
+The numerator is the squared correlation function between $ f(x,y)$ and $h(x-x_{m},y-y_{m})$. Expanding it in terms of the  Cauchy-Schwarz inequality yields
 \begin{eqnarray}
 \lefteqn{\frac{\left(\intRR f(x,y)h(x-x_{m},y-y_{m})\, d\vec{x}\right)^{2}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}}\nonumber \\
 &\qquad\qquad&\le\frac{\intRR f(x,y)^{2}\, d\vec{x}\cdot\intRR h(x-x_{m},y-y_{m})^{2}\, d\vec{x}}{\intRR h(x-x_{m},y-y_{m})^{2}\,d\vec{x}}\nonumber \\
 &&=\intRR\!\! f(x,y)^{2}\, d\vec{x}=\mathrm{const.}\nonumber
 \end{eqnarray}
 and equality (i.e. the maximum possible value) is only achievable when $h(x-x_{m},y-y_{m})=\kappa\, f(x,y)$.
-Since $\kappa$ can be chosen arbitrarily, the maximum is obtained
-for $x_{m}^{*}=x_{0}$ and $y_{m}^{*}=y_{0}$ as desired, and $h(x,y)$
-must be a \emph{matched filter}
+The maximum is thus obtained for $x_{m}^{*}=x_{0}$ and $y_{m}^{*}=y_{0}$ as desired. Since $\kappa$ can be chosen arbitrarily, $h(x,y)$ can be defined as a \emph{matched filter}
 \[
 h(x,y)=\psf(x,y)
 \]
@@ -223,16 +220,16 @@ The optimal estimate of the spot location is therefore the point where
 the convolution
 \begin{equation}
 %x_{m}^{*},y_{m}^{*}=\argmax_{x,y}g(x,y)=\psf(x,y)\star s(x,y)
-g(x,y)=\psf(x,y)\star s(x,y)
+g(x,y)=\psf(-x,-y)\star s(x,y)
 \end{equation}
-assumes its maximum. This point can be conveniently determined by
+assumes its maximum (recall that correlation is equivalent to convolution with the mirrored kernel). This point can be conveniently determined by
 spline interpolation of $g$, see section \ref{sec:spot-localization}.
 
 
 To use matched filters in localization microscopy, the following requirements
 must be met:
 \begin{enumerate}
-\item The PSF must be known. We address this in section \ref{sec:psf-estimation}.
+\item The PSF must be known. We address PSF estimation in section \ref{sec:psf-estimation}.
 \item The PSF should be uniform throughout the image. This condition may
 not be fulfilled when some spots are out of focus. However, this is
 not a major problem in practice, because the filter $h$ degrades
@@ -275,9 +272,9 @@ effects%
 than the noise from other sources.%
 }, the observed image gray levels $k'$ depend on $k$ according to
 the linear function 
-\[
-k'=a\, k+b
-\]
+\begin{equation}
+k'=a\, k+b\label{eq:linear-gain-model}
+\end{equation}
 where $a$ denotes the total gain factor and $b$ the
 dark signal (offset). The noise in $k'$ is no longer Poisson distributed.
 One can easily see this by recalling that both the mean and variance
@@ -289,7 +286,7 @@ E\left[k'\right] & = & a\, E\left[k\right]+b=a\,\lambda+b\\
 \end{eqnarray*}
 and these quantities are in general different. Consequently, it is \emph{incorrect}
 to apply algorithms which rest
-on the assumption of  Gaussian or Poisson noise (like matched filtering) directly to the observed
+on the assumption of Poisson or Gaussian noise (like matched filtering) directly to the observed
 image $k'(x,y)$. Fortunately,
 there is an easy way out: the \emph{Anscombe transform} \citep{anscombe_48_noise-normalization}
 \[
@@ -409,13 +406,13 @@ shows examples.
 \includegraphics[width=0.3\textwidth]{figures/Tubulin2normalprocessFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4_bgsubtracted.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_processed_rotated4.png}
 
 \caption{\label{fig:background-subtraction}Top: original images (from left: frame 50
-of the artificial Tubulin2 dataset, actin conjugated to mEos2, and tubulin labeld with Cy5, see section \ref{???} for details on the data). Bottom: the same frames after standardization.}
+of the artificial Tubulin2 dataset, actin conjugated to mEos2, and tubulin labeld with Cy5, see section \ref{sec:results} for details on the data). Bottom: the same frames after standardization.}
 \end{figure*}
 
 
 \subsection{\label{sec:psf-estimation}Estimation of the PSF}
 
-In order to apply the matched filter method, an accurate estimate of the PSF is required. We investigated two approaches to PSF estimation, a non-parametric and a parametric one. In both cases, the PSF is estimated {\em after} image standardization by averaging over many spots in order to get rid of the noise. The non-parametric method determines the PSF in the form of an optimal \emph{Wiener filter} which is based on the \emph{magnitude spectrum}
+In order to apply the matched filter method, an accurate estimate of the PSF is required. We investigated two approaches to PSF estimation, a non-parametric and a parametric one. In both cases, the PSF is estimated by averaging over many spots {\em after} image standardization. The non-parametric method determines the PSF in the form of an optimal \emph{Wiener filter} which is based on the \emph{magnitude spectrum}
 of the signal. Let
 \[
 S_{t}=\mathcal{F}[s_{t}]
@@ -488,9 +485,7 @@ Finally, the result of matched filtering is
 \[
 \hat{g}_{t}=s_{t}\star\mathrm{gauss}_{\sigma_{\psf}}
 \]
-where $\star$ denotes convolution.
-
-The three estimation methods perform similarly in experiments. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which occasionally failed to converge to the correct solution. Since Gaussian filtering is faster than Wiener filtering, we prefer the former in practice. Another advantage of the Gaussian filter is the possibility to change the filter strength, i.e. to use $\sigma_{\mathrm{filter}}\ne\sigma_{\psf}$. This is useful for high density data with overlapping spots. Here, the matched filter may cause neighboring spots to be fused into one, leading to detection errors. To avoid this, it is possible to reduce filter strength to keep the spots separate at the price of slightly reduced localization accuracy of well-separated spots, cf. the experiment reported in section \ref{validation}.
+where $\star$ denotes convolution. Experimental results are reported in section \ref{sec:validation}
 
 \subsection{Spot Detection}
 
@@ -603,25 +598,29 @@ approach only works reliably when the spots do not overlap significantly,
 i.e. when the spot distance is about twice as big.
 
 
-\section{Results}
-\subsection{Validation}\label{validation}
-For validation purposes the trainings datasets released for the ISBI Single-Molecule Localization Microscopy Challenge 2013 were used as well as the evaluation tool.\newline
-There are four different datasets. Two datasets with simulated tubulin tubes, we will refer to these datasets as tubulin 1 and tubulin 2 dataset. The tubulin 1 and tubulin 2 dataset consist of  2400 frames with a resolution of 256 px * 256 px and simulated autofluorescent background. The tubulin 2 dataset has the same structure as tubulin 1 dataset but a higher level of noise. The pixel to nanometer ration is 1/150.\newline
-The other two datasets simulated a bundle of tubulin tubes. There is a long sequence set with 12000 frames and almost no overlapping PSF and a high density set with 361 frames and frequently overlapping PSFs. Both datasets will be referred to as long sequence dataset and high density dataset respectively. Both, long sequence and high density dataset consist of images with a resolution of 256 px * 256 px and a pixel to nanometer ratio of 1/100.
-\subsection{PSF width estimation}
-As described above the performance of the matched filter depends on the proper estimation of the PSF width. For simpleSTORM the Levenberg-Marquardt algorithm was chosen to estimate the PSF width, since it performs almost as good as the matched filter determined from the power spectrum but gives the opportunity to set the PSF width manually. For data with a high density of fluorophores there is a trade-off between the increasing localization accuracy and the chance of near PSFs merge into one due to filtering. This effect is shown in Figure \ref{sigmas} which shows how the reconstruction gets worse with higher filter width. The same effect of merging PSFs and decreasing localization accuracy is also shown in Figure \ref{sigmas_quantitativeA}. Both Figures are based on the reconstruction of the same image, which was processed with the same parameters except the filter width. From left to right the filter width increases. Two effects are visible, the decrease of the number of localizations and the loss of structural information. The true PSF width is approximately 1 pixel in the raw images.  Although the appropriate filter width was used in the second picture of Figure \ref{sigmas}, the filtering did not perform best. This shows that in case of high PSF density it can be favorable to use a smaller filter to avoid merging PSFs. Figure \ref{sigmas_quantitativeB} shows that for high density datasets it is even more favorable to use a smaller filter width instead of the true PSF width.
-The estimation of the PSF width using the Fourier transformed imaged proved to be not reliable. It tended to overestimate the true PSF width.
+\section{Results}\label{sec:results}
+\subsection{Validation Datasets}\label{sec:validation}
+Validation data should be both realistic and accompanied with ground truth. A good compromise between these conflicting goals is achieved by the simulated image sequences that have been designed with great care for the ISBI Single-Molecule Localization Microscopy Challenge 2013 and can be downloaded freely\footnote{\url{http://bigwww.epfl.ch/smlm/datasets/index.html}}. The ground truth is available for four ``training'' data\-sets,and we used these for most of our quantitative experiments. Four additional datasets with undisclosed ground truth were used in the contest, where SimpleSTORM also performed well, but the organizers did not yet publish the results officially. A free program\footnote{\url{http://bigwww.epfl.ch/smlm/evaluation/index.html}} to compute performance metrics such as Jaccard index, F-score (both measurung detection reliability) and root mean square localization error (RMSE) accompanies the data.
+
+Two training datasets show simulated tubulin tubes, and we will refer to them as `Tubulin 1' and `Tubulin 2'. They consist of 2400 frames with a resolution of 256 px * 256 px (at 150nm per pixel) and strong autofluorescent background. Tubulin 2 dataset has a higher noise level than tubulin 1. The other two datasets simulate a bundle of tubulin tubes. There is a long sequence with 12000 frames and almost no overlapping spots and a high density set with 361 frames and severely overlapping spots. These datasets will be referred to as `long sequence' and `high density' respectively. Both datasets consist of images with a resolution of 256 px * 256 px at 100 nm per pixel. Full details are available on the challenge web site.
+
+\subsection{PSF Estimation}
+We compared a non-parametric (Wiener filter) and two parametric (Gaussian fitting in the Fourier and spatial domains) algorithms for PSF estimation. The three estimation methods performed similarly on the test datasets with non-overlapping spots. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which tended to overestimate $\sigma_{\psf}$ and occasionally failed to converge to the correct solution. Since a Gaussian matched filter is faster than a Wiener filter, we prefer the former. Figures \ref{histogram_of_sigmas} (a-d) show the distribution of sigmas estimated by applying the Levenberg-Marquardt algorithm to all spots in the first 2000 frames (respectively all frames in the high density dataset). The full width at half maximum (FWHM) of the true PSF was 258~nm in all cases, corresponding to $\sigma_{\mathrm{true}}=0.73$ pixels in Tubulin 1 and 2 and to $\sigma_{\mathrm{true}}=1.09$ pixels in the others. Our estimate of $\sigma_{\psf}$ is the median of these histograms and within $10\%$ of the true values, except in the high density dataset where our estimate is slightly too high because the fitting algorithm falsly merged  some overlapping spots. 
 
 \begin{figure}
-\subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped2.png}}\hfill%
-\subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped2.png}}\hfill%
-\subfloat[$\sigma = 1.5$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_5_croped2.png}}\hfill%
-	\caption{The effect of different filter widths on datasets with a high PSF density per frame.}%
-	\label{sigmas}%
+\subfloat[Tubulin 1 dataset]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
+\subfloat[Tubulin 2 dataset]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}\\
+\subfloat[Long sequence dataset]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
+\subfloat[High density datase]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}%
+	\caption{Histograms of estimated $\sigma_{\psf}$ for the training datasets from the ISBI localization challenge}%
+	\label{histogram_of_sigmas}%
 \end{figure}
 
+To improve results in high density datasets, another advantage of the parametric PSF model comes into effect: It is easy to change the filter strength by chosing $\sigma_{\mathrm{filter}}\le\sigma_{\psf}$. This reduces the tendency of overlapping spots to be erroneously fused. Figure \ref{sigmas_quantitative} shows the RMSE as a function of $\sigma_{\mathrm{filter}}$ for low and high density data. It can be seen that the matched filter indeed minimizes the RMSE when spots do not overlap, whereas the optimal filter size is much smaller when spots overlap. The same effect is illustrated qualitatively in figure \ref{sigmas}: The detection quality clearly decreases with increasing $\sigma_{\mathrm{filter}}$. Therefore, we choose a small value for $\sigma_{\mathrm{filter}}$ for high density data.
+
+
 \begin{figure}
-\subfloat[Long sequence dataset]{
+\subfloat[Low density dataset]{
 \includegraphics[width=0.23\textwidth]{figures/RMSE_filterwidthLD.png}\label{sigmas_quantitativeA}}\hfill%
 \subfloat[High density dataset]{
 \includegraphics[width=0.23\textwidth]{figures/RMSE_filterwidthHD.png}\label{sigmas_quantitativeB}}
@@ -629,30 +628,25 @@ The estimation of the PSF width using the Fourier transformed imaged proved to b
 	\label{sigmas_quantitative}%
 \end{figure}
 
-
-
-To validate the PSFs width estimation using the Levenberg-Marquardt algorithm all PSFs from the first 2000 frames (all frames from high density dataset) of the datasets provided from the ISBI challenge were detected and fitted. Figure \ref{histogram_of_sigmas} shows the distribution of the estimated width in histograms. The calculated values for the training datasets are 109~nm which is equivalent to 1.09 pixels for the high density and long sequence dataset and 0.73 pixels in the Tubulin datasets respectively. The estimated PSF width lies within a then percent range according to the calculated on. The only exception is the high density dataset for which the PSF width is overestimated because of the many overlapping PSFs.
-
 \begin{figure}
-\subfloat[Long sequence dataset, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes1.png}}\hfill%
-\subfloat[High density dataset, true sigma is 1.08]{\includegraphics[width = 0.24\textwidth]{figures/SigmaBundledTubes2.png}}\hfill%
-\subfloat[Tubulin 1 dataset, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
-\subfloat[Tubulin 2 dataset, true sigma is 0.8]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}
-	\caption{Histograms for three training datasets from the ISBI localization challenge}%
-	\label{histogram_of_sigmas}%
+\subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped2.png}}\hfill%
+\subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped2.png}}\hfill%
+\subfloat[$\sigma = 1.5$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_5_croped2.png}}\hfill%
+	\caption{The effect of filter width on high density data.}%
+	\label{sigmas}%
 \end{figure}
 
 \subsection{Gain estimation}
-One key feature is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the set one. For validation purpose a series of 500 frames of an average cell culture sample with phalloidin labeled actin filaments were captured several times with different gain settings. Figure \ref{gain_verification} shows the linear relation between the estimated gain factor and the set one.
+A key feature of SimpleSTORM is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the value indicated by the camera's  control settings. For validation purposes, we captured a series of 500 frames of a standard cell culture with phalloidin labeled actin filaments using different gain settings in the camera. Figure \ref{gain_verification} shows that the true and indicated gain values differ, but are precisely linearly related. This justifies our linear model (\ref{eq:linear-gain-model}) and the gain estimation method of section \ref{sec:noise-normalization}.
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{figures/gain_estimation}
-\caption{Scatter plot of estimated gain over set gain. The same sample was imaged multiple times with different gain factors set in the camera settings.}
+\caption{Scatter plot of estimated gain vs. gain setting in the camera.}
 \label{gain_verification}
 \end{figure}
 
-\subsection{Background estimation} \label{bg_estimation}
-To check whether the background estimation and Anscombe transformation worked as supposed, the false positive to background pixel rate was determined. The $p-$value determines the rate of false positives per background pixels. The number of background pixels that are erroreously detected as signal was calculated for the training datasets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbors that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
+\subsection{Image standardization} \label{bg_estimation}
+To check whether the image standardization works as desired, the false positive to background pixel rate was determined. The $p-$value determines the rate of false positives per background pixels. The number of background pixels that are erroreously detected as signal was calculated for the training datasets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbors that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
 
 \begin{figure}
 \subfloat[False positive to background pixel rate.]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}\label{fp_rate}}\hfill%
