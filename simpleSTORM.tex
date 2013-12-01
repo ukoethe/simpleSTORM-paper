@@ -45,7 +45,7 @@ The authors are with the Multi-Dimensional Image Processing Group, University of
 \maketitle
 
 \begin{abstract}
-Although there are many reconstruction algorithms for localization microscopy, their use is hampered by the difficulty to adjust a possibly large number of parameters correctly. We propose SimpleSTORM, an algorithm that determines appropriate parameter settings directly from the data in an initial self-calibration phase. The algorithm is based on a carefully designed, yet simple, model of the image acquisition process which allows us to standardize each image such that the background has zero mean and unit variance. This standardization makes it possible to detect spots by a true statistical test (instead of hand-tunes thresholds) and to de-noise the images with an efficient matched filter. By reducing the strength of the matched filter, SimpleSTORM also performs reasonably on data with high spot density, trading off localization accuracy for improved detection performance. Extensive validation experiments on the ISBI Localization Challenge Dataset, as well as real image reconstrutions, demonstrate the good performance of our algorithm. 
+Although there are many reconstruction algorithms for localization microscopy, their use is hampered by the difficulty to adjust a possibly large number of parameters correctly. We propose SimpleSTORM, an algorithm that determines appropriate parameter settings directly from the data in an initial self-calibration phase. The algorithm is based on a carefully designed, yet simple, model of the image acquisition process which allows us to standardize each image such that the background has zero mean and unit variance. This standardization makes it possible to detect spots by a true statistical test (instead of hand-tuned thresholds) and to de-noise the images with an efficient matched filter. By reducing the strength of the matched filter, SimpleSTORM also performs reasonably on data with high spot density, trading off localization accuracy for improved detection performance. Extensive validation experiments on the ISBI Localization Challenge Dataset, as well as real image reconstructions, demonstrate the good performance of our algorithm. 
 \keywords{localization microscopy \and STORM \and PALM \and matched filter \and noise normalization}
 \end{abstract}
 
@@ -133,9 +133,9 @@ is freely available in an easy-to-use GUI program.\footnote{\href{https://github
 \begin{centering}
 \includegraphics[width=0.45\textwidth]{figures/Bildmike_projection_scalebar}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction_scalebar.png}
 \par\end{centering}
-\caption{Tubulin Example result from SimpleSTORM (data courtesy of Mike Heilemann).
+\caption{Tubulin example result from SimpleSTORM (data courtesy of Mike Heilemann).
 Left: maximum projection of the raw data. Right: reconstructed high-resolution
-image. Scalebar represents 1\,micro meter}
+image. Scalebar represents $1\mu m$}
 
 
 \end{figure*}
@@ -152,23 +152,23 @@ accurate \citep{thompson_02_precise}. The free parameters of the
 model are optimized by a non-linear fitting algorithm (e.g. the Levenberg-Marquart
 method) in order to minimize the least-squares residual between the
 fitted model and the intensities of a spot candidate. This method is the basis of the 
-popular rapidSTORM software \citep{wolter_10_rapid-storm}, the ImageJ plugins Octane \citep{yu_11_octane}, PeakFit \citep{herbert_12_peakfit} and GraspJ (offering GPU accelaration, \cite{brede_12_graspj}), as well as the Localization Microscopy MicroManager plugin \citep{stuurman_12_plugin} and PYME (the Python localization microscopy environment, \cite{baddeley_12_pyme}).
+popular rapidSTORM software \citep{wolter_10_rapid-storm}, the ImageJ plugins Octane \citep{yu_11_octane}, PeakFit \citep{herbert_12_peakfit} and GraspJ (offering GPU acceleration, \cite{brede_12_graspj}), as well as the Localization Microscopy MicroManager plugin \citep{stuurman_12_plugin} and PYME (the Python localization microscopy environment, \cite{baddeley_12_pyme}).
 
 An even simpler approach avoids iterative optimization by computing the centroid of 
 each spot directly, either in terms of the intensity-weighted mean \citep{thompson_02_precise} or the 
 fluoroBancroft method \citep{andersson_08_localization}. These methods were found to be only 
 slightly less accurate then the least-squares fit when properly parametrized \citep{thompson_02_precise,hedde_09_localization-microscopy} and form the basis of fast reconstruction solutions such as the hardware-accelerated method of \citep{gruell_11_fpga-storm} and the QuickPALM ImageJ plugin \citep{henriques_10_quick-palm}.
 
-Both fitting and direct methods have difficulties with the reconstruction of high density image sequences, because these images violate the basic model assumption that neighboring spots do not overlap. Greedy procedures for fiting overlapping spots where proposed by \citep{egner_07_nanoscopy}, who adapt H{\"o}gbom's classical CLEAN algorithm \citep{hoegbom_74_clean} to localization microscopy, the DAOSTORM algorithm from \citep{holden_11_daostorm}, an adaptation of DAOPHOT, a well-known algorithm from astronomy \citep{stetson_87_daophot}, and the multi-emitter fitting algorithm of \citep{huang_11_simultaneous}, who fit up to $N_{\max}$ overlapping PSFs simultaneously and select the most likely spot number by a statistical test. A more principled model for overlapping spots is provided by {\em compressed sensing} \citep{zhu_12_faster-storm}. Here, a PSF candidate is initialized at all pixels of a fine grid (e.g. having one-eighth the pixel size of the original image). The fit is then performed under a strong {\em sparsity prior} which ensures that only the center pixels of true spots get non-zero activation. While this method is more accurate than DAOSTORM, it is also very expensive (about a hundred times slower). Recently, substantial improvements of the sparse reconstruction approach have been achieved by more sophisticated modeling and optimization methods \citep{kim_13_localization-microscopy,min_13_localization-microscopy}. However, it is as yet unclear if the improvements over simple algorithms like SimpleSTORM warrant the added complexity.
+Both fitting and direct methods have difficulties with the reconstruction of high density image sequences, because these images violate the basic model assumption that neighboring spots do not overlap. Greedy procedures for fitting overlapping spots where proposed by \citep{egner_07_nanoscopy}, who adapt H{\"o}gbom's classical CLEAN algorithm \citep{hoegbom_74_clean} to localization microscopy, the DAOSTORM algorithm from \citep{holden_11_daostorm}, an adaptation of DAOPHOT, a well-known algorithm from astronomy \citep{stetson_87_daophot}, and the multi-emitter fitting algorithm of \citep{huang_11_simultaneous}, who fit up to $N_{\max}$ overlapping PSFs simultaneously and select the most likely spot number by a statistical test. A more principled model for overlapping spots is provided by {\em compressed sensing} \citep{zhu_12_faster-storm}. Here, a PSF candidate is initialized at all pixels of a fine grid (e.g. having one-eighth the pixel size of the original image). The fit is then performed under a strong {\em sparsity prior} which ensures that only the center pixels of true spots get non-zero activation. While this method is more accurate than DAOSTORM, it is also very expensive (about a hundred times slower). Recently, substantial improvements of the sparse reconstruction approach have been achieved by more sophisticated modeling and optimization methods \citep{kim_13_localization-microscopy,min_13_localization-microscopy}. However, it is as yet unclear if the improvements over simple algorithms like SimpleSTORM warrant the added complexity.
 
-Proper noise modeling is a critical ingredient for reliable distinction between true spots and noise artefacts. Many authors simply use a generic additive noise model and select spots whose intensity exceeds the background by a certain multiple of the background's noise standard deviation \citep{thompson_02_precise,gruell_11_fpga-storm}. Frequently, the image is preprocessed by averaging filters \citep{wolter_10_rapid-storm,huang_11_simultaneous}, Gaussian filters \citep{krizek_11_minimizing} or a wavelet transform \citep{izeddin_12_wavelet} before thresholding. However, non-uniform background intensity and intensity-dependent background noise make the choice of an appropriate threshold very difficult. Heuristic solutions to this problem lead to algorithms with many adjustable parameters that are very hard to use.
+Proper noise modeling is a critical ingredient for reliable distinction between true spots and noise artifacts. Many authors simply use a generic additive noise model and select spots whose intensity exceeds the background by a certain multiple of the background's noise standard deviation \citep{thompson_02_precise,gruell_11_fpga-storm}. Frequently, the image is preprocessed by averaging filters \citep{wolter_10_rapid-storm,huang_11_simultaneous}, Gaussian filters \citep{krizek_11_minimizing} or a wavelet transform \citep{izeddin_12_wavelet} before thresholding. However, non-uniform background intensity and intensity-dependent background noise make the choice of an appropriate threshold very difficult. Heuristic solutions to this problem lead to algorithms with many adjustable parameters that are very hard to use.
 
-Moreover, it has been shown in \citep{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelera\-ted version of this method is described in \citep{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they deviate from the Poisson-distributed photon counts due to the action of amplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \citep{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \citep{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \citep{boulanger_10_patch-based}, who adaptiveliy subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
+Moreover, it has been shown in \citep{abraham_09_localization-estimation} that a maximum likelihood fit based on a Poisson noise model outperforms the least-squares algorithm which implicitly assumes additive noise. A fast GPU-accelera\-ted version of this method is described in \citep{smith_10_fast}. However, the Poisson model cannot be applied directly to the observed image intensities because they deviate from the Poisson-distributed photon counts due to the action of amplification steps and are no longer Poisson distributed. The amplification can be inverted when gain factor and offset are known, but this requirement is apparently overlooked sometimes (e.g. \citep{andersson_08_localization,gruell_11_fpga-storm,brede_12_graspj}). A simple gain and offset estimation procedure using dedicated calibration images was proposed in \citep{lidke_05_photon-statistics}. A more convenient self-calibration algorithm was introduced in \citep{boulanger_10_patch-based}, who adaptively subdivide the given image sequence to determine regions of homogeneous intensity for gain estimation. This method is very similar in spirit to our approach in section \ref{sec:noise-normalization}, but their algorithm is considerably more complicated.
 
 \section{Methods}
 \subsection{\label{sec:matched-filters}Matched Filters}
 
-It was shown by \citep{abraham_09_localization-estimation} that a maximum likelihood fit outperforms least-squares fitting when the noise follows a Poisson distribution. On the other hand, it is well-known that maximum likelihood and least-squares fitting are equivalent under additive Gaussian noise. Moreover, least-squares fitting can be replaced by {\em matched filtering} \citep{turin_60_matched-filters} when the mean background intensity is zero. Under these conditions, these algorithms are mathematicaly equivalent (as we show below), but filtering is much more efficient, in particular when the matched filter is a Gaussian PSF. This motivates our desire to work on {\em standardized images}, and robust standardization of the given image sequence is at the heart of the SimpleSTORM algorithm.
+It was shown by \citep{abraham_09_localization-estimation} that a maximum likelihood fit outperforms least-squares fitting when the noise follows a Poisson distribution. On the other hand, it is well-known that maximum likelihood and least-squares fitting are equivalent under additive Gaussian noise. Moreover, least-squares fitting can be replaced by {\em matched filtering} \citep{turin_60_matched-filters} when the mean background intensity is zero. Under these conditions, these algorithms are mathematically equivalent (as we show below), but filtering is much more efficient, in particular when the matched filter is a Gaussian PSF. This motivates our desire to work on {\em standardized images}, and robust standardization of the given image sequence is at the heart of the SimpleSTORM algorithm.
  
 We briefly recall the relationship between matched filtering and least-squares fitting. Let the image $s(x,y)$ contain just a single spot with unknown scaling $\mu_0$ at an unknown location
 $(x_{0},y_{0})$. We assume that the noise is additive Gaussian noise with mean zero
@@ -239,7 +239,7 @@ performs reasonably as long as the PSF is not too far off.
 in practice and in fact undesirable. But this is no problem as long as the spot density is not too high. Since the PSF
 decreases quickly, the filter response at point $(x,y)$ is not influenced
 by spots that are sufficiently far away. The detector suffers only
-a minor degradationat overlapping spots
+a minor degradation at overlapping spots
 whose distance remains larger than the PSFs full width at half
 maximum (FWHM). The spot density can easily be controlled by the experimental
 setup.
@@ -263,7 +263,7 @@ in pixel $(x,y)$ is given by
 \[
 p\left(k\right)=\frac{\lambda^{k}}{k!}e^{-\lambda}
 \]
-where $\lambda=\lambda(x,y)$ is the expected vount, i.e. true intensity (we dropped the dependency on $(x,y)$ to improve readability). Moreover,
+where $\lambda=\lambda(x,y)$ is the expected count, i.e. true intensity (we dropped the dependency on $(x,y)$ to improve readability). Moreover,
 these counts are not observed directly but are subjected to several
 amplification stages and discretized into a finite set of gray levels.
 If we assume linear amplification characteristics and neglect discretization
@@ -301,7 +301,7 @@ distributed counts $k$:
 \begin{equation}
 q(x,y)=2\sqrt{\frac{k'(x,y)-b}{a}+\frac{3}{8}}\label{eq:anscombe-transform}
 \end{equation}
-Dermining $a$ and $b$ turns out to be tricky. The standard
+Determining $a$ and $b$ turns out to be tricky. The standard
 solution is to record dedicated calibration images where the mean
 and variance of $k'$ can be computed easily \citep{lidke_05_photon-statistics}. Then, a linear regression
 through a set of pairs $\left(E[k'],\, \var[k']\right)$ with different
@@ -338,7 +338,7 @@ scatter plot: Repeat $k=10000$ times:
 \begin{enumerate}
 \item Select two points at random and compute the line through these points.
 \item Determine the number of inliers of this line, i.e. the number of points
-whose distance from the line is at most a twentyth of the range between the minimal and the maximal value.
+whose distance from the line is at most a twentieth of the range between the minimal and the maximal value.
 \item Keep the line with the maximum number of inliers as the best estimate
 of the lower leaning line.
 \end{enumerate}
@@ -350,13 +350,10 @@ and therefore ignored.
 \end{enumerate}
 \begin{figure}
 \includegraphics[width=1\columnwidth]{figures/lower-leaning-line}
-
 \caption{\label{fig:lower-leaning-line}RANSAC-fitting of a lower leaning line
 to a scatter plot showing variance vs. mean intensity for randomly
 selected pixels. Slope and intercept of this line determine the correction
 coefficients in equation (\ref{eq:anscombe-transform}).}
-
-
 \end{figure}
 Figure \ref{fig:lower-leaning-line} shows an example of the fit
 according to this algorithm. It can be seen that it does indeed detect
@@ -382,7 +379,7 @@ how fast the background varies by simple visual inspection of the
 data. 
 
 In each block, the median of the gray values $s$ is computed. The
-median is preferrable to the mean because it is more stable when the
+median is preferable to the mean because it is more stable when the
 block contains non-background pixels (blinking spots and beads): These
 pixels lead to a significant upward bias in the mean, whereas the
 median increases only marginally. The median values are placed on
@@ -400,7 +397,6 @@ We call the resulting image $s_{t}$ the {\em standardized} image because it
 now conforms to the requirements of the matched
 filter method. Figure \ref{fig:background-subtraction}
 shows examples.
-
 \begin{figure*}
 \includegraphics[width=0.3\textwidth]{figures/Tubulin2OrigFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_raw_frame2547_rotated4.png}\\[6pt]
 \includegraphics[width=0.3\textwidth]{figures/Tubulin2normalprocessFrame50}$\qquad$\includegraphics[width=0.3\textwidth]{figures/dcframe4_bgsubtracted.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/lunet_processed_rotated4.png}
@@ -436,7 +432,7 @@ with the Wiener filter, followed by inverse Fourier transform
 \[
 \hat{s}_{t}=\mathcal{F}^{-1}[S_{t}\cdot W]
 \]
-In contrast, the parameteric method assumes that the PSF is shaped
+In contrast, the parametric method assumes that the PSF is shaped
 like a Gaussian, which is a very good approximation for typical microscopes.
 Under this assumption, the self-calibration only needs to determine
 a single parameter, the PSF scale $\sigma_{\psf}$. Clearly, the variance of a single
@@ -460,7 +456,7 @@ symmetric Gaussian functions, the model is
 g(r | w_1, w_2, w_3) = w_{1}\,\exp\left(-\frac{r^{2}}{2w_{2}^{2}}\right)+w_{3}\label{eq:gaussian-psf}
 \end{equation}
 where $r=\sqrt{u^{2}+v^{2}}$ is the distance of the point from the
-origin. The parameters $w_{i}$ are choosen by means of non-linear
+origin. The parameters $w_{i}$ are chosen by means of non-linear
 least-squares optimization (using the Levenberg-Marquardt algorithm) such that
 the squared difference between the model and the power spectrum is
 minimized
@@ -487,15 +483,15 @@ Finally, the result of matched filtering is
 \]
 where $\star$ denotes convolution. Experimental results are reported in section \ref{sec:validation}
 
-\subsection{Spot Detection}
+\subsection{Spot Detection}\label{sec:spot-detection}
 
 Spot detection is performed in each frame after image standardization. Since the background now contains only Gaussian additive noise with zero mean and unit variance,
 a standard statistical test can be used to detect pixels whose intensity
 is unlikely to be background. For a given $p$-value, corresponding
 to the probability of false positives, the intensity threshold is
-\[
-t\ge\sqrt{2}\,\erfi(2p-1)
-\]
+\begin{equation}
+t\ge\sqrt{2}\,\erfi(2p-1)\label{eq:detection-threshold}
+\end{equation}
 where $\erfi(.)$ is the inverse error function. That is, a
 normalized pixel with intensity at least $t$ has a probability of
 at most $p$ to represent background. For example, $p$-values of
@@ -515,10 +511,6 @@ setting can be approximated by a binomial distribution with parameter
 $p$. For example, for $p=1\%$, the probability that three or more
 background pixels are above threshold in a given 3x3 window is below
 $0.01\%$, for $p=0.1\%$ the resulting probability is $\approx\!10^{-5}\%$. 
-Experiments reported in section \ref{bg_estimation} validate our claim that the false
-positive rate (number of false positives over total number of background
-pixels) is very low, namely 228 false positives out of 46 million for 
-$p=1\%$ and 16 for $p=0.1\%$.
 The result of this step is a set of spot masks, i.e. connected regions
 above threshold that contain at least three pixels.
 
@@ -600,13 +592,12 @@ i.e. when the spot distance is about twice as big.
 
 \section{Results}\label{sec:results}
 \subsection{Validation Datasets}\label{sec:validation}
-Validation data should be both realistic and accompanied with ground truth. A good compromise between these conflicting goals is achieved by the simulated image sequences that have been designed with great care for the ISBI Single-Molecule Localization Microscopy Challenge 2013 and can be downloaded freely\footnote{\url{http://bigwww.epfl.ch/smlm/datasets/index.html}}. The ground truth is available for four ``training'' data\-sets,and we used these for most of our quantitative experiments. Four additional datasets with undisclosed ground truth were used in the contest, where SimpleSTORM also performed well, but the organizers did not yet publish the results officially. A free program\footnote{\url{http://bigwww.epfl.ch/smlm/evaluation/index.html}} to compute performance metrics such as Jaccard index, F-score (both measurung detection reliability) and root mean square localization error (RMSE) accompanies the data.
+Validation data should be both realistic and accompanied with ground truth. A good compromise between these conflicting goals is achieved by the simulated image sequences that have been designed with great care for the ISBI Single-Molecule Localization Microscopy Challenge 2013 and can be downloaded freely\footnote{\url{http://bigwww.epfl.ch/smlm/datasets/index.html}}. The ground truth is available for four ``training'' data\-sets,and we used these for most of our quantitative experiments. Four additional datasets with undisclosed ground truth were used in the contest, where SimpleSTORM also performed well, but the organizers did not yet publish the results officially. A free program\footnote{\url{http://bigwww.epfl.ch/smlm/evaluation/index.html}} to compute performance metrics such as Jaccard index, F-score (both measuring detection reliability) and root mean square localization error (RMSE) accompanies the data.
 
-Two training datasets show simulated tubulin tubes, and we will refer to them as `Tubulin 1' and `Tubulin 2'. They consist of 2400 frames with a resolution of 256 px * 256 px (at 150nm per pixel) and strong autofluorescent background. Tubulin 2 dataset has a higher noise level than tubulin 1. The other two datasets simulate a bundle of tubulin tubes. There is a long sequence with 12000 frames and almost no overlapping spots and a high density set with 361 frames and severely overlapping spots. These datasets will be referred to as `long sequence' and `high density' respectively. Both datasets consist of images with a resolution of 256 px * 256 px at 100 nm per pixel. Full details are available on the challenge web site.
+Two training datasets show simulated tubulin tubes, and we will refer to them as `Tubulin 1' and `Tubulin 2'. They consist of 2400 frames with a resolution of 256 px * 256 px (at 150nm per pixel) and strong autofluorescent background. Tubulin 2 dataset has a higher noise level than tubulin 1. The other two datasets simulate a bundle of tubulin tubes. There is a long sequence with 12000 frames and almost no overlapping spots and a high density set with 361 frames and severely overlapping spots. These datasets will be referred to as `long sequence' (LS) and `high density' (HD) respectively. Both datasets consist of images with a resolution of 64 px * 64 px at 100 nm per pixel. Full details are available on the challenge web site.
 
 \subsection{PSF Estimation}
-We compared a non-parametric (Wiener filter) and two parametric (Gaussian fitting in the Fourier and spatial domains) algorithms for PSF estimation. The three estimation methods performed similarly on the test datasets with non-overlapping spots. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which tended to overestimate $\sigma_{\psf}$ and occasionally failed to converge to the correct solution. Since a Gaussian matched filter is faster than a Wiener filter, we prefer the former. Figures \ref{histogram_of_sigmas} (a-d) show the distribution of sigmas estimated by applying the Levenberg-Marquardt algorithm to all spots in the first 2000 frames (respectively all frames in the high density dataset). The full width at half maximum (FWHM) of the true PSF was 258~nm in all cases, corresponding to $\sigma_{\mathrm{true}}=0.73$ pixels in Tubulin 1 and 2 and to $\sigma_{\mathrm{true}}=1.09$ pixels in the others. Our estimate of $\sigma_{\psf}$ is the median of these histograms and within $10\%$ of the true values, except in the high density dataset where our estimate is slightly too high because the fitting algorithm falsly merged  some overlapping spots. 
-
+We compared a non-parametric (Wiener filter) and two parametric (Gaussian fitting in the Fourier and spatial domains) algorithms for PSF estimation. The three estimation methods performed similarly on the test datasets with non-overlapping spots. This confirms that the Gaussian model is indeed applicable, because otherwise the Wiener filter would have been superior. Spatial domain fitting was slightly more robust than Fourier domain fitting, which tended to overestimate $\sigma_{\psf}$ and occasionally failed to converge to the correct solution. Since a Gaussian matched filter is faster than a Wiener filter, we prefer the former. Figures \ref{histogram_of_sigmas} (a-d) show the distribution of sigmas estimated by applying the Levenberg-Marquardt algorithm to all spots in the first 2000 frames (respectively all frames in the high density dataset). The full width at half maximum (FWHM) of the true PSF was 258~nm in all cases, which translates into $\sigma_{\mathrm{true}}=0.73$ pixels in Tubulin 1 and 2 and into $\sigma_{\mathrm{true}}=1.09$ pixels in the others. Our estimate of $\sigma_{\psf}$ is the median of these histograms and within $10\%$ of the true values, except in the high density dataset where our estimate is slightly too high because the fitting algorithm falsly merged  some overlapping spots. 
 \begin{figure}
 \subfloat[Tubulin 1 dataset]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin1.png}}\hfill%
 \subfloat[Tubulin 2 dataset]{\includegraphics[width = 0.24\textwidth]{figures/SigmaTubulin2.png}}\\
@@ -616,9 +607,7 @@ We compared a non-parametric (Wiener filter) and two parametric (Gaussian fittin
 	\label{histogram_of_sigmas}%
 \end{figure}
 
-To improve results in high density datasets, another advantage of the parametric PSF model comes into effect: It is easy to change the filter strength by chosing $\sigma_{\mathrm{filter}}\le\sigma_{\psf}$. This reduces the tendency of overlapping spots to be erroneously fused. Figure \ref{sigmas_quantitative} shows the RMSE as a function of $\sigma_{\mathrm{filter}}$ for low and high density data. It can be seen that the matched filter indeed minimizes the RMSE when spots do not overlap, whereas the optimal filter size is much smaller when spots overlap. The same effect is illustrated qualitatively in figure \ref{sigmas}: The detection quality clearly decreases with increasing $\sigma_{\mathrm{filter}}$. Therefore, we choose a small value for $\sigma_{\mathrm{filter}}$ for high density data.
-
-
+To improve results in high density datasets, another advantage of the parametric PSF model comes into effect: It is easy to change the filter strength by choosing $\sigma_{\mathrm{filter}}\le\sigma_{\psf}$. This reduces the tendency of overlapping spots to be erroneously fused. Figure \ref{sigmas_quantitative} shows the RMSE as a function of $\sigma_{\mathrm{filter}}$ for low and high density data. It can be seen that the matched filter indeed minimizes the RMSE when spots do not overlap, whereas the optimal filter size is much smaller when spots overlap. The same effect is illustrated qualitatively in figure \ref{sigmas}: The detection quality clearly decreases with increasing $\sigma_{\mathrm{filter}}$. Therefore, we choose a small value for $\sigma_{\mathrm{filter}}$ for high density data.
 \begin{figure}
 \subfloat[Low density dataset]{
 \includegraphics[width=0.23\textwidth]{figures/RMSE_filterwidthLD.png}\label{sigmas_quantitativeA}}\hfill%
@@ -627,7 +616,6 @@ To improve results in high density datasets, another advantage of the parametric
 	\caption{RMSE for different filter widths.}%
 	\label{sigmas_quantitative}%
 \end{figure}
-
 \begin{figure}
 \subfloat[$\sigma = 0$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_0_croped2.png}}\hfill%
 \subfloat[$\sigma = 1$]{\includegraphics[width = 0.15\textwidth]{figures/bundledTubulins2_sigma_1_croped2.png}}\hfill%
@@ -637,8 +625,7 @@ To improve results in high density datasets, another advantage of the parametric
 \end{figure}
 
 \subsection{Gain estimation}
-A key feature of SimpleSTORM is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the value indicated by the camera's  control settings. For validation purposes, we captured a series of 500 frames of a standard cell culture with phalloidin labeled actin filaments using different gain settings in the camera. Figure \ref{gain_verification} shows that the true and indicated gain values differ, but are precisely linearly related. This justifies our linear model (\ref{eq:linear-gain-model}) and the gain estimation method of section \ref{sec:noise-normalization}.
-
+A key feature of SimpleSTORM is the estimation of the camera gain directly from the data. This is important since the actual gain factor differs from the value indicated by the camera's  control settings. For validation purposes, we captured a series of 500 frames of a standard cell culture with phalloidin labeled actin filaments using different gain settings in the camera. Figure \ref{gain_verification} shows that the true and indicated gain values differ, but are proportional to each other. This justifies our linear model (\ref{eq:linear-gain-model}) and the gain estimation method of section \ref{sec:noise-normalization}.
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{figures/gain_estimation}
 \caption{Scatter plot of estimated gain vs. gain setting in the camera.}
@@ -646,138 +633,88 @@ A key feature of SimpleSTORM is the estimation of the camera gain directly from 
 \end{figure}
 
 \subsection{Image standardization} \label{bg_estimation}
-To check whether the image standardization works as desired, the false positive to background pixel rate was determined. The $p-$value determines the rate of false positives per background pixels. The number of background pixels that are erroreously detected as signal was calculated for the training datasets of the ISBI challenge. For each frame the background subtraction and the Anscombe transformation was applied and the number of background pixels were counted that exceed the threshold corresponding to different $p$-values. This rate of false positives to background pixels can be seen in Figure \ref{fp_rate}. The more important error rate is calculated from the pixels that exceed the threshold and have two neighbors that exceed the threshold too. This rate over the corresponding $p$-value is shown in Figure \ref{fp3_rate}.
-
+To check whether the image standardization works as desired, we measure the false positive rate of the statistical test according to section \ref{sec:spot-detection} on the image background. Since the ground truth is known, we can define the background precisely as the set of pixels which are at least 4 pixels away from any true spot position. For the plain statistical test (without connectivity constraint), the false positive rate should equal the $p$-value. To verify this, we counted the fraction of background pixels whose intensity exceeds the threshold according to (\ref{eq:detection-threshold}) after image standardization. Figure \ref{fp_rate} shows results for Tubulin 1 where the actual error rate is even a bit less than expected. As can be seen in figure \ref{fp3_rate}, the additional connectivity test reduces the error rate further: Out of 46 million background pixels, we found 228 false positives for $p=1\%$ and only 16 for $p=0.1\%$.
 \begin{figure}
-\subfloat[False positive to background pixel rate.]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}\label{fp_rate}}\hfill%
-\subfloat[False positive rate only considering false positives with at least 2 neighbours.]{\includegraphics[width = 0.24\textwidth]{figures/FP3_BgRatioTubulin1.png}\label{fp3_rate}}\hfill%	
-\caption{False positives rates.}%
+\subfloat[without connectivity test]{\includegraphics[width = 0.24\textwidth]{figures/FP_BgRatioTubulin1.png}\label{fp_rate}}\hfill%
+\subfloat[with connectivity test]{\includegraphics[width = 0.24\textwidth]{figures/FP3_BgRatioTubulin1.png}\label{fp3_rate}}\hfill%	
+\caption{False positives rates for Tubulin 1 as a function of $p$.}%
 \end{figure}
 
-\subsection{Results on the trainings datasets}
-No parameter has to be set to produce reasonable results using simpleSTORM. However advanced users can adjust the settings to optimize the output according to the total number of fluorophores detected or the RMSE or something in between. It is not possible to optimize Jaccard index and RMSE at the same time. 
-SimpleSTORM gives the opportunity to set the p-value, an asymmetry threshold and the upscaling factor. Table \ref{improvements} shows the changes for Jaccard index, f-score and RMSE for the long sequence dataset evaluated for a lateral tolerance of 50~nm which corresponds to half of the width of the raw image. Baseline settings are, camera parameters automatically detected,  p-value = 0.1~\%, upscale factor = 10 and asymmetry threshold off.
-\begin{table}
-\caption{Effect of different settings.}
-\begin{tabular}{l|ccc}
-&Jaccard&f-score&RMSE\\\hline
-baseline&0.824&0.903&12.88\\
-p-val = 0.001~\%&0.815&0.898&12.76\\
-asymmetry (1.5)&0.620&0.765&12.13\\
-upscale factor = 100&0.619&0.764&11.45
-\end{tabular}
-\label{improvements}
-\end{table}
-Lowering the p-value does not alter the results significantly. The reason is that even for the baselines p-value, almost no false positives are detected. Applying an asymmetry threshold discards many true positives but also improves the localization error due to the selection the best and undisturbed PSFs. A higher upsampling factor increases the localization accuracy without removing any points but increasing the reconstruction time.\newline
+\subsection{Reconstruction results}
 
-To give an objective impression of the simpleSTORM algorithm the four training datasets are processed with the standard parameters except the upscaling factor. Gain offset and PSF width were estimated from the data and the standard p-value of 0.0001 (0.01~\%) was used. For evaluation of the results the evaluation tool available on the ISBI challenge website was used. Table \ref{result_Training_0_3} shows the results for Jaccard index, f-score, precision and RMSE. For the evaluation only ground truth localizations within a lateral tolerance disk around the detected molecule positions are considered. Thus the radius of the lateral tolerance disk is crucial for the results. The radius was set at a rate of 0.3 the pixel size of the raw data. The RMSE is given in nanometers.
-%\begin{table}
-%\caption{Radius 0.1}
-%\begin{tabular}{l|ccccc}
-%&Jaccard&F-Score&Precision&RMSE\\ \hline
-%Tubulin1&0.261&0.414&0.630&9.19\\
-%Tubulin2&0.126&0.224&0.508&9.64\\
-%LS&0.442&0.613&0.669&6.154\\
-%HD&0.007&0.013&0.094&7.038
-%\end{tabular}
-%\label{result_Training_0_1}
-%\end{table}
+We finally report results for the entire SimpleSTORM algorithm on artificial and real data. For the artificial data, we adopt the performance metrics suggested by the ISBI challenge, namely the {\em Jaccard index}
+\[
+\mathrm{Jaccard}=\frac{\mathrm{TP}}{\mathrm{FN}+\mathrm{TP}+\mathrm{FP}}
+\]
+the F-score 
+\begin{eqnarray*}
+\mathrm{Recall:}\quad &\mathrm{R}=&\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}\\
+\mathrm{Precision:}\quad &\mathrm{P}=&\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}}\\
+\mathrm{F-score:}\quad &\mathrm{F}=&\frac{2\,\mathrm{R}\,\mathrm{P}}{\mathrm{R}+\mathrm{P}}\\
+\end{eqnarray*}
+and the root mean square error
+\[
+\mathrm{RMSE}=\left(\frac{1}{\mathrm{TP}}\sum_{i=1}^{\mathrm{TP}}d(\vec{x}_i^*,\vec{x}_i)^2\right)^{1/2}
+\]
+where $\mathrm{TP}$, $\mathrm{FN}$, and $\mathrm{FP}$ are the number of true positives, false negatives and false positives respectively, and $d(\vec{x}_i^*,\vec{x}_i)$ is the Euclidean distance of the $i^{\mathrm{th}}$ detection from the corresponding ground truth location. A true match is recorded if the ground truth position is within radius $r$ of the detection, such that each ground truth point can be assigned at most once. We use the evaluation tool from the ISBI challenge website to compute these metrics with $r=0.3 px$. 
 
+Table \ref{result_Training_0_3} shows the metrics and the processing speed for the four training datasets, where SimpleSTORM was run with standard settings on the first three datasets. That is, gain, offset, and PSF size were determined by self-calibration, the $p$-value was set to 0.01\%, and the reconstructed images were 16-fold upsampled relative to the originals. In the high density dataset, matched filtering was skipped, and an asymmetry threshold of 2 was introduced. Corresponding reconstructions are shown in figures \ref{tubulin1} and \ref{highdensity}. The reconstructed images contain both our detections and ground truth. It can be seen in the low density dataset (figure \ref{tubulin1} right) that the detections are typically within one pixel of the ground truth position in the reconstructed image. On the difficult high density dataset, SimpleSTORM still performs reasonably after the indicated manual parameter adjustments. While these adjustments result in a rather low recall, the localization error of the surviving spots is acceptably low. 
 \begin{table}
-\caption{Radius 0.3}
+\caption{Performance }
 \begin{tabular}{l|cccccc}
 &Jaccard&Precision&RMSE&frames per sec.\\ \hline
-Tubulin1&0.437&0.936&15.7&43\\
-Tubulin2&0.232&0.904&18.8&52\\
-LS&0.761&0.946&9.97&231\\
-HD&0.031&0.449&20.55&50
+Tubulin1&0.437&0.936&15.7\,nm&43\\
+Tubulin2&0.232&0.904&18.8\,nm&52\\
+LS&0.761&0.946&9.97\,nm&231\\
+HD&0.031&0.449&20.55\,nm&50
 \end{tabular}
 \label{result_Training_0_3}
 \end{table}
-
-%\begin{table}
-%\caption{Radius 0.5}
-%\begin{tabular}{l|ccccc}
-%&Jaccard&F-Score&Precision&RMSE\\ \hline
-%Tubulin1&0.470&0.640&0.974&19.6\\
-%Tubulin2&0.270&0.426&0.966&22.9\\
-%LS&0.805&0.892&0.974&11.6\\
-%HD&0.060&0.112&0.788&32.168
-%\end{tabular}
-%\label{result_Training_0_1}
-%\end{table}
-
-%\begin{table}
-%\caption{Radius 1}
-%\begin{tabular}{l|ccccc}
-%&Jaccard&F-Score&Precision&RMSE\\ \hline
-%Tubulin1&0.487&0.655&0.997&26.6\\
-%Tubulin2&0.282&0.439&0.997&31.0\\
-%LS&0.836&0.911&0.994&15.7\\
-%HD&0.075&0.139&0.976&55.1
-%\end{tabular}
-%\label{result_Training_1}
-%\end{table}
-
-\subsection{ISBI Localization Microscopy Challenge results}
-The performance of the simpleSTORM algorithm was tested in the  ISBI Localization Microscopy Challenge. The results for different meassures like the f-score, the Jaccard index or the RMSE were calculated from the organizers of the challenge. The Jaccard index and the RMSE are contrary measures. Increasing the number of detected fluorophores by lowering the intensity threshold increases also the RMSE. This is because the number of fluorophores with lower intensity increases which can not be fitted as accurate as brighter fluorophores. Lowering the Jaccard index leads therefore to an decreasing RMSE. There were three test datasets used for the challenge. Each in a high density and a low density version. To present the results of the different softwares the rank for each software was calculated for each measure and dataset individually. After that the mean rank on both, the Jaccard index (higher is better and therefore yields a lower rank) and the RMSE (lower is better) for each dataset was calculated. Figure \ref{scatterplot_challenge} shows the results for the high density datasets and the low density datasets. Software that achieved high Jaccard indices are present in the lower part of the scatter plot, software with small RMSE can be found on the left. The nearer an algorithm is located to the origin, the better it performs. SimpleSTORM is closest to the origin for the high density datasets and within the best 5 algorithms for the low density datasets. 
-
-Figure \ref{tubulin1} and Figure \ref{highdensity} show the average projection of the raw data, the reconstruction and a smaller part of the image with the underlying groundtruth of both the tubulin 1 training dataset and the high density dataset from the ISBI Localization Microscopy Challenge. 
-
-
-\begin{figure}
-\subfloat[High density datasets]{\includegraphics[width = 0.49\textwidth]{figures/high_Density_scatter.pdf}}\hfill%
-\subfloat[Low density datasets]{\includegraphics[width = 0.49\textwidth]{figures/low_Density_scatter.pdf}}\hfill%
-	\caption{Histograms for three training datasets from the ISBI localization challenge}%
-	\label{scatterplot_challenge}%
-\end{figure}
-
-
-%\begin{figure*}
-%\begin{centering}
-%\includegraphics[width=0.45\textwidth]{figures/Bildmike_projection}$\qquad$\includegraphics[width=0.45\textwidth]{figures/Bildmike_reconstruction.png}
-%\par\end{centering}
-
-%\caption{Example result from simpleSTORM (data courtesy of Mike Heilemann).
-%Left: one frame of the raw data. Right: reconstructed high-resolution
-%image.}
-%\end{figure*}
-
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect2_hc_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt2_scalebar.png}
 \par\end{centering}
 
-\caption{Tubulin 1 dataset from the ISBI Localization Microscopy Challenge. Left: mean projection of the raw data. Middle: reconstructed image. Right: localizations (green) and groundtruth (red). Scalebar represents 2\,micrometer for the first two images and 100\,nm for the third.}\label{tubulin1}
+\caption{Tubulin 1. Left: mean projection of the raw data. Center: reconstructed image. Right: localizations (green) and ground truth (red), yellow indicates perfect alignment. Scalebar represents $2\,\mu m$ for the first two images and 100\,nm for the third.}\label{tubulin1}
 \end{figure*}
-
 \begin{figure*}
 \begin{centering}
-\includegraphics[width=0.3\textwidth]{figures/Highdensity_raw_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/highdensityreconstruction_rect_hc_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/highdensityAusschnitt_gt_scalebar.png}
+\includegraphics[width=0.3\textwidth]{figures/high-density_003.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/highdensityreconstruction_rect_hc_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/highdensityAusschnitt_gt_scalebar.png}
 \par\end{centering}
 
-\caption{High density dataset from the ISBI Localization Microscopy Challenge. Left: mean projection of the raw data. Middle: reconstructed image. Right: localizations (green) and groundtruth (red). Scalebar represents 1\,micrometer for the first two images and 200\,nm for the third.}\label{highdensity}
+\caption{High density dataset. Left: frame 3 of the raw data. Middle: reconstructed image. Right: localizations (green) and ground truth (red). Scalebar represents $1\mu m$ for the first two images and 200\,nm for the third.}\label{highdensity}
 \end{figure*}
 
+Thus, SimpleSTORM produces good results on ``normal'' data without parameter tuning, but advanced users can adjust the settings to tailor the output to the needs of a particular experiment. Specifically, it is possible to strengthen the criteria for true positives, so that only points with high certainty and correspondingly better localization accuracy are recorded. This trade-off reduces the detection performance (Jaccard and F-score), but improves the RMSE (it is not possible to improve both at the same time). To this end, SimpleSTORM offers the opportunity to set the p-value, an asymmetry threshold and the upscaling factor for the reconstructed image. Table \ref{improvements} shows the changes in Jaccard index, F-score and RMSE for the `long sequence' dataset after these changes. Baseline settings are: $p$-value = 0.1~\%, upscaling factor = 10 and asymmetry threshold off.
+\begin{table}
+\caption{Effect of different settings.}
+\begin{tabular}{l|ccc}
+&Jaccard&F-score&RMSE\\\hline
+baseline&0.824&0.903&12.88\\
+p-val = 0.001~\%&0.815&0.898&12.76\,nm\\
+asymmetry (1.5)&0.620&0.765&12.13\,nm\\
+upscale factor = 100&0.619&0.764&11.45\,nm
+\end{tabular}
+\label{improvements}
+\end{table}
+Lowering the p-value does not alter the results significantly, because the false positive rate is already very low. Applying an asymmetry threshold improves the RMSE, but discards a number of true positives along with the undesirable distorted spots. A higher upsampling factor increases the localization accuracy without removing any points, but increases the reconstruction time.
+
+Finally, we also applied SimpleSTORM to real data. A qualitative impression is given in figures \ref{fig:hela2-tubulin} and \ref{fig:hela2-actine}. In figure \ref{fig:hela2-tubulin}, we can even make a qualitative statement: the depicted microtubuli have a true diameter of about 25nm, whereas the diameter in the reconstruction is about 60nm. Considering the expected RMSE and the average distance of the fluorescent marker form the actual molecule, this is in the expected range.
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.3\textwidth]{figures/AVG_Hela2_aTub647-i.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_rect.png}
 \par\end{centering}
 
-\caption{Beta-tubulin labeld with AlexaFluor647 in a Hela cell. Example result from simpleSTORM.
-Left: one frame of the raw data. Middle: reconstructed high-resolution
-image. Right: magnified, selected part from the reconstructed image.}
+\caption{Beta-tubulin labeled with AlexaFluor647 in a Hela cell. simpleSTORM.
+Left: mean image of the raw data. Middle: reconstruction by SimpleSTORM. Right: magnification of the indicated subregion.}\label{fig:hela2-tubulin}
 \end{figure*}
-
-
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.45\textwidth]{figures/AVG_110603_HeLa2_actin-mEOS2-2_scalebar.png}$\qquad$\includegraphics[width=0.45\textwidth]{figures/110603_HeLa2_actin-mEOS2_resultHighContrast-1_scalebar.png}
 \par\end{centering}
 
-\caption{Actin labeled with mEos2 in HeLa cells..
-Left: one frame of the raw data. Middle: reconstructed high-resolution
-image. Right: magnified, selected part from the reconstructed image. Scalebar represents 3\,micrometer}
+\caption{Actin labeled with mEos2 in HeLa cells.
+Left: mean image of the raw data. Right: reconstruction by SimpleSTORM. Scalebars represent $3\mu m$}.\label{fig:hela2-actine}
 \end{figure*}
 
 
