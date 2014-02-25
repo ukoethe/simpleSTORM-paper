@@ -667,7 +667,7 @@ where $\mathrm{TP}$, $\mathrm{FN}$, and $\mathrm{FP}$ are the number of true pos
 
 Table \ref{result_Training_0_3} shows the metrics and the processing speed for the four training data\-sets, where SimpleSTORM was run with standard settings on the first three datasets. That is, gain, offset, and PSF size were determined by self-calibration, the $p$-value was set to {\bf 0.1\%}, and the reconstructed images were upsampled {\bf 16}-fold relative to the originals. In the high density dataset, matched filtering was skipped, and an asymmetry threshold of 2 was introduced. Corresponding reconstructions are shown in figures \ref{tubulin1} and \ref{highdensity}. The reconstructed images contain both our detections and ground truth. It can be seen in the low density dataset (figure \ref{tubulin1} right) that the detections are typically within one pixel of the ground truth position in the reconstructed image. On the difficult high density dataset, SimpleSTORM still performs reasonably after the indicated manual parameter adjustments. While these adjustments result in a rather low recall, the localization error of the surviving spots is acceptably low. {\bf In addition, table \ref{result_Training_0_3_rapid} contains the performance of rapidSTORM (version 3.2) with settings adjusted for good results (which takes some time for datasets with variable background). The performance in terms of precision and localization error is comparable but SimpleSTORM needed no parameters to be tuned (Its results could be improved by optimizing the parameters). For big data sets rapidSTORM processes the data  5 to 6 times faster than SimpleSTORM. For small data sets it depends on the number of frames, rapidSTORM performed up to 11 times better for the long sequence data set with 12000 frames. Summarized, SimpleSTORM is easier to use, rapidSTORM is faster, but both produce images of comparable quality.}
 
-{\bf
+
 \begin{table}
 \caption{SimpleSTORM performance }
 \tabcolsep=0.11cm
@@ -693,7 +693,7 @@ HD&0.467&0.041&20.3\,nm&257
 \end{tabular}
 \label{result_Training_0_3_rapid}
 \end{table}
-}
+
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.3\textwidth]{figures/Tubulin1_zproj_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_reconstructed_rect2_hc_scalebar.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/Tubulin1_ausschnitt2_scalebar.png}
@@ -726,7 +726,7 @@ Lowering the p-value does not alter the results significantly, because the false
 {\bf Finally, we applied SimpleSTORM to experimental single-molecule localization data recorded from cellular structures. The images we processed were recorded either using the principle of direct stochastic optical reconstruction microscopy (dSTORM,  \cite{heilemann_08_dstorm}, figures \ref{fig:microtubuli} and \ref{fig:hela2-tubulin}), or photoactivated-localization microscopy (PALM, \cite{betzig_06_imaging},  figure \ref{fig:hela2-actine}). All data were recorded with an exposure time of 100 ms and irradiation intensities between $1$ and $4\,\mathrm{kW/cm}^2$ (for experimental protocols, the reader is referred to \cite{heilemann_09_organic} (dSTORM, ATTO520), \cite{heilemann_08_dstorm} (dSTORM, Alexa Fluor 647) and \cite{muranyi_13_super-resolution} (PALM, mEos2)). Reconstructed super-resolution images are shown for tubulin labeled with ATTO520 (figure \ref{fig:microtubuli}) or Alexa Fluor 647 (figure \ref{fig:hela2-tubulin}), as well as for actin labeled with mEos2 (figure \ref{fig:hela2-actine}). We further estimate the spatial resolution by measuring the width of tubulin filaments, which were found to be about 60 nm (figure \ref{fig:microtubuli}) and comparable to previously published values (\cite{heilemann_08_dstorm}). Considering the expected RMSE and the average distance of the fluorescent markers from the actual molecule, this is in the expected ballpark.}
 \begin{figure*}
 \begin{centering}
-\includegraphics[width=0.3\textwidth]{figures/AVG_Hela2_aTub647-i.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_reconstructed_rect.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/HeLa2_aTub647-i_resultHighContrast-1_rect.png}
+\includegraphics[width=0.3\textwidth]{figures/betatub1_rs_maxprojection-2.png}$\qquad$\includegraphics[width=0.3\textwidth]{figures/betatub1_rs_std_driftCorrected_combinedImg.pdf}$\qquad$\includegraphics[width=0.3\textwidth]{figures/betatub1_rs_std_driftCorrected_combinedImg_cropped.png}
 \par\end{centering}
 
 \caption{Beta-tubulin labeled with AlexaFluor647 in a Hela cell.
