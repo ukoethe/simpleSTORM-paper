@@ -665,7 +665,7 @@ and the root mean square error
 \]
 where $\mathrm{TP}$, $\mathrm{FN}$, and $\mathrm{FP}$ are the number of true positives, false negatives and false positives respectively, and $d(\vec{x}_i^*,\vec{x}_i)$ is the Euclidean distance of the $i^{\mathrm{th}}$ detection from the corresponding ground truth location. A true match is recorded if the ground truth position is within radius $r$ of the detection, and each ground truth point can be assigned at most once. We use the evaluation tool from the ISBI challenge website to compute these metrics with $r=0.3~\mathrm{px}$ {\bf (which corresponds to 30 nm for the high density and long sequence data set and 45~nm for the tubulin1 and tubulin2 data sets)}. 
 
-Table \ref{result_Training_0_3} shows the metrics and the processing speed for the four training data\-sets, where SimpleSTORM was run with standard settings on the first three datasets. That is, gain, offset, and PSF size were determined by self-calibration, the $p$-value was set to {\bf 0.1\%}, and the reconstructed images were upsampled {\bf 16}-fold relative to the originals. In the high density dataset, matched filtering was skipped, and an asymmetry threshold of 2 was introduced. Corresponding reconstructions are shown in figures \ref{tubulin1} and \ref{highdensity}. The reconstructed images contain both our detections and ground truth. It can be seen in the low density dataset (figure \ref{tubulin1} right) that the detections are typically within one pixel of the ground truth position in the reconstructed image. On the difficult high density dataset, SimpleSTORM still performs reasonably after the indicated manual parameter adjustments. While these adjustments result in a rather low recall, the localization error of the surviving spots is acceptably low. {\bf For comparison, table \ref{result_Training_0_3_rapid} contains corresponding results for rapidSTORM (version 3.2) whose parameters were manually adjusted for good performance (this takes some time and experience, especially for datasets with variable background). The performance in terms of precision and localization error is comparable, but SimpleSTORM achieved this without parameter tuning. On average, rapidSTORM processes the data 5 to 6 times faster than SimpleSTORM, but on very small images with low spot density, the speed difference can be up to a factor of 11. In summary, SimpleSTORM is easier to use, rapidSTORM is faster, and both produce images of comparable quality.}
+Table \ref{result_Training_0_3} shows the metrics and the processing speed for the four training data\-sets, where SimpleSTORM was run with standard settings on the first three datasets. That is, gain, offset, and PSF size were determined by self-calibration, the $p$-value was set to {\bf 0.3\%}, and the reconstructed images were upsampled {\bf 16}-fold relative to the originals. In the high density dataset, matched filtering was skipped, and an asymmetry threshold of 2 was introduced. Corresponding reconstructions are shown in figures \ref{tubulin1} and \ref{highdensity}. The reconstructed images contain both our detections and ground truth. It can be seen in the low density dataset (figure \ref{tubulin1} right) that the detections are typically within one pixel of the ground truth position in the reconstructed image. On the difficult high density dataset, SimpleSTORM still performs reasonably after the indicated manual parameter adjustments. While these adjustments result in a rather low recall, the localization error of the surviving spots is acceptably low. {\bf For comparison, table \ref{result_Training_0_3_rapid} contains corresponding results for rapidSTORM (version 3.2) whose parameters were manually adjusted for good performance (this takes some time and experience, especially for datasets with variable background). The performance in terms of precision and localization error is comparable, but SimpleSTORM achieved this without parameter tuning. On average, rapidSTORM processes the data 5 to 6 times faster than SimpleSTORM, but on very small images with low spot density, the speed difference can be up to a factor of 11. In summary, SimpleSTORM is easier to use, rapidSTORM is faster, and both produce images of comparable quality.}
 
 
 \begin{table}
@@ -673,10 +673,10 @@ Table \ref{result_Training_0_3} shows the metrics and the processing speed for t
 \tabcolsep=0.11cm
 \begin{tabular}{l|ccccccc}
 &Precision&Recall&RMSE&SimpleST.\\ \hline
-Tubulin1&0.932&0.455&16.5\,nm&51\\
-Tubulin2&0.912&0.333&20.5\,nm&72\\
+Tubulin1&0.938&0.542&16.9\,nm&51\\
+Tubulin2&0.912&0.368&20.4\,nm&72\\
 LS&0.946&0.802&10.2\,nm&563\\
-HD&0.439&0.033&20.5\,nm&257
+HD&0.437&0.033&20.5\,nm&257
 \end{tabular}
 \label{result_Training_0_3}
 \end{table}
@@ -689,7 +689,7 @@ HD&0.439&0.033&20.5\,nm&257
 Tubulin1&0.890&0.537&16.9\,nm&333\\
 Tubulin2&0.901&0.378&20.2\,nm&387\\
 LS&0.935&0.797&9.63\,nm&6000\\
-HD&0.467&0.041&20.3\,nm&257
+HD&0.467&0.041&20.3\,nm&256
 \end{tabular}
 \label{result_Training_0_3_rapid}
 \end{table}
