@@ -58,7 +58,7 @@ major tools for cell biology \citep{bates_08_super-resolution,heilemann_10_fluor
 Despite differences in the experimental procedures, these techniques
 rest on a unified computational principle: Super-resolution images
 are constructed by means of subpixel-accurate spot detection in a
-sequence of images that was taken at optical resolution. Various algorithms
+sequence of images taken at optical resolution. Various algorithms
 have been proposed for this task and many of them are available in
 open-source software. We will briefly review related work in section \ref{sec:related-work}.
 
@@ -77,7 +77,7 @@ SimpleSTORM is based on an accurate model of the image acquisition
 process. It assumes that Poisson-distributed photon counting noise is 
 the dominant noise source. However, we explicitly account for the fact that photon counts
 are only observed after a number of transformations by amplification
-stages and digitization. In the assumption that the combined transformation
+stages and digitization. Under the assumption that the combined transformation
 can be described by a linear equation, we can recover Poisson-distributed intensities
 by inverting this linear equation after robust estimation of its parameters (gain and offset). Furthermore, we assume
 that the point spread function (PSF) is fixed throughout the image sequence and 
@@ -121,9 +121,9 @@ specified sensitivity
 \item Cubic spline interpolation to specified subpixel accuracy and maxima
 detection
 \end{enumerate}
-On a standard laptop, our algorithm is able to process about 20 frames
+On a standard laptop, our algorithm is able to process about 50 frames
 per second for a typical raw image size of 200x200 pixels. It performed
-favorably in the recent ISBI Localization Microscopy Challenge (\href{http://bigwww.epfl.ch/smlm/challenge/}{bigwww.epfl.ch/smlm/challenge/})
+favorably in the recent ISBI Localization Microscopy Challenge\footnote{\href{http://bigwww.epfl.ch/smlm/challenge/}{http://bigwww.epfl.ch/smlm/challenge/}}
 that carefully tested more than 20 reconstruction algorithms. In particular,
 SimpleSTORM achieved high localization accuracy on high-density data,
 where a relatively large number of spots was simultaneously switched
@@ -672,7 +672,7 @@ Table \ref{result_Training_0_3} shows the metrics and the processing speed for t
 \caption{SimpleSTORM performance }
 \tabcolsep=0.11cm
 \begin{tabular}{l|ccccccc}
-&Precision&Recall&RMSE&SimpleST.\\ \hline
+&Precision&Recall&RMSE&frames per sec\\ \hline
 Tubulin1&0.938&0.542&16.9\,nm&51\\
 Tubulin2&0.912&0.368&20.4\,nm&72\\
 LS&0.946&0.802&10.2\,nm&563\\
@@ -729,14 +729,14 @@ Finally, we applied SimpleSTORM to experimental single-molecule localization dat
 Fixed cells were blocked with 5~\% horse serum in PBS and incubated with the primary antibody against alpha-tubulin (Sigma, T6199) for 1h. Cells were washed three times for 5 minutes with blocking buffer (5~\% horse serum in PBS). Afterwards, cells were incubated with the secondary antibody (Invitrogen catalog no. A-21236) against mouse coupled to the fluorophore Alexa 647 for 1 hour. Again, cells were washed three times 5 minutes with blocking buffer.
 With 4~\% PFA cells were postfixed for 10 minutes before putting the cells in a 0.1~\% poly-L-lysine solution for 4 hours. 100 mM MEA solution and Tetraspeck (LifeTechnologies) beads with a concentration of 1:200 were used as imaging buffer. 
 
-Reconstructed super-resolution images are shown for tubulin labeled with ATTO520 (figure \ref{fig:microtubuli}) or Alexa Fluor 647 (figure \ref{fig:HEKcells}), as well as for actin labeled with mEos2 (figure \ref{fig:hela2-actine}). We further estimate the spatial resolution by measuring the width of tubulin filaments, which were found to be about 60 nm (figure \ref{fig:microtubuli}) and comparable to previously published values (\cite{heilemann_08_dstorm}). Considering the expected RMSE and the average distance of the fluorescent markers from the actual molecule, this is in the expected ballpark.}
+Reconstructed super-resolution images are shown for tubulin labeled with ATTO520 (figure \ref{fig:microtubuli}) or Alexa Fluor 647 (figure \ref{fig:HEKcells}), as well as for actin labeled with mEos2 (figure \ref{fig:hela2-actine}). We further estimate the spatial resolution by measuring the width of tubulin filaments, which were found to be about 60 nm (figure \ref{fig:microtubuli}) and comparable to previously published values (\cite{heilemann_08_dstorm}). Considering the expected RMSE and the average distance of the fluorescent markers from the actual molecule, this is in the expected range.}
 \begin{figure*}
 \begin{centering}
 \includegraphics[width=0.3\textwidth]{figures/betatub1_rs_maxprojection-2.pdf}$\qquad$\includegraphics[width=0.3\textwidth]{figures/betatub1_rs_std_driftCorrected_combinedImg.pdf}$\qquad$\includegraphics[width=0.3\textwidth]{figures/betatub1_rs_std_driftCorrected_combinedImg_cropped.pdf}
 \par\end{centering}
 
 \caption{Micro-tubulin labeled with AlexaFluor647 in HEK cells.
-Left: mean image of the raw data. Middle: reconstruction by SimpleSTORM. Right: magnification of the indicated subregion. Scalebars: 10~$\mu$m (first two images), 1.5~$mu$m.}\label{fig:HEKcells}
+Left: mean image of the raw data. Middle: reconstruction by SimpleSTORM. Right: magnification of the indicated subregion. Scalebars: 10~$\mu$m (first two images), 1.5~$\mu$m.}\label{fig:HEKcells}
 \end{figure*}
 \begin{figure*}
 \begin{centering}
